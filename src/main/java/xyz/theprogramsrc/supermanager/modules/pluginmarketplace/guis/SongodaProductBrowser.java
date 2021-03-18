@@ -1,0 +1,66 @@
+package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.guis;
+
+import org.bukkit.entity.Player;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
+import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
+import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.SuperManager;
+import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
+import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects.SongodaProduct;
+
+import java.util.LinkedHashMap;
+
+public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
+
+    private final LinkedHashMap<String, String> currencySymbols = new LinkedHashMap<>();
+
+    public SongodaProductBrowser(Player player) {
+        super(player);
+        this.backEnabled = true;
+        currencySymbols.put("EUR", "€");
+        currencySymbols.put("USD", "$");
+        currencySymbols.put("AUD", "AU$");
+        currencySymbols.put("GBP", "£");
+        this.open();
+    }
+
+    @Override
+    public SongodaProduct[] getObjects() {
+        return PluginMarketplace.products.toArray(new SongodaProduct[0]);
+    }
+
+    @Override
+    public GUIButton getButton(SongodaProduct songodaProduct) {
+        SimpleItem item = new SimpleItem(XMaterial.CHEST)
+                .setDisplayName("&a" + songodaProduct.getName())
+                .setLore(
+                        "&7",
+                        "&9Left Click &7Show product url"
+                );
+        if(songodaProduct.getPaymentMethod().equalsIgnoreCase("None")){
+            item.addLoreLine("&9Right Click &7Install Plugin");
+        }else{
+            item.addLoreLine("&9Product Price: &7" + (this.currencySymbols.get(songodaProduct.getCurrency())) + songodaProduct.getPrice());
+        }
+        item.addLoreLines(Utils.breakText(songodaProduct.getDescription(), 40, "&7"));
+        return new GUIButton(item).setAction(a-> {
+            this.close();
+            if(a.getAction() == ClickType.LEFT_CLICK){
+                this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + songodaProduct.getName() + ":");
+                this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + songodaProduct.getUrl());
+            }else{
+                SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PLUGIN);
+                songodaProduct.download(a.getPlayer());
+            }
+        });
+    }
+
+    @Override
+    protected String getTitle() {
+        return "Songoda Marketplace";
+    }
+}

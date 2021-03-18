@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>xyz.theprogramsrc</groupId>
+    <artifactId>SuperManager</artifactId>
+    <version>2.0.0</version>
+    <packaging>jar</packaging>
+
+    <name>SuperManager</name>
+
+    <description>The best way to manage and customize your server</description>
+    <properties>
+        <kotlin.compiler.languageVersion>1.4</kotlin.compiler.languageVersion>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <main.class>xyz.theprogramsrc.supermanager.SuperManager</main.class>
+        <java.version>1.8</java.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <relocations>
+                                <relocation>
+                                    <pattern>xyz.theprogramsrc.supercoreapi</pattern>
+                                    <shadedPattern>xyz.theprogramsrc.supermanager.supercoreapi</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>${main.class}</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <finalName>SuperManager</finalName>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>theprogramsrc-releases</id>
+            <url>https://repo.theprogramsrc.xyz/repository/maven-private/</url>
+        </repository>
+        <snapshotRepository>
+            <id>theprogramsrc-snapshots</id>
+            <url>https://repo.theprogramsrc.xyz/repository/maven-private/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <repositories>
+        <!-- TheProgramSrc Repo -->
+        <repository>
+            <id>theprogramsrc</id>
+            <url>https://repo.theprogramsrc.xyz/repository/maven-public</url>
+        </repository>
+        <!-- CodeMC -->
+        <repository>
+            <id>CodeMC</id>
+            <url>https://repo.codemc.io/repository/maven-public</url>
+        </repository>
+        <!-- Spigot -->
+        <repository>
+            <id>spigotmc-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <!-- Sonatype -->
+        <repository>
+            <id>sonatype</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- SuperCoreAPI -->
+        <dependency>
+            <groupId>xyz.theprogramsrc</groupId>
+            <artifactId>SuperCoreAPI</artifactId>
+            <version>4.10.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <!-- Spigot -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
+            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- BUNGEE -->
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-api</artifactId>
+            <version>1.16-R0.4-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Logs Filter -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.5</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>
