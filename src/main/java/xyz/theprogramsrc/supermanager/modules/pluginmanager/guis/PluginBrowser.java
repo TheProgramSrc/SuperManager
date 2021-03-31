@@ -9,7 +9,6 @@ import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
 
-
 public abstract class PluginBrowser extends BrowserGUI<SPlugin> {
 
     public PluginBrowser(Player player) {

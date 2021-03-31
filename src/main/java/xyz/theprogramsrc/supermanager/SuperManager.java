@@ -1,11 +1,15 @@
 package xyz.theprogramsrc.supermanager;
 
+import xyz.theprogramsrc.supercoreapi.global.storage.DataBase;
+import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotPlugin;
 import xyz.theprogramsrc.supermanager.api.SuperManagerAPI;
 import xyz.theprogramsrc.supermanager.commands.MainCommand;
 import xyz.theprogramsrc.supermanager.managers.ModuleManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
+import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
+import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +23,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
     private ModuleManager moduleManager;
     private LinkedList<Module> modules;
     private LinkedHashMap<String, Module> enabledModules;
+    private DataBase dataBase;
 
     @Override
     public void onPluginLoad() {
@@ -30,6 +35,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     @Override
     public void onPluginEnable() {
+        UniversalStorage.register(this);
         this.registerTranslation(L.class);
         this.registerModules();
         new MainCommand();
@@ -42,6 +48,8 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     private void registerModules(){
         this.registerModule(PluginManager.class);
+        this.registerModule(PluginMarketplace.class);
+        this.registerModule(UserManagerModule.class);
     }
 
     public ModuleManager getModuleManager() {

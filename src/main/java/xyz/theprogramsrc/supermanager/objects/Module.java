@@ -25,7 +25,7 @@ public abstract class Module extends SpigotModule {
     public boolean isEnabled(){
         return this.superManager.getModuleManager().isModuleEnabled(this); // Check if module is enabled in the config
     }
-    
+
     public boolean isRunning() {
         return running; // Check if the module is currently running
     }
@@ -35,6 +35,10 @@ public abstract class Module extends SpigotModule {
     public abstract String getIdentifier(); // Get the module identifier used for permissions and other things
 
     public abstract SimpleItem getDisplayItem(); // Get the module display item
+
+    public String getPermission(){
+        return null;
+    }
 
     public abstract void onAction(ClickAction clickAction); // Executed when the module display item is clicked in the main gui
 
@@ -72,11 +76,6 @@ public abstract class Module extends SpigotModule {
             throw new IllegalStateException("The module '" + this.getDisplay() + "' is already enabled");
         }else{
             try{ // Try to run
-                HandlerList.unregisterAll(this);
-                this.listener(this);
-                this.onEnable();
-                this.running = true;
-                this.log("&aModule &3" + this.getDisplay() + "&a enabled.", false);
                 if(this.requireInternetConnection() && !Utils.isConnected()){
                     this.log("&cFailed to enable the module '&7" + this.getDisplay() + "&c': Internet connection is required");
                     this.running = false;
@@ -85,7 +84,7 @@ public abstract class Module extends SpigotModule {
                     this.listener(this);
                     this.onEnable();
                     this.running = true;
-                    this.log("&aModule &3" + this.getDisplay() + "&a enabled.");
+                    this.log("&aModule &3" + this.getDisplay() + "&a enabled.", false);
                 }
             }catch (Exception e){
                 this.log("&cError while enabling module &3" + this.getDisplay(), false);

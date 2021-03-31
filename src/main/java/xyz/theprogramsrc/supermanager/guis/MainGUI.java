@@ -27,7 +27,7 @@ public class MainGUI extends BrowserGUI<Module> {
 
     @Override
     public Module[] getObjects() {
-        return Arrays.stream(SuperManager.i.getModules()).filter(Utils::nonNull).toArray(Module[]::new); // Request all the modules and check if there is some null module.
+        return Arrays.stream(SuperManager.i.getModules()).filter(Utils::nonNull).filter(m-> m.getPermission() == null || this.getPlayer().hasPermission(m.getPermission())).toArray(Module[]::new); // Request all the modules and check if there is some null module or if the user has permissions to see them.
     }
 
     @Override

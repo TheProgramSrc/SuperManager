@@ -3,7 +3,6 @@ package xyz.theprogramsrc.supermanager.modules.pluginmanager;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import xyz.theprogramsrc.supercoreapi.apache.commons.io.FileUtils;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;

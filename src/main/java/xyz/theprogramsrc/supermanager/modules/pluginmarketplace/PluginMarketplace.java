@@ -15,20 +15,23 @@ import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects.SongodaP
 import xyz.theprogramsrc.supermanager.objects.Module;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 public class PluginMarketplace extends Module {
 
-    public static LinkedList<SongodaProduct> products;
+    public static LinkedHashMap<Integer, SongodaProduct> products;
+    private static final int per_page = 50;
     private static long lastCheck;
     private static PluginMarketplace i;
 
     @Override
     public void onEnable() {
         i = this;
-        products = new LinkedList<>();
+        products = new LinkedHashMap<>();
         lastCheck = 0L;
-        Thread thread = new Thread(() -> {
+        new Thread(() -> {
             try{
                 loadProducts();
             }catch (IOException e){
@@ -36,9 +39,7 @@ public class PluginMarketplace extends Module {
                 e.printStackTrace();
                 this.plugin.addError(e);
             }
-        });
-        thread.setPriority(7); // 0 (LOWEST) - 5 (NORMAL) - 10 (HIGH)
-        thread.start();
+        }).start();
     }
 
     @Override
@@ -69,7 +70,7 @@ public class PluginMarketplace extends Module {
 
     @Override
     public void onAction(ClickAction clickAction) {
-        if(products.size() < 200){ // We know that the marketplace has at least 200 products
+        if(products.size() < 400){ // We know that the marketplace has at least 200 products
             this.getSuperUtils().sendMessage(clickAction.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MARKETPLACE_STILL_LOADING);
         }
 
@@ -94,61 +95,102 @@ public class PluginMarketplace extends Module {
             for(int i = 0; i < pages; ++i){
                 try{
                     int page = i+1;
-                    PluginMarketplace.i.debug("Loaded " + (page) + " page(s), " + (pages - page) + " page(s) left.");
-                    CustomConnection connection = new ConnectionBuilder("https://songoda.com/api/v2/products?page=" + page).connect();
+                    PluginMarketplace.i.debug("Loading page " + (page) + ", " + (pages - page) + " page(s) left.");
+                    CustomConnection connection = new ConnectionBuilder("https://songoda.com/api/v2/products?per_page="+per_page+"&page=" + page).connect();
                     JsonObject json = connection.getResponseJson();
                     if(json == null) continue;
+                    int x = 0;
+                    int productsArraySize = json.get("data").getAsJsonArray().size();
                     for(JsonElement el : json.get("data").getAsJsonArray()){
-                        JsonObject productJson = el.getAsJsonObject();
-                        if(productJson.get("approved").getAsBoolean() && productJson.get("class").getAsString().equalsIgnoreCase("plugin") && productJson.get("status").getAsString().equalsIgnoreCase("approved")){
-                            String slug = productJson.get("slug").getAsString();
-                            JsonArray versions = productJson.get("versions").getAsJsonArray();
-                            if(versions.size() < 1) continue;
-                            JsonObject version = versions.get(0).getAsJsonObject();
-                            String owner = "Unknown";
-                            try{
-                                if(productJson.get("team_id").isJsonNull()){
-                                    CustomConnection profileConnection = new ConnectionBuilder("https://songoda.com/api/v2/profiles/id/" + productJson.get("user_id").getAsInt()).connect();
-                                    JsonObject profileJson = profileConnection.getResponseJson();
-                                    if(profileJson == null) continue;
-                                    owner = profileJson.get("data").getAsJsonObject().get("name").getAsString();
-                                }else{
-                                    int team = productJson.get("team_id").getAsInt();
-                                    if(team >= 1){
-                                        CustomConnection profileConnection = new ConnectionBuilder("https://songoda.com/api/v2/teams/id/" + team).connect();
-                                        JsonObject profileJson = profileConnection.getResponseJson();
-                                        if(profileJson == null) continue;
-                                        owner = profileJson.get("data").getAsJsonObject().get("name").getAsString();
-                                    }else{
+                        x++;
+                        PluginMarketplace.i.debug("Loading product " + x + " in page " + page + ", " + (productsArraySize-x) + " product(s) left.");
+                        try {
+                            JsonObject productJson = el.getAsJsonObject();
+                            if(isNull(productJson, true)) continue;
+                            if(productJson.get("approved").getAsBoolean() && productJson.get("class").getAsString().equalsIgnoreCase("plugin") && productJson.get("status").getAsString().equalsIgnoreCase("approved") && productJson.get("user_id").getAsInt() != 12522){
+                                int id = productJson.get("id").getAsInt();
+                                if(products.containsKey(id)) continue;
+                                String slug = productJson.get("slug").getAsString();
+                                JsonArray versions = productJson.get("versions").getAsJsonArray();
+                                if(versions.size() < 1) continue;
+                                JsonObject version = versions.get(0).getAsJsonObject();
+                                String owner;
+                                try{
+                                    if(productJson.get("team_id").isJsonNull()){
                                         CustomConnection profileConnection = new ConnectionBuilder("https://songoda.com/api/v2/profiles/id/" + productJson.get("user_id").getAsInt()).connect();
                                         JsonObject profileJson = profileConnection.getResponseJson();
                                         if(profileJson == null) continue;
-                                        owner = profileJson.get("data").getAsJsonObject().get("name").getAsString();
+                                        JsonObject data = profileJson.get("data").getAsJsonObject();
+                                        if(isNull(data, false)) continue;
+                                        owner = data.get("name").getAsString();
+                                    }else{
+                                        int team = productJson.get("team_id").getAsInt();
+                                        if(team >= 1){
+                                            CustomConnection profileConnection = new ConnectionBuilder("https://songoda.com/api/v2/teams/id/" + team).connect();
+                                            JsonObject profileJson = profileConnection.getResponseJson();
+                                            if(profileJson == null) continue;
+                                            JsonObject data = profileJson.get("data").getAsJsonObject();
+                                            if(isNull(data, false)) continue;
+                                            owner = data.get("name").getAsString();
+                                        }else{
+                                            CustomConnection profileConnection = new ConnectionBuilder("https://songoda.com/api/v2/profiles/id/" + productJson.get("user_id").getAsInt()).connect();
+                                            JsonObject profileJson = profileConnection.getResponseJson();
+                                            if(profileJson == null) continue;
+                                            JsonObject data = profileJson.get("data").getAsJsonObject();
+                                            if(isNull(data, false)) continue;
+                                            owner = data.get("name").getAsString();
+                                        }
                                     }
+                                }catch (IOException ex){ continue; }
+                                if(owner.isEmpty() || owner.equals(" ")){
+                                    owner = "Unknown";
                                 }
-                            }catch (IOException ex){ continue; }
-                            int id = productJson.get("id").getAsInt();
-                            String product = productJson.get("name").getAsString();
-                            String url = "https://songoda.com/marketplace/product/" + productJson.get("id").getAsString();
-                            String description = productJson.get("description").getAsString();
-                            String filename = version.get("filename").getAsString();
-                            String downloadUrl = String.format("https://songoda.com/product/%s/download/%s", slug, version.get("version").getAsString());
-                            String paymentMethod = productJson.get("payment_method").getAsString();
-                            double price = paymentMethod.equalsIgnoreCase("none") ? 0 : productJson.get("price").getAsDouble();
-                            String currency = productJson.get("currency").getAsString();
-                            int downloads = productJson.get("downloads").getAsInt();
-                            int views = productJson.get("views").getAsInt();
-                            products.add(new SongodaProduct(id, product, description, owner, url, price+"", currency, paymentMethod, filename, downloadUrl, views, downloads));
-                        }
+
+                                String product = productJson.get("name").getAsString();
+                                String url = "https://songoda.com/marketplace/product/" + productJson.get("id").getAsString();
+                                String description = productJson.get("description").getAsString();
+                                String filename = version.get("filename").getAsString();
+                                String downloadUrl = String.format("https://songoda.com/product/%s/download/%s", slug, version.get("version").getAsString());
+                                String paymentMethod = productJson.get("payment_method").getAsString();
+                                double price = paymentMethod.equalsIgnoreCase("none") ? 0 : productJson.get("price").getAsDouble();
+                                String currency = productJson.get("currency").getAsString();
+                                int downloads = productJson.get("downloads").getAsInt();
+                                int views = productJson.get("views").getAsInt();
+                                String tagline = productJson.get("tagline").getAsString();
+                                LinkedList<String> supportedVersions = new LinkedList<>();
+                                version.get("minecraft_version").getAsJsonArray().forEach(e-> supportedVersions.add(e.getAsString()));
+                                products.put(id, new SongodaProduct(id, product, description, owner, url, price+"", currency, paymentMethod, filename, downloadUrl, views, downloads, tagline, supportedVersions.stream().collect(Collectors.joining(", "))));
+                            }
+                        }catch (Exception ignored){ }
                     }
-                }catch (IOException ignored){
-                }
+
+                    if(page - pages == 0) {
+                        PluginMarketplace.i.debug("Loaded " + products.size() + " products");
+                    }
+                }catch (IOException ignored){ }
             }
         }
     }
 
+    private static boolean isNull(JsonObject json, boolean product) {
+        if(json == null) return true;
+        if(json.isJsonNull()) return true;
+        String[] keys = product ? new String[]{"id", "name", "slug", "user_id", "tagline", "description", "versions"} : new String[]{"name"};
+        for (String key : keys) {
+            if(json.get(key) == null){
+                return true;
+            }
+
+            if(json.get(key).isJsonNull()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private static int pages() throws IOException {
-        CustomConnection connection = new ConnectionBuilder("https://songoda.com/api/v2/products").connect();
+        CustomConnection connection = new ConnectionBuilder("https://songoda.com/api/v2/products?per_page=" + per_page).connect();
         JsonObject json = connection.getResponseJson();
         if(json == null){
             throw new NullPointerException("Failed to retrieve the data from the Songoda API: Null response.");

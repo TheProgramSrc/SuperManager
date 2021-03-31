@@ -4,3 +4,9 @@ main: xyz.theprogramsrc.supermanager.SuperManager
 api-version: "1.13"
 author: TheProgramSrc
 description: ${project.description}
+
+permissions:
+  supermanager.admin:
+    description: Access to the SuperManager Admin GUI
+    default: op
+

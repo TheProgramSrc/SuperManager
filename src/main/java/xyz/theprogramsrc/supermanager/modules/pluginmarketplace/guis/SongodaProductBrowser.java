@@ -1,6 +1,7 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.guis;
 
 import org.bukkit.entity.Player;
+import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
@@ -30,30 +31,41 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
 
     @Override
     public SongodaProduct[] getObjects() {
-        return PluginMarketplace.products.toArray(new SongodaProduct[0]);
+        return PluginMarketplace.products.values().toArray(new SongodaProduct[0]);
     }
 
     @Override
     public GUIButton getButton(SongodaProduct songodaProduct) {
         SimpleItem item = new SimpleItem(XMaterial.CHEST)
-                .setDisplayName("&a" + songodaProduct.getName())
+                .setDisplayName("&a" + L.PLUGIN_MARKETPLACE_CARD_NAME)
                 .setLore(
                         "&7",
-                        "&9Left Click &7Show product url"
+                        "&9" + Base.LEFT_CLICK + "&7 " + L.PLUGIN_MARKETPLACE_LEFT_ACTION
                 );
         if(songodaProduct.getPaymentMethod().equalsIgnoreCase("None")){
-            item.addLoreLine("&9Right Click &7Install Plugin");
-        }else{
-            item.addLoreLine("&9Product Price: &7" + (this.currencySymbols.get(songodaProduct.getCurrency())) + songodaProduct.getPrice());
+            item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.PLUGIN_MARKETPLACE_RIGHT_ACTION);
         }
+
+        item.addLoreLines(
+                "&7",
+                "&7" + L.PLUGIN_MARKETPLACE_CARD_AUTHOR,
+                "&7" + L.PLUGIN_MARKETPLACE_CARD_SUPPORTED_VERSIONS,
+                "&7" + L.PLUGIN_MARKETPLACE_CARD_PRICE
+        ).addPlaceholder("{ProductAuthor}", songodaProduct.getOwner())
+        .addPlaceholder("{ProductName}", songodaProduct.getName())
+        .addPlaceholder("{ProductTagline}", songodaProduct.getTagline())
+        .addPlaceholder("{ProductPrice}", this.currencySymbols.get(songodaProduct.getCurrency()) + songodaProduct.getPrice())
+        .addPlaceholder("{SupportedVersions}", songodaProduct.getSupportedVersions());
+
         item.addLoreLines(Utils.breakText(songodaProduct.getDescription(), 40, "&7"));
         return new GUIButton(item).setAction(a-> {
-            this.close();
             if(a.getAction() == ClickType.LEFT_CLICK){
+                this.close();
                 this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + songodaProduct.getName() + ":");
                 this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + songodaProduct.getUrl());
-            }else{
-                SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PLUGIN);
+            }else if(a.getAction() == ClickType.RIGHT_CLICK){
+                this.close();
+                SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PRODUCT.options().placeholder("{ProductName}", songodaProduct.getName()).get());
                 songodaProduct.download(a.getPlayer());
             }
         });
@@ -61,6 +73,6 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
 
     @Override
     protected String getTitle() {
-        return "Songoda Marketplace";
+        return L.PLUGIN_MARKETPLACE_TITLE.toString();
     }
 }

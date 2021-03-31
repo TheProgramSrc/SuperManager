@@ -19,9 +19,9 @@ import java.io.IOException;
 public class SongodaProduct {
 
     private final int id, downloads, views;
-    private final String name, description, owner, url, price, currency, paymentMethod, filename, downloadUrl;
+    private final String name, description, owner, url, price, currency, paymentMethod, filename, downloadUrl, tagline, supportedVersions;
 
-    public SongodaProduct(int id, String name, String description, String owner, String url, String price, String currency, String paymentMethod, String filename, String downloadUrl, int views, int downloads){
+    public SongodaProduct(int id, String name, String description, String owner, String url, String price, String currency, String paymentMethod, String filename, String downloadUrl, int views, int downloads, String tagline, String supportedVersions){
         this.id = id;
         this.name = name;
         this.description = description;
@@ -32,6 +32,8 @@ public class SongodaProduct {
         this.views = views;
         this.filename = filename;
         this.downloadUrl = downloadUrl;
+        this.tagline = tagline;
+        this.supportedVersions = supportedVersions;
         if(paymentMethod.equalsIgnoreCase("patreon")){
             this.price = "15.0";
             this.currency = "USD";
@@ -43,6 +45,10 @@ public class SongodaProduct {
 
     public String getName() {
         return name;
+    }
+
+    public String getTagline(){
+        return tagline;
     }
 
     public String getDescription() {
@@ -87,6 +93,10 @@ public class SongodaProduct {
 
     public String getDownloadUrl() {
         return downloadUrl;
+    }
+
+    public String getSupportedVersions() {
+        return supportedVersions;
     }
 
     public void download(Player player){
@@ -142,13 +152,13 @@ public class SongodaProduct {
                                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_INVALID_FILE.options().placeholder("{Path}", output.getPath()).placeholder("{PluginName}", this.getName()));
                             }
                         }else{
-                            SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD);
+                            SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD.options().placeholder("{PluginName}", this.getName()).get());
                         }
                     }
                 }catch (IOException e){
                     SuperManager.i.addError(e);
                     SuperManager.i.log("&cFailed to download plugin '" + this.getName() + "'");
-                    SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD);
+                    SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
                     e.printStackTrace();
                 }
             }
