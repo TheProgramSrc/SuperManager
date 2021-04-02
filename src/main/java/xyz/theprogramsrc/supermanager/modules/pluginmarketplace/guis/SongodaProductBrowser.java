@@ -37,7 +37,7 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
     @Override
     public GUIButton getButton(SongodaProduct songodaProduct) {
         SimpleItem item = new SimpleItem(XMaterial.CHEST)
-                .setDisplayName("&a" + L.PLUGIN_MARKETPLACE_CARD_NAME)
+                .setDisplayName("&a" + (songodaProduct.getTagline() != null ? L.PLUGIN_MARKETPLACE_CARD_NAME : L.PLUGIN_MARKETPLACE_CARD_NAME_NO_TAGLINE))
                 .setLore(
                         "&7",
                         "&9" + Base.LEFT_CLICK + "&7 " + L.PLUGIN_MARKETPLACE_LEFT_ACTION
@@ -53,7 +53,7 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
                 "&7" + L.PLUGIN_MARKETPLACE_CARD_PRICE
         ).addPlaceholder("{ProductAuthor}", songodaProduct.getOwner())
         .addPlaceholder("{ProductName}", songodaProduct.getName())
-        .addPlaceholder("{ProductTagline}", songodaProduct.getTagline())
+        .addPlaceholder("{ProductTagline}", songodaProduct.getTagline() != null ? songodaProduct.getTagline() : "")
         .addPlaceholder("{ProductPrice}", this.currencySymbols.get(songodaProduct.getCurrency()) + songodaProduct.getPrice())
         .addPlaceholder("{SupportedVersions}", songodaProduct.getSupportedVersions());
 

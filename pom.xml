@@ -97,6 +97,11 @@
             <id>CodeMC</id>
             <url>https://repo.codemc.io/repository/maven-public</url>
         </repository>
+        <!-- CodeMC -->
+        <repository>
+            <id>NMS</id>
+            <url>https://repo.codemc.io/repository/nms</url>
+        </repository>
         <!-- Spigot -->
         <repository>
             <id>spigotmc-repo</id>
@@ -117,11 +122,18 @@
             <version>4.12.0</version>
             <scope>compile</scope>
         </dependency>
+        <!-- NMS -->
+        <dependency>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.16.5-R0.1-20210316.010240-9</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- BUNGEE -->
@@ -129,13 +141,6 @@
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
             <version>1.16-R0.4-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Logs Filter -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.5</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

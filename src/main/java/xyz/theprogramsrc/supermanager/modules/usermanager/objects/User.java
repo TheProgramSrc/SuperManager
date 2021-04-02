@@ -3,7 +3,6 @@ package xyz.theprogramsrc.supermanager.modules.usermanager.objects;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.google.gson.JsonArray;
 import xyz.theprogramsrc.supercoreapi.google.gson.JsonObject;
 import xyz.theprogramsrc.supercoreapi.google.gson.JsonParser;
@@ -16,7 +15,7 @@ public class User {
 
     private final UUID uuid;
     private final String name;
-    private final SkinTexture skinTexture;
+    private SkinTexture skinTexture;
     private final LinkedHashMap<String, Object> data;
 
     public User(UUID uuid, String name, SkinTexture skinTexture){
@@ -79,6 +78,14 @@ public class User {
         return this.skinTexture;
     }
 
+    public boolean hasSkin() {
+        return this.skinTexture != null;
+    }
+
+    public void setSkinTexture(SkinTexture skinTexture) {
+        this.skinTexture = skinTexture;
+    }
+
     @Override
     public String toString() {
         JsonObject json = new JsonObject();
@@ -131,13 +138,5 @@ public class User {
         });
 
         return user;
-    }
-
-    public static User create(Player player){
-        return new User(
-                player.getUniqueId(),
-                player.getName(),
-                Utils.isConnected() ? SkinTexture.fromPlayer(player) : null
-        );
     }
 }

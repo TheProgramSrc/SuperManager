@@ -46,9 +46,9 @@ public class UserStorage extends DataBaseStorage {
                 try {
                     Statement statement = c.createStatement();
                     if(this.exists(user.getUUID())){
-                        statement.executeUpdate("UPDATE users SET data = '" + user.toString() + "' WHERE uuid = '" + user.getUUID() + "';");
+                        statement.executeUpdate("UPDATE "+this.table+" SET data = '" + user.toString() + "' WHERE uuid = '" + user.getUUID() + "';");
                     }else{
-                        statement.executeUpdate("INSERT INTO users (uuid, data) VALUES ('" + user.getUUID() + "', '" + user.toString() + "');");
+                        statement.executeUpdate("INSERT INTO "+this.table+" (uuid, data) VALUES ('" + user.getUUID() + "', '" + user.toString() + "');");
                     }
                 }catch (SQLException e){
                     this.plugin.addError(e);

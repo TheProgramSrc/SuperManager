@@ -60,7 +60,7 @@ public class MainGUI extends BrowserGUI<Module> {
                 }else{
                     String moduleUsePermission =  "supermanager.module." + module.getIdentifier() + ".use";
                     if(Checkers.hasPermission(clickAction.getPlayer(), moduleUsePermission)){ // Check if player has permission to use the module
-                        module.onAction(clickAction);
+                        module.onAction(clickAction.getPlayer());
                     }else{
                         this.close();
                         this.getSuperUtils().sendMessage(clickAction.getPlayer(), this.getSettings().getPrefix() + L.NO_ACCESS_TO_MODULE

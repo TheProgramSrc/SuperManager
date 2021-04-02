@@ -101,11 +101,11 @@ public class SongodaProduct {
 
     public void download(Player player){
         new Thread(() -> {
-            if(!this.paymentMethod.equalsIgnoreCase("none")){
+            if(!this.paymentMethod.equalsIgnoreCase("none") && !SuperManager.i.getSettingsStorage().getConfig().contains("songoda-token")){
                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_CANNOT_DOWNLOAD_PAID_PLUGIN);
             }else{
                 try{
-                    CustomConnection connection = new ConnectionBuilder(this.getDownloadUrl()).connect();
+                    CustomConnection connection = new ConnectionBuilder(this.paymentMethod.equalsIgnoreCase("none") ? this.getDownloadUrl() : (this.getDownloadUrl() + "?token=" + SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token"))).connect();
                     if(connection.getResponseString() != null && !(connection.getResponseCode()+"").startsWith("2")){
                         if(connection.getResponseString().toLowerCase().contains("msg")){
                             JsonArray data = new JsonParser().parse(connection.getResponseString()).getAsJsonArray();

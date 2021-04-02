@@ -1,5 +1,6 @@
 package xyz.theprogramsrc.supermanager.objects;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
@@ -40,7 +41,7 @@ public abstract class Module extends SpigotModule {
         return null;
     }
 
-    public abstract void onAction(ClickAction clickAction); // Executed when the module display item is clicked in the main gui
+    public abstract void onAction(Player player); // Executed when the module display item is clicked in the main gui
 
     protected void log(String message, boolean prefixed){
         if(prefixed){

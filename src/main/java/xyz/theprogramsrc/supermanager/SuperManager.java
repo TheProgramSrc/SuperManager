@@ -7,6 +7,7 @@ import xyz.theprogramsrc.supercoreapi.spigot.SpigotPlugin;
 import xyz.theprogramsrc.supermanager.api.SuperManagerAPI;
 import xyz.theprogramsrc.supermanager.commands.MainCommand;
 import xyz.theprogramsrc.supermanager.managers.ModuleManager;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsModule;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
@@ -50,6 +51,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         this.registerModule(PluginManager.class);
         this.registerModule(PluginMarketplace.class);
         this.registerModule(UserManagerModule.class);
+        this.registerModule(ChatChannelsModule.class);
     }
 
     public ModuleManager getModuleManager() {

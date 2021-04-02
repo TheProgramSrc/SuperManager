@@ -1,10 +1,14 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager;
 
+import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.files.JsonConfig;
 import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
+import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.guis.MainGUI;
+import xyz.theprogramsrc.supermanager.modules.usermanager.guis.UserBrowser;
 import xyz.theprogramsrc.supermanager.modules.usermanager.listeners.PlayerListener;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 import xyz.theprogramsrc.supermanager.objects.Module;
@@ -29,7 +33,7 @@ public class UserManagerModule extends Module {
 
     @Override
     public String getDisplay() {
-        return "User Manager";
+        return L.USER_MANAGER_DISPLAY.toString();
     }
 
     @Override
@@ -39,12 +43,22 @@ public class UserManagerModule extends Module {
 
     @Override
     public SimpleItem getDisplayItem() {
-        return new SimpleItem(XMaterial.PLAYER_HEAD);
+        return new SimpleItem(XMaterial.PLAYER_HEAD)
+                .setDisplayName("&a" + L.USER_MANAGER_NAME)
+                .setLore(
+                        "&7",
+                        "&7" + L.USER_MANAGER_LORE
+                );
     }
 
     @Override
-    public void onAction(ClickAction clickAction) {
-
+    public void onAction(Player player) {
+        new UserBrowser(player, this){
+            @Override
+            public void onBack(ClickAction clickAction) {
+                new MainGUI(clickAction.getPlayer());
+            }
+        };
     }
 
     public UserStorage getUserStorage() {

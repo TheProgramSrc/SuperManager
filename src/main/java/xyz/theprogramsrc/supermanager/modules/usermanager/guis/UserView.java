@@ -2,6 +2,7 @@ package xyz.theprogramsrc.supermanager.modules.usermanager.guis;
 
 import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
@@ -11,6 +12,8 @@ import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserStorage;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
+
+import java.text.DecimalFormat;
 
 public abstract class UserView extends GUI {
 
@@ -43,6 +46,9 @@ public abstract class UserView extends GUI {
                 this.getInformationCardButton(),
                 this.getFreezeButton(),
                 this.getTeleportButton(),
+                this.getViewInventoryButton(),
+                this.getViewECButton(),
+                this.getSendMessageButton(),
         };
     }
 
@@ -58,7 +64,7 @@ public abstract class UserView extends GUI {
         return new GUIButton(0, item, a->{
             this.close();
             this.userStorage.save(this.user.setData("frozen", !frozen));
-            this.getSuperUtils().sendMessage(a.getPlayer(), L.USER_MANAGER_FREEZE_STATUS.options().placeholder("{Status}", Utils.parseEnabledBoolean(!frozen)+"&r").get());
+            this.getSuperUtils().sendMessage(a.getPlayer(), L.USER_MANAGER_FREEZE_STATUS.options().placeholder("{Status}", Utils.parseEnabledBoolean(!frozen)+"&r").placeholder("{UserName}", this.user.getName()).get());
         });
     }
 
@@ -80,6 +86,80 @@ public abstract class UserView extends GUI {
         });
     }
 
+    private GUIButton getViewInventoryButton(){
+        SimpleItem item = new SimpleItem(XMaterial.CHEST)
+                .setDisplayName("&a" + L.USER_MANAGER_EDITOR_VIEW_INV_NAME)
+                .setLore(
+                        "&7",
+                        "&7" + L.USER_MANAGER_EDITOR_VIEW_INV_LORE
+                ).addPlaceholder("{UserName}", this.user.getName());
+        return new GUIButton(2, item, a-> {
+            if(!this.user.isOnline()){
+                this.close();
+                this.getSuperUtils().sendMessage(a.getPlayer(), L.USER_MANAGER_OFFLINE_USER.options().placeholder("{UserName}", this.user.getName()).get());
+            }else{
+                a.getPlayer().openInventory(this.getPlayer().getInventory());
+            }
+        });
+    }
+
+    private GUIButton getViewECButton(){
+        SimpleItem item = new SimpleItem(XMaterial.ENDER_CHEST)
+                .setDisplayName("&a" + L.USER_MANAGER_EDITOR_VIEW_ENDER_CHEST_NAME)
+                .setLore(
+                        "&7",
+                        "&7" + L.USER_MANAGER_EDITOR_VIEW_ENDER_CHEST_LORE
+                ).addPlaceholder("{UserName}", this.user.getName());
+        return new GUIButton(3, item, a->{
+            if(!this.user.isOnline()){
+                this.close();
+                this.getSuperUtils().sendMessage(a.getPlayer(), L.USER_MANAGER_OFFLINE_USER.options().placeholder("{UserName}", this.user.getName()).get());
+            }else{
+                a.getPlayer().openInventory(this.user.getPlayer().getEnderChest());
+            }
+        });
+    }
+
+    private GUIButton getSendMessageButton(){
+        SimpleItem item = new SimpleItem(XMaterial.PAPER)
+                .setDisplayName("&a" + L.USER_MANAGER_EDITOR_SEND_MESSAGE_NAME)
+                .setLore(
+                        "&7",
+                        "&7" + L.USER_MANAGER_EDITOR_SEND_MESSAGE_LORE
+                ).addPlaceholder("{UserName}", this.user.getName());
+        return new GUIButton(4, item, a->{
+            if(!this.user.isOnline()){
+                this.close();
+                this.getSuperUtils().sendMessage(a.getPlayer(), L.USER_MANAGER_OFFLINE_USER.options().placeholder("{UserName}", this.user.getName()).get());
+            }else{
+                new Dialog(a.getPlayer()){
+                    @Override
+                    public String getTitle() {
+                        return L.USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_TITLE.toString();
+                    }
+
+                    @Override
+                    public String getSubtitle() {
+                        return L.USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_SUBTITLE.toString();
+                    }
+
+                    @Override
+                    public String getActionbar() {
+                        return L.USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_ACTIONBAR.toString();
+                    }
+
+                    @Override
+                    public boolean onResult(String s) {
+                        this.getSuperUtils().sendMessage(UserView.this.user.getPlayer(), s);
+                        this.getSuperUtils().sendMessage(this.getPlayer(), L.USER_MANAGER_MESSAGE_SENT.options().placeholder("{UserName}", UserView.this.user.getName()).get());
+                        this.getSuperUtils().sendMessage(this.getPlayer(), s);
+                        return true;
+                    }
+                }.addPlaceholder("{UserName}", this.user.getName());
+            }
+        });
+    }
+
     private GUIButton getInformationCardButton(){
         SimpleItem item = new SimpleItem(XMaterial.PAPER)
                 .setDisplayName("&a" + L.USER_MANAGER_EDITOR_INFORMATION_NAME)
@@ -93,11 +173,12 @@ public abstract class UserView extends GUI {
                 .addPlaceholder("{Player}", this.user.getName())
                 .addPlaceholder("{UUID}", this.user.getUUID().toString());
         if(this.user.isOnline()){
+            DecimalFormat decimalFormat = new DecimalFormat("#.##");
             Player player = this.user.getPlayer();
             item.addPlaceholder("{World}", player.getWorld().getName())
-                    .addPlaceholder("{POS_X}", player.getLocation().getX()+"")
-                    .addPlaceholder("{POS_Y}", player.getLocation().getY()+"")
-                    .addPlaceholder("{POS_Z}", player.getLocation().getZ()+"")
+                    .addPlaceholder("{POS_X}", decimalFormat.format(player.getLocation().getX()))
+                    .addPlaceholder("{POS_Y}", decimalFormat.format(player.getLocation().getY()))
+                    .addPlaceholder("{POS_Z}", decimalFormat.format(player.getLocation().getZ()))
                     .addPlaceholder("{HealthLevel}", player.getHealth()+"")
                     .addPlaceholder("{FoodLevel}", player.getFoodLevel()+"")
                     .addPlaceholder("{DisplayName}", player.getDisplayName());

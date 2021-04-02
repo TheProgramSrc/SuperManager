@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
@@ -20,6 +21,7 @@ public class UserBrowser extends BrowserGUI<User> {
     public UserBrowser(Player player, UserManagerModule userManagerModule) {
         super(player);
         this.userManagerModule = userManagerModule;
+        this.backEnabled = true;
         this.open();
     }
 
@@ -27,10 +29,10 @@ public class UserBrowser extends BrowserGUI<User> {
     protected GUIButton[] getButtons() {
         LinkedList<GUIButton> buttons = new LinkedList<>(Utils.toList(super.getButtons()));
         SimpleItem item = new SimpleItem(this.onlineOnly ? XMaterial.ENDER_EYE : XMaterial.ENDER_PEARL)
-                .setDisplayName("&aToggle Online Only")
+                .setDisplayName("&a" + (this.onlineOnly ? L.USER_MANAGER_BROWSER_ALL_ONLINE_NAME : L.USER_MANAGER_BROWSER_ONLINE_ONLY_NAME))
                 .setLore(
                         "&7",
-                        "&7Click to toggle Online Only Filter"
+                        "&7" + (this.onlineOnly ? L.USER_MANAGER_BROWSER_ALL_ONLINE_LORE : L.USER_MANAGER_BROWSER_ONLINE_ONLY_LORE)
                 );
         buttons.add(new GUIButton(47, item, a-> {
             this.onlineOnly = !this.onlineOnly;
@@ -53,8 +55,11 @@ public class UserBrowser extends BrowserGUI<User> {
                         "&7" + L.USER_MANAGER_BROWSER_ITEM_LORE
                 ).setSkin(user.getSkin())
                 .addPlaceholder("{UserName}", user.getName());
-        return new GUIButton(item, a->{
-
+        return new GUIButton(item, a-> new UserView(a.getPlayer(), user, this.userManagerModule.getUserStorage()){
+            @Override
+            public void onBack(ClickAction clickAction) {
+                UserBrowser.this.open();
+            }
         });
     }
 
