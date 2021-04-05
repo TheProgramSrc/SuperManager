@@ -37,7 +37,7 @@ public class ChatChannelCommand extends SpigotCommand {
                 if(args.length == 1){
                     return CommandResult.INVALID_ARGS;
                 }else{
-                    ChatChannel chatChannel = ChatChannelsStorage.i.get(args[1]);
+                    ChatChannel chatChannel = ChatChannelsStorage.i.getChannel(args[1]);
                     if(chatChannel == null){
                         this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_DOESNT_EXISTS.options().placeholder("{ChannelName}", args[1]).get());
                     }else{
@@ -83,7 +83,7 @@ public class ChatChannelCommand extends SpigotCommand {
                 if(!player.hasPermission("chatchannels.online")){
                     return CommandResult.NO_PERMISSION;
                 }else{
-                    this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_ONLINE.options().placeholder("{Online}", ChatChannelsManager.i.onlineWith(player)+"").placeholder("{Max}", ChatChannelsStorage.i.get(ChatChannelsManager.i.getChannel(player)).getMaxPlayers()+"").get());
+                    this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_ONLINE.options().placeholder("{Online}", ChatChannelsManager.i.onlineWith(player)+"").placeholder("{Max}", ChatChannelsStorage.i.getChannel(ChatChannelsManager.i.getChannel(player)).getMaxPlayers()+"").get());
                 }
             }else{
                 return CommandResult.INVALID_ARGS;

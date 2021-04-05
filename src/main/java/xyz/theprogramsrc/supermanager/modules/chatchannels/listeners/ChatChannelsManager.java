@@ -28,7 +28,7 @@ public class ChatChannelsManager extends SpigotModule {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        this.channels.put(e.getPlayer().getUniqueId(), this.storage.defaultChannel());
+        this.channels.put(e.getPlayer().getUniqueId(), this.storage.getGlobalChannel());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -38,8 +38,8 @@ public class ChatChannelsManager extends SpigotModule {
         this.getSpigotTasks().runTask(() -> {
             String channel = this.getChannel(e.getPlayer());
             if(channel == null) {
-                channel = this.storage.defaultChannel();
-                this.joinChannel(e.getPlayer(), this.storage.defaultChannel());
+                channel = this.storage.getGlobalChannel();
+                this.joinChannel(e.getPlayer(), this.storage.getGlobalChannel());
             }
             String format = this.storage.format();
             if(e.getPlayer().hasPermission("chatchannels." + channel + ".write")){

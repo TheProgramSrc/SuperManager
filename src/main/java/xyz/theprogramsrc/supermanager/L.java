@@ -185,6 +185,10 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_BROWSER_SETTINGS_LORE("&7Click to edit the ChatChannels Settings"),
     CHAT_CHANNELS_SETTINGS_CREATE_NAME("&aCreate Channel"),
     CHAT_CHANNELS_SETTINGS_CREATE_LORE("&7Click to create a channel"),
+    CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_NAME("&cUpdate Format"),
+    CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_LORE("&7Click to update the &cformat&7 of the chat."),
+    CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_PREVIEW("&7Current Format: &r{ChatFormat}"),
+
     ;
 
     private TranslationManager translationManager;

@@ -2,6 +2,7 @@ package xyz.theprogramsrc.supermanager.modules.chatchannels;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
@@ -19,6 +20,7 @@ public class ChatChannelsModule extends Module {
     @Override
     public void onEnable() {
         i = this;
+        UniversalStorage.register(this.getPlugin());
         this.chatChannelsStorage = new ChatChannelsStorage(this);
         this.chatChannelsManager = new ChatChannelsManager();
         new ChatChannelCommand();
