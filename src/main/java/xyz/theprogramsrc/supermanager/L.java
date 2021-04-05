@@ -93,6 +93,10 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_CREATOR_DIALOG_SUBTITLE("&7Write the channel name"),
     CHAT_CHANNELS_CREATOR_DIALOG_ACTIONBAR("&aThis will be the name of the chat channel."),
 
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_TITLE("&9Update Format"),
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_SUBTITLE("&7Write the new chat format"),
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_ACTIONBAR("&7Current format: &r{ChatFormat}"),
+
     /* Modules */
     PLUGIN_MANAGER_DISPLAY("Plugin Manager"),
     PLUGIN_MANAGER_NAME("&aPlugin Manager"),
@@ -183,6 +187,8 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION("&7Click to remove."),
     CHAT_CHANNELS_BROWSER_SETTINGS_NAME("&cSettings"),
     CHAT_CHANNELS_BROWSER_SETTINGS_LORE("&7Click to edit the ChatChannels Settings"),
+
+    CHAT_CHANNELS_SETTINGS_TITLE("&cChat Channels &7> &4Settings"),
     CHAT_CHANNELS_SETTINGS_CREATE_NAME("&aCreate Channel"),
     CHAT_CHANNELS_SETTINGS_CREATE_LORE("&7Click to create a channel"),
     CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_NAME("&cUpdate Format"),

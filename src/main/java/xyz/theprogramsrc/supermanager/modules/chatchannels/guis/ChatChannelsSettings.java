@@ -31,7 +31,7 @@ public class ChatChannelsSettings extends GUI {
 
     @Override
     protected String getTitle() {
-        return null;
+        return L.CHAT_CHANNELS_SETTINGS_TITLE.toString();
     }
 
     @Override
@@ -39,6 +39,7 @@ public class ChatChannelsSettings extends GUI {
         return new GUIButton[]{
                 new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), a-> this.back.run()),
                 this.getCreateChatChannelButton(),
+                this.getUpdateFormatButton(),
 
         };
     }
@@ -79,6 +80,46 @@ public class ChatChannelsSettings extends GUI {
                 }
                 return false;
             }
+        });
+    }
+
+    private GUIButton getUpdateFormatButton(){
+        SimpleItem item = new SimpleItem(XMaterial.PAPER)
+                .setDisplayName("&a" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_NAME)
+                .setLore(
+                        "&7",
+                        "&7" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_LORE,
+                        "&7" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_PREVIEW
+                ).addPlaceholder("{ChatFormat}", this.storage.format());
+        return new GUIButton(12, item, a-> {
+            // Add placeholders list
+            this.getSuperUtils().sendMessage(a.getPlayer(), "&9Available Placeholders:");
+            this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Message} &7- &cMessage");
+            this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Channel} &7- &cChannel Name");
+            this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Player} &7- &cPlayer Name");
+            new Dialog(a.getPlayer()){
+                @Override
+                public String getTitle() {
+                    return L.CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_TITLE.toString();
+                }
+
+                @Override
+                public String getSubtitle() {
+                    return L.CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_SUBTITLE.toString();
+                }
+
+                @Override
+                public String getActionbar() {
+                    return L.CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_ACTIONBAR.toString();
+                }
+
+                @Override
+                public boolean onResult(String s) {
+                    ChatChannelsSettings.this.storage.setFormat(s);
+                    ChatChannelsSettings.this.open();
+                    return true;
+                }
+            }.addPlaceholder("{ChatFormat}", this.storage.format());
         });
     }
 }

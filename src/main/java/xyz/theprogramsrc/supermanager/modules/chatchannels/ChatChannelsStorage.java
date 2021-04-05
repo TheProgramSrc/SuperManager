@@ -136,6 +136,10 @@ public class ChatChannelsStorage extends DataBaseStorage {
         return this.getSetting("format").getValue();
     }
 
+    public void setFormat(String format){
+        this.saveSetting(new ChatChannelsSetting("format", format));
+    }
+
     public String getGlobalChannel(){
         return this.getSetting("globalChannel").getValue();
     }
@@ -218,10 +222,10 @@ public class ChatChannelsStorage extends DataBaseStorage {
         new Thread(() -> this.dataBase.connect(c-> {
             try {
                 Statement statement = c.createStatement();
-                statement.executeUpdate("DELETE * FROM `" + this.chatchannels_table + "` WHERE `channel_name` = '" + name + "';");
+                statement.executeUpdate("DELETE FROM `" + this.chatchannels_table + "` WHERE `channel_name` = '" + name + "';");
             }catch (SQLException e){
                 this.plugin.addError(e);
-                this.plugin.log("&cFailed to retrieve channel:");
+                this.plugin.log("&cFailed to remove channel:");
                 e.printStackTrace();
             }
         })).start();
