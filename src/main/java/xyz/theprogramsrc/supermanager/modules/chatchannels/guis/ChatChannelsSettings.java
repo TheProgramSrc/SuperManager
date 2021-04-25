@@ -92,7 +92,6 @@ public class ChatChannelsSettings extends GUI {
                         "&7" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_PREVIEW
                 ).addPlaceholder("{ChatFormat}", this.storage.format());
         return new GUIButton(12, item, a-> {
-            // Add placeholders list
             this.getSuperUtils().sendMessage(a.getPlayer(), "&9Available Placeholders:");
             this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Message} &7- &cMessage");
             this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Channel} &7- &cChannel Name");

@@ -78,6 +78,10 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_JOINED("&7Now you're in the channel &a{ChannelName}"),
     CHAT_CHANNELS_FULL("&cThe channel is full! Please try again later"),
     CHAT_CHANNELS_ONLINE("&aThere are currently &e{Online}&7/&c{Max}&a players in this channel."),
+    FILE_MANAGER_PROTECTED_FILE("&cThe file &7{FileName}&c is protected and you can't delete it."),
+    FILE_MANAGER_FAILED_TO_DELETE_DIRECTORY("&cFailed to delete the directory &7{Path}&c."),
+    FILE_MANAGER_INVALID_NUMBER("&cThe provided input is not a valid number!"),
+    FILE_MANAGER_REMOVE_FROM_LIST("&aTo remove the line from the list type &7yml-editor:line-remove&a."),
 
     /* Dialogs */
 
@@ -96,6 +100,22 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_TITLE("&9Update Format"),
     CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_SUBTITLE("&7Write the new chat format"),
     CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_ACTIONBAR("&7Current format: &r{ChatFormat}"),
+
+    FILE_MANAGER_SET_STRING_TITLE("&9Set String"),
+    FILE_MANAGER_SET_STRING_SUBTITLE("&7Write the new value"),
+    FILE_MANAGER_SET_STRING_ACTIONBAR("&aCurrent Value: &r{CurrentValue}"),
+
+    FILE_MANAGER_SET_NUMBER_TITLE("&9Set Number"),
+    FILE_MANAGER_SET_NUMBER_SUBTITLE("&7Write the new number"),
+    FILE_MANAGER_SET_NUMBER_ACTIONBAR("&aCurrent Value: &r{CurrentValue}"),
+
+    FILE_MANAGER_ADD_TO_LIST_TITLE("&9Add to list"),
+    FILE_MANAGER_ADD_TO_LIST_SUBTITLE("&7Write the new value"),
+    FILE_MANAGER_ADD_TO_LIST_ACTIONBAR("&aThe new value will be added to the list."),
+
+    FILE_MANAGER_SET_TO_LIST_TITLE("&9Set to list"),
+    FILE_MANAGER_SET_TO_LIST_SUBTITLE("&7Write the new value"),
+    FILE_MANAGER_SET_TO_LIST_ACTIONBAR("&aCurrent value in list: &r{CurrentValue}"),
 
     /* Modules */
     PLUGIN_MANAGER_DISPLAY("Plugin Manager"),
@@ -195,6 +215,46 @@ public enum L implements TranslationPack {
     CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_LORE("&7Click to update the &cformat&7 of the chat."),
     CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_PREVIEW("&7Current Format: &r{ChatFormat}"),
 
+    /* File Manager */
+    FILE_MANAGER_DISPLAY("File Manager"),
+    FILE_MANAGER_NAME("&aFile Manager"),
+    FILE_MANAGER_LORE("&7Edit all your files in-game!"),
+
+    FILE_MANAGER_FILE_BROWSER_TITLE("&aFile Browser &7> &9{Path}"),
+
+    FILE_MANAGER_FILE_BROWSER_DIRECTORY_NAME("&6{FileName}"),
+    FILE_MANAGER_FILE_BROWSER_DIRECTORY_LEFT("&7Open Directory"),
+    FILE_MANAGER_FILE_BROWSER_DIRECTORY_RIGHT("&cDelete Directory"),
+
+    FILE_MANAGER_FILE_BROWSER_EDITABLE_NAME("&a{FileName}"),
+    FILE_MANAGER_FILE_BROWSER_EDITABLE_LEFT("&7Edit File"),
+    FILE_MANAGER_FILE_BROWSER_EDITABLE_RIGHT("&cDelete File"),
+
+    FILE_MANAGER_FILE_BROWSER_NON_EDITABLE_NAME("&7{FileName}"),
+    FILE_MANAGER_FILE_BROWSER_NON_EDITABLE_RIGHT("&cDelete File"),
+
+    FILE_MANAGER_YML_EDITOR_TITLE("&aFileBrowser &7> &c{FileName}"),
+    FILE_MANAGER_YML_EDITOR_ITEM_SECTION("&7Current section: &a{Section}"),
+    FILE_MANAGER_YML_EDITOR_ITEM_PREVIEW("&7Current value: &r{Preview}"),
+
+    FILE_MANAGER_YML_EDITOR_STRING_NAME("&aText"),
+    FILE_MANAGER_YML_EDITOR_STRING_ACTION("&7Click to set the new value"),
+
+    FILE_MANAGER_YML_EDITOR_NUMBER_NAME("&aNumber"),
+    FILE_MANAGER_YML_EDITOR_NUMBER_LEFT("&7Increase by &9{Amount}"),
+    FILE_MANAGER_YML_EDITOR_NUMBER_Q("&7Write a value"),
+    FILE_MANAGER_YML_EDITOR_NUMBER_RIGHT("&7Decrease by &9{Amount}"),
+
+    FILE_MANAGER_YML_EDITOR_BOOLEAN_NAME("&aBoolean"),
+    FILE_MANAGER_YML_EDITOR_BOOLEAN_ACTION("&7Click to toggle"),
+
+    FILE_MANAGER_YML_EDITOR_STRING_LIST_NAME("&aString List"),
+    FILE_MANAGER_YML_EDITOR_STRING_LIST_LEFT("&7Add value to list"),
+    FILE_MANAGER_YML_EDITOR_STRING_LIST_Q("&7Change current line"),
+    FILE_MANAGER_YML_EDITOR_STRING_LIST_RIGHT("&7Update selected line value"),
+
+    FILE_MANAGER_YML_EDITOR_UNKNOWN_NAME("&7Unknown Field"),
+    FILE_MANAGER_YML_EDITOR_UNKNOWN_LORE("&7To edit this you will need to manually open the file."),
     ;
 
     private TranslationManager translationManager;
