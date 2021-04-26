@@ -126,7 +126,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.5-R0.1-20210316.010240-9</version>
+            <version>1.16.5-R0.1-20210407.051511-11</version>
             <scope>provided</scope>
         </dependency>
         <!-- Spigot -->
