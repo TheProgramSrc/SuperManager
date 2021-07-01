@@ -4,12 +4,10 @@ import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.networking.CustomConnection;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonArray;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonElement;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonObject;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.*;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.guis.SongodaProductBrowser;
@@ -189,7 +187,7 @@ public class PluginMarketplace extends Module {
                                 String tagline = productJson.get("tagline") == null || productJson.get("tagline").isJsonNull() ? null : productJson.get("tagline").getAsString();
                                 LinkedList<String> supportedVersions = new LinkedList<>();
                                 version.get("minecraft_version").getAsJsonArray().forEach(e-> supportedVersions.add(e.getAsString()));
-                                products.put(id, new SongodaProduct(id, product, description, owner, url, price+"", currency, paymentMethod, filename, downloadUrl, views, downloads, tagline, supportedVersions.stream().collect(Collectors.joining(", "))));
+                                products.put(id, new SongodaProduct(id, product, description, owner, url, price+"", currency, paymentMethod, filename, downloadUrl, views, downloads, tagline, String.join(", ", supportedVersions)));
                             }
 
                         }catch (Exception ignored){}

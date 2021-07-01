@@ -12,6 +12,7 @@ import xyz.theprogramsrc.supermanager.modules.filemanager.FileManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
+import xyz.theprogramsrc.supermanager.modules.worldmanager.WorldManager;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
 import java.lang.reflect.InvocationTargetException;
@@ -25,7 +26,6 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
     private ModuleManager moduleManager;
     private LinkedList<Module> modules;
     private LinkedHashMap<String, Module> enabledModules;
-    private DataBase dataBase;
 
     @Override
     public void onPluginLoad() {
@@ -54,6 +54,11 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         this.registerModule(UserManagerModule.class);
         this.registerModule(ChatChannelsModule.class);
         this.registerModule(FileManager.class);
+        this.registerModule(WorldManager.class);
+    }
+
+    public DataBase getDataBase() {
+        return UniversalStorage.database();
     }
 
     public ModuleManager getModuleManager() {

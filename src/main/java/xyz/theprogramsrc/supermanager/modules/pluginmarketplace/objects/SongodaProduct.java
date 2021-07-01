@@ -6,9 +6,10 @@ import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
 import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.networking.CustomConnection;
-import xyz.theprogramsrc.supercoreapi.global.utils.FileUtils;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonArray;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonParser;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.global.utils.files.FileUtils;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonArray;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.utils.PluginUtils;
@@ -119,9 +120,8 @@ public class SongodaProduct {
                         }
                     }
 
-                    File downloadFolder = new File(SuperManager.i.getPluginFolder(), "downloads/");
-                    if(!downloadFolder.exists()) downloadFolder.mkdirs();
-                    File pluginsFolder = new File(SuperManager.i.getServerFolder(), "plugins/");
+                    File downloadFolder = Utils.folder(new File(SuperManager.i.getPluginFolder(), "downloads/"));
+                    File pluginsFolder = Utils.folder(new File(SuperManager.i.getServerFolder(), "plugins/"));
                     if(new File(pluginsFolder, this.getFilename()).exists()){
                         SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_PLUGIN_ALREADY_INSTALLED.options().placeholder("{PluginName}", this.getName()));
                     }else{

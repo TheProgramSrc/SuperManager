@@ -8,7 +8,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
-import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsStorage;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
 import java.util.LinkedHashMap;
 import java.util.UUID;
@@ -16,19 +16,18 @@ import java.util.UUID;
 public class ChatChannelsManager extends SpigotModule {
 
     public static ChatChannelsManager i;
-    private ChatChannelsStorage storage;
-    private LinkedHashMap<UUID, String> channels;
+    private ChatChannelsDataManager chatChannelsDataManager;
+    private LinkedHashMap<UUID, String> channels; // TODO: Move this to the Config.
 
-    @Override
-    public void onLoad() {
+    public ChatChannelsManager(ChatChannelsDataManager chatChannelsDataManager){
         i = this;
-        this.storage = ChatChannelsStorage.i;
+        this.chatChannelsDataManager = chatChannelsDataManager;
         this.channels = new LinkedHashMap<>();
     }
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        this.channels.put(e.getPlayer().getUniqueId(), this.storage.getGlobalChannel());
+        this.channels.put(e.getPlayer().getUniqueId(), this.chatChannelsDataManager.globalChannel());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -38,10 +37,10 @@ public class ChatChannelsManager extends SpigotModule {
         this.getSpigotTasks().runTask(() -> {
             String channel = this.getChannel(e.getPlayer());
             if(channel == null) {
-                channel = this.storage.getGlobalChannel();
-                this.joinChannel(e.getPlayer(), this.storage.getGlobalChannel());
+                channel = this.chatChannelsDataManager.globalChannel();
+                this.joinChannel(e.getPlayer(), this.chatChannelsDataManager.globalChannel());
             }
-            String format = this.storage.format();
+            String format = this.chatChannelsDataManager.format();
             if(e.getPlayer().hasPermission("chatchannels." + channel + ".write")){
                 boolean color = e.getPlayer().hasPermission("chatchannels.write.color");
                 String baseMSG = this.getSuperUtils().color(format.replace("{Player}", e.getPlayer().getName()).replace("{Channel}", channel)).replace("{Message}", e.getMessage());

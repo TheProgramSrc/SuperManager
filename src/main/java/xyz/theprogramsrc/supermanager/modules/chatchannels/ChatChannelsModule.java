@@ -1,28 +1,30 @@
 package xyz.theprogramsrc.supermanager.modules.chatchannels;
 
+import java.io.File;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.commands.ChatChannelCommand;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.guis.ChatChannelBrowser;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.listeners.ChatChannelsManager;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
 public class ChatChannelsModule extends Module {
 
     public static ChatChannelsModule i;
-    private ChatChannelsStorage chatChannelsStorage;
     private ChatChannelsManager chatChannelsManager;
+    private ChatChannelsDataManager chatChannelsDataManager;
 
     @Override
     public void onEnable() {
         i = this;
-        UniversalStorage.register(this.getPlugin());
-        this.chatChannelsStorage = new ChatChannelsStorage(this);
-        this.chatChannelsManager = new ChatChannelsManager();
+        this.chatChannelsDataManager = new ChatChannelsDataManager(new File(this.getModuleFolder(), "ChatChannels.yml"));
+        this.chatChannelsManager = new ChatChannelsManager(this.chatChannelsDataManager);
         new ChatChannelCommand();
     }
 
@@ -53,6 +55,6 @@ public class ChatChannelsModule extends Module {
 
     @Override
     public void onAction(Player player) {
-        new ChatChannelBrowser(player, this.chatChannelsStorage);
+        new ChatChannelBrowser(player, this.chatChannelsDataManager);
     }
 }

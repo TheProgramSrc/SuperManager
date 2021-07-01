@@ -3,13 +3,13 @@ package xyz.theprogramsrc.supermanager.modules.pluginmanager.guis;
 import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.Recall;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
@@ -60,16 +60,16 @@ public class PluginView extends GUI {
         return new GUIButton(11, item, a->{
             this.close();
             if(!Utils.isConnected()){
-                this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.NO_CONNECTION.toString());
+                this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.NO_CONNECTION);
             }else{
                 boolean updateAvailable = this.sPlugin.isUpdateAvailable();
                 if(this.sPlugin.getLatestVersion() == null){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.ERROR_WHILE_FETCHING_LATEST_VERSION.options().placeholder("{PluginName}", this.sPlugin.getName()));
+                    this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.PLUGIN_MANAGER_FAILED_TO_CHECK_FOR_UPDATES.options().placeholder("{PluginName}", this.sPlugin.getName()));
                 }else{
                     if(updateAvailable){
-                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_NEEDS_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{LatestVersion}", this.sPlugin.getLatestVersion()));
+                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{LatestVersion}", this.sPlugin.getLatestVersion()));
                     }else{
-                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_UP_TO_DATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
+                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_ALREADY_UP_TO_DATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
                     }
                 }
             }
@@ -108,7 +108,7 @@ public class PluginView extends GUI {
                         @Override
                         public boolean onResult(String s) {
                             this.getSettings().getConfig().set("songoda-token", s);
-                            this.getSettings().getConfig().reload();
+                            this.getSettings().getConfig().load();
                             PluginManager.token = s;
                             this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_SAVED);
                             return true;
@@ -124,12 +124,12 @@ public class PluginView extends GUI {
     }
 
     private void startDownload(ClickAction a){
-        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.DOWNLOADING_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
+        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_DOWNLOADING_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
         boolean download = this.sPlugin.downloadUpdate();
         if(download) {
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
+            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
         }else{
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
+            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
         }
     }
 }

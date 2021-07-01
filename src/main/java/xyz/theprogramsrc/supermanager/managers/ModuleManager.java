@@ -13,7 +13,7 @@ public class ModuleManager extends JsonConfig {
     }
 
     public boolean isModuleEnabled(Module module){
-        this.add(module.getIdentifier(), "true"); // Add module if doesn't exists
+        this.add(module.getIdentifier(), "false"); // Add module if doesn't exists
         return this.getBoolean(module.getIdentifier()); // Return if the module is enabled
     }
 

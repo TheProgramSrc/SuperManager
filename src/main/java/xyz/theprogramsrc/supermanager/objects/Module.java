@@ -43,7 +43,7 @@ public abstract class Module extends SpigotModule {
 
     public abstract void onAction(Player player); // Executed when the module display item is clicked in the main gui
 
-    protected void log(String message, boolean prefixed){
+    public void log(String message, boolean prefixed){
         if(prefixed){
             this.plugin.log(this.getDisplay() + "> " + message);
         }else{

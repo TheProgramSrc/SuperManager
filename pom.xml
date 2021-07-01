@@ -119,7 +119,7 @@
         <dependency>
             <groupId>xyz.theprogramsrc</groupId>
             <artifactId>SuperCoreAPI</artifactId>
-            <version>4.12.0</version>
+            <version>5.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <!-- NMS -->

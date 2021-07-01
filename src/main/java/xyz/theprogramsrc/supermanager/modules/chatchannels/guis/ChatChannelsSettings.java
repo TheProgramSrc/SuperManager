@@ -2,25 +2,26 @@ package xyz.theprogramsrc.supermanager.modules.chatchannels.guis;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
-import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsStorage;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
 
 public class ChatChannelsSettings extends GUI {
 
-    private final ChatChannelsStorage storage;
+    private final ChatChannelsDataManager chatChannelsDataManager;
     private final Runnable back;
 
-    public ChatChannelsSettings(Player player, Runnable back) {
+    public ChatChannelsSettings(Player player, ChatChannelsDataManager chatChannelsDataManager, Runnable back) {
         super(player);
         this.back = back;
-        this.storage = ChatChannelsStorage.i;
+        this.chatChannelsDataManager = chatChannelsDataManager;
         this.open();
     }
 
@@ -71,10 +72,10 @@ public class ChatChannelsSettings extends GUI {
             public boolean onResult(String s) {
                 if(s.contains(" ")){
                     this.getSuperUtils().sendMessage(this.getPlayer(), L.CHAT_CHANNELS_CONTAINS_SPACES.toString());
-                }else if(ChatChannelsSettings.this.storage.existsChannel(s)){
+                }else if(ChatChannelsSettings.this.chatChannelsDataManager.hasChannel(s)){
                     this.getSuperUtils().sendMessage(this.getPlayer(), L.CHAT_CHANNELS_ALREADY_EXISTS.toString());
                 }else{
-                    ChatChannelsSettings.this.storage.saveChannel(new ChatChannel(s, Bukkit.getMaxPlayers()));
+                    ChatChannelsSettings.this.chatChannelsDataManager.saveChannel(new ChatChannel(s, Bukkit.getMaxPlayers()));
                     ChatChannelsSettings.this.open();
                     return true;
                 }
@@ -90,7 +91,7 @@ public class ChatChannelsSettings extends GUI {
                         "&7",
                         "&7" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_LORE,
                         "&7" + L.CHAT_CHANNELS_SETTINGS_UPDATE_FORMAT_PREVIEW
-                ).addPlaceholder("{ChatFormat}", this.storage.format());
+                ).addPlaceholder("{ChatFormat}", this.chatChannelsDataManager.format());
         return new GUIButton(12, item, a-> {
             this.getSuperUtils().sendMessage(a.getPlayer(), "&9Available Placeholders:");
             this.getSuperUtils().sendMessage(a.getPlayer(), "&e{Message} &7- &cMessage");
@@ -114,11 +115,11 @@ public class ChatChannelsSettings extends GUI {
 
                 @Override
                 public boolean onResult(String s) {
-                    ChatChannelsSettings.this.storage.setFormat(s);
+                    ChatChannelsSettings.this.chatChannelsDataManager.setFormat(s);
                     ChatChannelsSettings.this.open();
                     return true;
                 }
-            }.addPlaceholder("{ChatFormat}", this.storage.format());
+            }.addPlaceholder("{ChatFormat}", this.chatChannelsDataManager.format());
         });
     }
 }
