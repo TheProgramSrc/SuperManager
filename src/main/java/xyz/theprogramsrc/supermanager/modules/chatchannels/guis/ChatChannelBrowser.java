@@ -66,7 +66,7 @@ public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
                         "&7",
                         "&7" + L.CHAT_CHANNELS_BROWSER_SETTINGS_LORE
                 );
-        buttons.add(new GUIButton(47, item, a-> new ChatChannelsSettings(a.getPlayer(), this.chatChannelsDataManager, ::open)));
+        buttons.add(new GUIButton(47, item, a-> new ChatChannelsSettings(a.getPlayer(), this.chatChannelsDataManager, this::open)));
         return buttons.toArray(new GUIButton[0]);
     }
 

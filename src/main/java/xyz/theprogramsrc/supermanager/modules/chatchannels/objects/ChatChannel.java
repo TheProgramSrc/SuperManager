@@ -1,9 +1,16 @@
 package xyz.theprogramsrc.supermanager.modules.chatchannels.objects;
 
+import java.util.Arrays;
 import java.util.UUID;
+
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
 public class ChatChannel {
 
+    private final ChatChannelsDataManager dataManager = ChatChannelsDataManager.i;
     private final UUID uuid;
     private final String name;
     private final int maxPlayers;
@@ -40,6 +47,14 @@ public class ChatChannel {
 
     public String getWriteWithColorPermission(){
         return "chatchannels." + this.name + ".write.color";
+    }
+
+    public int countOnline() {
+        return this.dataManager.getOnlineInChannel(this);
+    }
+
+    public Player[] onlinePlayers(){
+        return Arrays.stream(this.dataManager.getPlayersInChannel(this)).filter(OfflinePlayer::isOnline).map(OfflinePlayer::getPlayer).toArray(Player[]::new);
     }
 
 }

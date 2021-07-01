@@ -11,15 +11,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import me.clip.placeholderapi.PlaceholderAPI;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.StringUtils;
-import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.Optional;
-import java.util.UUID;
 
 public class ChatChannelsManager extends SpigotModule {
 

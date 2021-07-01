@@ -174,4 +174,8 @@ public class ChatChannelsDataManager extends YMLConfig {
     public OfflinePlayer[] getOnlineWithPlayer(OfflinePlayer player){
         return this.getPlayersInChannel(this.currentChannel(player));
     }
+
+    public int getOnlineInChannel(ChatChannel channel){
+        return ((int) this.getSection("Players").getKeys(false).stream().filter(key -> this.getString("Players." + key + ".CurrentChannel") == channel.getUuid().toString()).count());
+    }
 }
