@@ -109,7 +109,7 @@ public class SongodaProduct {
                     CustomConnection connection = new ConnectionBuilder(this.paymentMethod.equalsIgnoreCase("none") ? this.getDownloadUrl() : (this.getDownloadUrl() + "?token=" + SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token"))).connect();
                     if(connection.getResponseString() != null && !(connection.getResponseCode()+"").startsWith("2")){
                         if(connection.getResponseString().toLowerCase().contains("msg")){
-                            JsonArray data = new JsonParser().parse(connection.getResponseString()).getAsJsonArray();
+                            JsonArray data = JsonParser.parseString(connection.getResponseString()).getAsJsonArray();
                             if(data.size() != 2){
                                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_MESSAGE_RESPONSE.options().placeholder("{Message}", connection.getResponseString()));
                             }else{

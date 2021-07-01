@@ -1,7 +1,7 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.guis;
 
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.apache.commons.io.FileUtils;
+import xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
@@ -9,7 +9,7 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors.YMLEditor;
 

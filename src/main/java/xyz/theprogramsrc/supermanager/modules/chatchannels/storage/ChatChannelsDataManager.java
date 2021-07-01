@@ -86,7 +86,7 @@ public class ChatChannelsDataManager extends YMLConfig {
             int maxPlayers = this.getInt(path + ".MaxPlayers");
             this.CHANNELS_CACHE.put(uuid, new ChatChannel(uuid, name, maxPlayers));
         }
-        return this.CHANNELS_CACHE.get(uuid);
+        return this.CHANNELS_CACHE.containsKey(uuid) ? this.CHANNELS_CACHE.get(uuid) : this.getChannel(uuid);
     }
 
     public Optional<ChatChannel> getChannel(String name){

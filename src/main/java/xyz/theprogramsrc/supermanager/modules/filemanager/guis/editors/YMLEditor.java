@@ -1,15 +1,16 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors;
 
 import org.bukkit.entity.Player;
+
+import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.SpigotYMLConfig;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.filemanager.objects.YMLField;
 
@@ -19,14 +20,14 @@ import java.util.List;
 
 public class YMLEditor extends BrowserGUI<YMLField> {
 
-    private final SpigotYMLConfig cfg;
+    private final YMLConfig cfg;
     private final File file;
     private final LinkedHashMap<String, Integer> currentLine;
 
     public YMLEditor(Player player, File file) {
         super(player);
         this.file = file;
-        this.cfg = new SpigotYMLConfig(this.file);
+        this.cfg = new YMLConfig(this.file);
         this.backEnabled = true;
         this.currentLine = new LinkedHashMap<>();
         this.open();

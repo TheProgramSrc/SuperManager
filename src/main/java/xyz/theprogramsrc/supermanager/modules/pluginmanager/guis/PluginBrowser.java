@@ -1,10 +1,11 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager.guis;
 
 import org.bukkit.entity.Player;
+
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;

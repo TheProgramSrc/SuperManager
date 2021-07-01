@@ -8,14 +8,12 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.objects.Module;
 import xyz.theprogramsrc.supermanager.utils.Checkers;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 
 public class MainGUI extends BrowserGUI<Module> {
 

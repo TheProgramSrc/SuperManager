@@ -1,19 +1,18 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.objects;
 
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.ConfigField;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.SpigotYMLConfig;
-
 import java.io.File;
 import java.util.List;
+
+import xyz.theprogramsrc.supercoreapi.global.files.yml.*;
 
 public class YMLField {
 
     private final ConfigField field;
-    private final SpigotYMLConfig cfg;
+    private final YMLConfig cfg;
 
     public YMLField(File file, String path){
-        this.cfg = new SpigotYMLConfig(file);
-        this.field = new ConfigField(this.cfg.getConfig(), path);
+        this.cfg = new YMLConfig(file);
+        this.field = new ConfigField(this.cfg, path);
     }
 
     public String getPath() {

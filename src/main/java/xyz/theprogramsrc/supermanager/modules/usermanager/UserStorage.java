@@ -1,119 +1,52 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager;
 
-import xyz.theprogramsrc.supercoreapi.SuperPlugin;
-import xyz.theprogramsrc.supercoreapi.global.storage.DataBase;
-import xyz.theprogramsrc.supercoreapi.global.storage.DataBaseStorage;
-import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
-public class UserStorage extends DataBaseStorage {
+import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.spigot.utils.skintexture.SkinTexture;
+import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 
-    private final LinkedHashMap<UUID, User> cache;
-    private final String table;
+public class UserStorage extends YMLConfig {
 
-    public UserStorage(SuperPlugin<?> plugin, DataBase dataBase) {
-        super(plugin, dataBase);
-        this.cache = new LinkedHashMap<>();
-        this.table = this.getTablePrefix() + "usermanagermodule_userstorage";
-        this.init();
-    }
+    private final LinkedHashMap<UUID, User> CACHE;
 
-    private void init(){
-        new Thread(() -> this.dataBase.connect(c-> {
-            try{
-                Statement statement = c.createStatement();
-                statement.executeUpdate("CREATE TABLE IF NOT EXISTS " + this.table + " (uuid VARCHAR(255) NOT NULL UNIQUE PRIMARY KEY, data LONGTEXT NOT NULL);");
-            }catch (SQLException e){
-                this.plugin.addError(e);
-                this.plugin.log("&cFailed to initialize UserStorage:");
-                e.printStackTrace();
-            }
-        })).start();
+    public UserStorage(File file) {
+        super(file);
+        this.CACHE = new LinkedHashMap<>();
     }
 
     public void save(User user){
-        new Thread(() -> {
-            this.cache.remove(user.getUUID());
-            this.dataBase.connect(c-> {
-                try {
-                    Statement statement = c.createStatement();
-                    if(this.exists(user.getUUID())){
-                        statement.executeUpdate("UPDATE "+this.table+" SET data = '" + user.toString() + "' WHERE uuid = '" + user.getUUID() + "';");
-                    }else{
-                        statement.executeUpdate("INSERT INTO "+this.table+" (uuid, data) VALUES ('" + user.getUUID() + "', '" + user.toString() + "');");
-                    }
-                }catch (SQLException e){
-                    this.plugin.addError(e);
-                    this.plugin.log("&cFailed to save user:");
-                    e.printStackTrace();
-                }
-            });
-        }).start();
+        String path = "Users." + user.getUUID();
+        this.set(path + ".Name", user.getName());
+        this.set(path + ".Skin", user.getSkin() != null ? user.getSkin().toString() : null);
+        this.set(path + ".Data", Utils.encodeBase64(user.dataToString()));
     }
 
     public boolean exists(UUID uuid){
-        AtomicBoolean atomicBoolean = new AtomicBoolean();
-        this.dataBase.connect(c-> {
-            try {
-                Statement statement = c.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT COUNT(DISTINCT uuid) AS `count` FROM " + this.table + " WHERE uuid = '" + uuid + "';");
-                if(rs.next()){
-                    atomicBoolean.set(rs.getInt("count") > 0);
-                }
-            }catch (SQLException e){
-                this.plugin.addError(e);
-                this.plugin.log("&cFailed to retrieve user:");
-                e.printStackTrace();
-            }
-        });
-        return atomicBoolean.get();
+        return this.contains(uuid.toString());
     }
 
     public User get(UUID uuid){
-        if(this.cache.containsKey(uuid)) this.cache.get(uuid);
-        AtomicReference<User> atomicUser = new AtomicReference<>(null);
-        this.dataBase.connect(c-> {
-            try {
-                Statement statement = c.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT `data` FROM " + this.table + " WHERE uuid = '" + uuid + "';");
-                if(rs.next()){
-                    atomicUser.set(User.fromJSON(rs.getString("data")));
-                }
-            }catch (SQLException e){
-                this.plugin.addError(e);
-                this.plugin.log("&cFailed to retrieve user:");
-                e.printStackTrace();
-            }
-        });
-        if(atomicUser.get() != null) this.cache.put(uuid, atomicUser.get());
-        return atomicUser.get();
+        if(!this.CACHE.containsKey(uuid)) {
+            String path = "Users." + uuid;
+            String name = this.getString(path + ".Name");
+            SkinTexture skin = this.contains(path + ".Skin") ? new SkinTexture(this.getString(path + ".Skin")) : null;
+            String data = Utils.decodeBase64(this.getString(path + ".Data"));
+            User user = new User(uuid, name, skin);
+            user.loadDataFromString(data);
+            this.CACHE.put(uuid, user);
+        }
+
+        return this.CACHE.containsKey(uuid) ? this.CACHE.get(uuid) : this.get(uuid);
     }
 
     public User[] get(){
         LinkedList<User> users = new LinkedList<>();
-        this.dataBase.connect(c-> {
-            try {
-                Statement statement = c.createStatement();
-                ResultSet rs = statement.executeQuery("SELECT `data` FROM " + this.table + ";");
-                while(rs.next()){
-                    User user = User.fromJSON(rs.getString("data"));
-                    this.cache.put(user.getUUID(), user);
-                    users.add(user);
-                }
-            }catch (SQLException e){
-                this.plugin.addError(e);
-                this.plugin.log("&cFailed to retrieve users:");
-                e.printStackTrace();
-            }
-        });
+        this.getSection("Users").getKeys(false).forEach(key -> users.add(this.get(UUID.fromString(key))));
         return users.toArray(new User[0]);
     }
 }

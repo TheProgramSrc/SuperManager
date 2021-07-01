@@ -2,15 +2,13 @@ package xyz.theprogramsrc.supermanager.modules.pluginmanager.objects;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
+
+import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.networking.CustomConnection;
-import xyz.theprogramsrc.supercoreapi.global.utils.FileUtils;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonArray;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonElement;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonObject;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonParser;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.SpigotYMLConfig;
+import xyz.theprogramsrc.supercoreapi.global.utils.files.FileUtils;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.*;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
@@ -108,7 +106,7 @@ public class SPlugin {
                         }
                     }
                 }else{
-                    JsonElement jsonElement = new JsonParser().parse(connection.getResponseString());
+                    JsonElement jsonElement = JsonParser.parseString(connection.getResponseString());
                     if(jsonElement.isJsonNull()){
                         SuperManager.i.log("&cThe SpigetAPI returned a null json response while checking for " + this.getName() + " updates");
                         this.updateAvailable = false;
@@ -175,7 +173,7 @@ public class SPlugin {
         }
 
         // Success test and download the product!
-        SpigotYMLConfig cfg = new SpigotYMLConfig(new File("bukkit.yml"));
+        YMLConfig cfg = new YMLConfig(new File("bukkit.yml"));
         File pluginsFolder = new File(SuperManager.i.getServerFolder(), "plugins/"); // Don't need to mkdir since this plugin won't be working if there is no plugins folder
         File updateFolder = Utils.folder(new File(pluginsFolder, cfg.getString("settings.update-folder") + "/"));
         return FileUtils.downloadUsingStream(url, new File(updateFolder, this.getName() + ".jar"));

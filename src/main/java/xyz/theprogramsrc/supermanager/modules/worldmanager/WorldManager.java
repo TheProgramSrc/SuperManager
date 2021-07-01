@@ -2,9 +2,10 @@ package xyz.theprogramsrc.supermanager.modules.worldmanager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.worldmanager.guis.WorldBrowserGUI;

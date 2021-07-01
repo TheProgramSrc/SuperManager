@@ -17,7 +17,6 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.stream.Collectors;
 
 public class PluginMarketplace extends Module {
 
@@ -35,7 +34,7 @@ public class PluginMarketplace extends Module {
         owners2 = new LinkedHashMap<>(); // Teams
         products = new LinkedHashMap<>();
         // A list of products that should not be shown. Search them if you want to, but their data in the API is empty, like only the creator and the name of the product
-        // Some of those product won't even show because they're not approved
+        // Some of these product won't even show because they're not approved
         bannedProducts = new LinkedList<>(Utils.toList(545, 268, 425, 43, 594, 411, 438, 262, 403, 354, 388, 450, 529, 416, 377, 511, 324, 319));
         lastCheck = 0L;
         new Thread(() -> {

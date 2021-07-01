@@ -1,11 +1,9 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager;
 
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.global.files.JsonConfig;
-import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.usermanager.guis.UserBrowser;
@@ -13,6 +11,7 @@ import xyz.theprogramsrc.supermanager.modules.usermanager.listeners.PlayerListen
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class UserManagerModule extends Module {
@@ -22,7 +21,7 @@ public class UserManagerModule extends Module {
     @Override
     public void onEnable() {
         super.onEnable();
-        this.userStorage = new UserStorage(this.plugin, UniversalStorage.database());
+        this.userStorage = new UserStorage(new File(this.getModuleFolder(), "Users.yml"));
         new PlayerListener(this.userStorage);
     }
 
