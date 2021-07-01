@@ -3,15 +3,20 @@ package xyz.theprogramsrc.supermanager.modules.chatchannels.storage;
 import java.io.File;
 import java.util.*;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.*;
 
 public class ChatChannelsDataManager extends YMLConfig {
 
+    public static ChatChannelsDataManager i;
     private final LinkedHashMap<UUID, ChatChannel> CHANNELS_CACHE;
 
     public ChatChannelsDataManager(File file) {
         super(file);
+        i = this;
         this.CHANNELS_CACHE = new LinkedHashMap<>();
         this.addSetting(
             new ChatChannelsSetting("format", "&7#{Channel} - {Player}&b»&f {Message}"),
@@ -135,5 +140,38 @@ public class ChatChannelsDataManager extends YMLConfig {
         this.saveSetting(new ChatChannelsSetting("command", command.toLowerCase()));
     }
 
+    public void joinChannel(OfflinePlayer player, ChatChannel chatChannel){
+        String path = "Players." + player.getUniqueId();
+        this.set(path + ".CurrentChannel", chatChannel.getUuid().toString());
+    }
 
+    public ChatChannel currentChannel(OfflinePlayer player){
+        String path = "Players." + player.getUniqueId();
+        if(!this.contains(path)){
+            Optional<ChatChannel> optional = this.getChannel(this.globalChannel());
+            if(optional.isPresent()){
+                this.joinChannel(player, optional.get());
+            }else{
+                throw new RuntimeException("Couldn't find the Global Channel, make sure it exists!");
+            }
+        }
+
+        return this.getChannel(UUID.fromString(this.getString(path + ".CurrentChannel")));
+    }
+
+    public OfflinePlayer[] getPlayersInChannel(ChatChannel channel){
+        LinkedList<OfflinePlayer> players = new LinkedList<>();
+        this.getSection("Players").getKeys(false).forEach(key -> {
+            UUID uuid = UUID.fromString(key);
+            if(channel.getUuid().toString() == this.getString("Players." + key + ".CurrentChannel")){
+                players.add(Bukkit.getOfflinePlayer(uuid));
+            }
+        });
+
+        return players.toArray(new OfflinePlayer[0]);
+    }
+
+    public OfflinePlayer[] getOnlineWithPlayer(OfflinePlayer player){
+        return this.getPlayersInChannel(this.currentChannel(player));
+    }
 }

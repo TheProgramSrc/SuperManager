@@ -38,4 +38,8 @@ public class ChatChannel {
         return "chatchannels." + this.name + ".write";
     }
 
+    public String getWriteWithColorPermission(){
+        return "chatchannels." + this.name + ".write.color";
+    }
+
 }

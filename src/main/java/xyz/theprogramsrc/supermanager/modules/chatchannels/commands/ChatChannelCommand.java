@@ -7,12 +7,13 @@ import xyz.theprogramsrc.supercoreapi.spigot.commands.SpigotCommand;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.SpigotConsole;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsModule;
-import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsStorage;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.listeners.ChatChannelsManager;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ChatChannelCommand extends SpigotCommand {
@@ -24,7 +25,7 @@ public class ChatChannelCommand extends SpigotCommand {
 
     @Override
     public String getCommand() {
-        return ChatChannelsStorage.i.command();
+        return ChatChannelsDataManager.i.command();
     }
 
     @Override
@@ -37,10 +38,11 @@ public class ChatChannelCommand extends SpigotCommand {
                 if(args.length == 1){
                     return CommandResult.INVALID_ARGS;
                 }else{
-                    ChatChannel chatChannel = ChatChannelsStorage.i.getChannel(args[1]);
-                    if(chatChannel == null){
+                    Optional<ChatChannel> optional = ChatChannelsDataManager.i.getChannel(args[1]);
+                    if(!optional.isPresent()){
                         this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_DOESNT_EXISTS.options().placeholder("{ChannelName}", args[1]).get());
                     }else{
+                        ChatChannel chatChannel = optional.get();
                         if(!player.hasPermission(chatChannel.getJoinPermission())){
                             return CommandResult.NO_PERMISSION;
                         }else{
@@ -59,7 +61,7 @@ public class ChatChannelCommand extends SpigotCommand {
                 }else{
                     StringBuilder msg = new StringBuilder();
                     msg.append("&a").append(L.CHANNELS.toString()).append(":\n");
-                    for (ChatChannel cc : ChatChannelsStorage.i.all()) {
+                    for (ChatChannel cc : ChatChannelsDataManager.i.getChannels()) {
                         msg.append(L.CHAT_CHANNELS_LIST_ITEM.options().placeholder("{ChannelName}", cc.getName()).get()).append("\n");
                     }
                     this.getSuperUtils().sendMessage(player, msg.toString());
@@ -83,7 +85,13 @@ public class ChatChannelCommand extends SpigotCommand {
                 if(!player.hasPermission("chatchannels.online")){
                     return CommandResult.NO_PERMISSION;
                 }else{
-                    this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_ONLINE.options().placeholder("{Online}", ChatChannelsManager.i.onlineWith(player)+"").placeholder("{Max}", ChatChannelsStorage.i.getChannel(ChatChannelsManager.i.getChannel(player)).getMaxPlayers()+"").get());
+                    Optional<ChatChannel> optional = ChatChannelsDataManager.i.getChannel(ChatChannelsManager.i.getChannel(player));
+                    if(optional.isPresent()){
+                        ChatChannel chatChannel = optional.get();
+                        this.getSuperUtils().sendMessage(player, L.CHAT_CHANNELS_ONLINE.options().placeholder("{Online}", ChatChannelsManager.i.onlineWith(player)+"").placeholder("{Max}", chatChannel.getMaxPlayers()+"").get());
+                    }else{
+
+                    }
                 }
             }else{
                 return CommandResult.INVALID_ARGS;
@@ -105,7 +113,7 @@ public class ChatChannelCommand extends SpigotCommand {
         }else if(args.length == 1){
             return Utils.toList("join", "list", "permissions", "help", "online").stream().filter(s-> s.toLowerCase().contains(args[0].toLowerCase())).collect(Collectors.toList());
         }else if(args.length == 2){
-            return Arrays.stream(ChatChannelsStorage.i.all()).filter(c-> player.hasPermission(c.getJoinPermission())).map(ChatChannel::getName).filter(name -> name.toLowerCase().contains(args[1].toLowerCase())).collect(Collectors.toList());
+            return Arrays.stream(ChatChannelsDataManager.i.all()).filter(c-> player.hasPermission(c.getJoinPermission())).map(ChatChannel::getName).filter(name -> name.toLowerCase().contains(args[1].toLowerCase())).collect(Collectors.toList());
         }else{
             return super.getCommandComplete(player, alias, args);
         }
