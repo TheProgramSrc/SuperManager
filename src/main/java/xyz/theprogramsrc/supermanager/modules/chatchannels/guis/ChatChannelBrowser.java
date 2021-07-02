@@ -14,6 +14,7 @@ import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 
 public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
@@ -41,7 +42,12 @@ public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
     public GUIButton getButton(final ChatChannel chatChannel) {
         SimpleItem item = new SimpleItem(XMaterial.OAK_SIGN)
                 .setDisplayName("&a" + L.CHAT_CHANNELS_BROWSER_ITEM_NAME)
-                .setLore("&7");
+                .setLore(
+                    "&7",
+                    "&7" + L.CHAT_CHANNELS_BROWSER_ITEM_CREATED_AT,
+                    "&7" + L.CHAT_CHANNELS_BROWSER_ITEM_ID,
+                    "&7"
+                );
         if(!this.chatChannelsDataManager.globalChannel().equals(chatChannel.getName())){
             item.addLoreLine("&9" + Base.LEFT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_LEFT_ACTION);
         }
@@ -49,8 +55,8 @@ public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
             item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION);
         }
         item.addPlaceholder("{ChannelName}", chatChannel.getName())
-            .addPlaceholder("{ChannelId}", chatChannel.getUuid().toString());
-            // TODO: Add formatted creation date.
+            .addPlaceholder("{ChannelId}", chatChannel.getUuid().toString())
+            .addPlaceholder("{CreatedAt}", DateTimeFormatter.ofPattern(this.chatChannelsDataManager.globalDateFormat()).format(chatChannel.getInstantCreated()));
         return new GUIButton(item, a->{
             if(a.getAction() == ClickType.LEFT_CLICK){
                 this.chatChannelsDataManager.setGlobalChannel(chatChannel.getUuid().toString());

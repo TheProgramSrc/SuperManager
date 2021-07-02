@@ -211,6 +211,8 @@ public enum L implements TranslationPack {
 
     CHAT_CHANNELS_BROWSER_TITLE("GUI.Modules.ChatChannels.Browser.Title", "&cChat Channels"),
     CHAT_CHANNELS_BROWSER_ITEM_NAME("GUI.Modules.ChatChannels.Browser.Item.Name","&a#{ChannelName}"),
+    CHAT_CHANNELS_BROWSER_ITEM_CREATED_AT("GUI.Modules.ChatChannels.Browser.Item.CreatedAt","&7Created At: &9{CreatedAt}"),
+    CHAT_CHANNELS_BROWSER_ITEM_ID("GUI.Modules.ChatChannels.Browser.Item.ID","&7Channel Id: &9{ChannelId}"),
     CHAT_CHANNELS_BROWSER_ITEM_LEFT_ACTION("GUI.Modules.ChatChannels.Browser.Item.MarkAsGlobal","&7Click to mark as global channel"),
     CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION("GUI.Modules.ChatChannels.Browser.Item.Remove","&7Click to remove."),
     CHAT_CHANNELS_BROWSER_SETTINGS_NAME("GUI.Modules.ChatChannels.Browser.Settings.Name","&cSettings"),

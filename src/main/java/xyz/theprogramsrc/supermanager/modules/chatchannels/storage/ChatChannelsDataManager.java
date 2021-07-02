@@ -21,7 +21,8 @@ public class ChatChannelsDataManager extends YMLConfig {
         this.addSetting(
             new ChatChannelsSetting("format", "&7#{Channel} - {Player}&b»&f {Message}"),
             new ChatChannelsSetting("command", "cc"), 
-            new ChatChannelsSetting("globalChannel", UUID.randomUUID().toString())
+            new ChatChannelsSetting("globalChannel", UUID.randomUUID().toString()),
+            new ChatChannelsSetting("globalDateFormat", "dd/MM/yyyy HH:mm:ss")
         );
 
         if(!this.hasChannel(UUID.fromString(this.globalChannel()))){
@@ -122,30 +123,6 @@ public class ChatChannelsDataManager extends YMLConfig {
         return Arrays.stream(this.getChannels()).anyMatch(channel -> channel.getName() == name);
     }
 
-    public String format(){
-        return this.getSetting("format").getValue();
-    }
-
-    public void setFormat(String format){
-        this.saveSetting(new ChatChannelsSetting("format", format));
-    }
-
-    public String globalChannel() {
-        return this.getSetting("globalChannel").getValue();
-    }
-
-    public void setGlobalChannel(String channel){
-        this.saveSetting(new ChatChannelsSetting("globalChannel", channel));
-    }
-
-    public String command(){
-        return this.getSetting("command").getValue();
-    }
-
-    public void setCommand(String command){
-        this.saveSetting(new ChatChannelsSetting("command", command.toLowerCase()));
-    }
-
     public void joinChannel(OfflinePlayer player, ChatChannel chatChannel){
         String path = "Players." + player.getUniqueId();
         this.set(path + ".CurrentChannel", chatChannel.getUuid().toString());
@@ -185,5 +162,37 @@ public class ChatChannelsDataManager extends YMLConfig {
     public int getOnlineInChannel(ChatChannel channel){
         if(this.getSection("Players") == null) return 0;
         return ((int) this.getSection("Players").getKeys(false).stream().filter(key -> this.getString("Players." + key + ".CurrentChannel") == channel.getUuid().toString()).count());
+    }
+
+    public String format(){
+        return this.getSetting("format").getValue();
+    }
+
+    public void setFormat(String format){
+        this.saveSetting(new ChatChannelsSetting("format", format));
+    }
+
+    public String globalChannel() {
+        return this.getSetting("globalChannel").getValue();
+    }
+
+    public void setGlobalChannel(String channel){
+        this.saveSetting(new ChatChannelsSetting("globalChannel", channel));
+    }
+
+    public String command(){
+        return this.getSetting("command").getValue();
+    }
+
+    public void setCommand(String command){
+        this.saveSetting(new ChatChannelsSetting("command", command.toLowerCase()));
+    }
+
+    public String globalDateFormat(){
+        return this.getSetting("globalDateFormat").getValue();
+    }
+
+    public void setGlobalDateFormat(String format){
+        this.saveSetting(new ChatChannelsSetting("globalDateFormat", format));
     }
 }
