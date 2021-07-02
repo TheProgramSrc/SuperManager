@@ -17,7 +17,12 @@ import java.util.stream.Collectors;
 
 public class ChatChannelCommand extends SpigotCommand {
 
-    private final ChatChannelsDataManager dataManager = ChatChannelsDataManager.i;
+    private ChatChannelsDataManager dataManager;
+
+    @Override
+    public void onLoad(){
+        dataManager = ChatChannelsDataManager.i;
+    }
 
     @Override
     public String getPermission() {

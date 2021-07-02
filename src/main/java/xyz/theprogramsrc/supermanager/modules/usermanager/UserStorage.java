@@ -35,9 +35,11 @@ public class UserStorage extends YMLConfig {
             String path = "Users." + uuid;
             String name = this.getString(path + ".Name");
             SkinTexture skin = this.contains(path + ".Skin") ? new SkinTexture(this.getString(path + ".Skin")) : null;
-            String data = Utils.decodeBase64(this.getString(path + ".Data"));
             User user = new User(uuid, name, skin);
-            user.loadDataFromString(data);
+            if(this.contains(path + ".Data")){
+                String data = Utils.decodeBase64(this.getString(path + ".Data"));
+                user.loadDataFromString(data);
+            }
             this.CACHE.put(uuid, user);
         }
 
@@ -46,7 +48,9 @@ public class UserStorage extends YMLConfig {
 
     public User[] get(){
         LinkedList<User> users = new LinkedList<>();
-        this.getSection("Users").getKeys(false).forEach(key -> users.add(this.get(UUID.fromString(key))));
+        if(this.getSection("Users") != null){
+            this.getSection("Users").getKeys(false).forEach(key -> users.add(this.get(UUID.fromString(key))));
+        }
         return users.toArray(new User[0]);
     }
 }

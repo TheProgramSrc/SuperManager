@@ -48,6 +48,7 @@ public class WorldBrowserGUI extends BrowserGUI<SWorld> {
                         "&7" + L.WORLD_MANAGER_BROWSER_GUI_ITEM_LORE_MANAGE,
                         "&7" + L.WORLD_MANAGER_BROWSER_GUI_ITEM_LORE_LAST_BACKUP
                 )
+                .addPlaceholder("{WorldName}", sWorld.getName())
                 .addPlaceholder("{LastBackup}", sWorld.getLastBackupTime());
         return new GUIButton(item, a->{
             new WorldViewGUI(a.getPlayer(), sWorld, a1-> this.open());
@@ -56,6 +57,6 @@ public class WorldBrowserGUI extends BrowserGUI<SWorld> {
 
     @Override
     protected String getTitle() {
-        return L.WORLD_MANAGER_BROWSER_GUI_TITLE.toString();
+        return L.WORLD_MANAGER_BROWSER_GUI_TITLE.options().placeholder("{WorldAmount}", this.getObjects().length+"").get();
     }
 }

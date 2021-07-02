@@ -21,8 +21,12 @@ public class ChatChannelsDataManager extends YMLConfig {
         this.addSetting(
             new ChatChannelsSetting("format", "&7#{Channel} - {Player}&b»&f {Message}"),
             new ChatChannelsSetting("command", "cc"), 
-            new ChatChannelsSetting("globalChannel", "global")
+            new ChatChannelsSetting("globalChannel", UUID.randomUUID().toString())
         );
+
+        if(!this.hasChannel(UUID.fromString(this.globalChannel()))){
+            this.saveChannel(new ChatChannel(UUID.fromString(this.globalChannel()), "Global", Bukkit.getMaxPlayers()));
+        }
     }
 
     public void addSetting(ChatChannelsSetting... settings) {
@@ -68,6 +72,7 @@ public class ChatChannelsDataManager extends YMLConfig {
             String path = "Channels." + channel.getUuid();
             this.set(path + ".Name", channel.getName());
             this.set(path + ".MaxPlayers", channel.getMaxPlayers());
+            this.set(path + ".CreatedAt", channel.getCreatedAt());
             this.CHANNELS_CACHE.remove(channel.getUuid());
         }
     }
@@ -89,7 +94,8 @@ public class ChatChannelsDataManager extends YMLConfig {
             String path = "Channels." + uuid;
             String name = this.getString(path + ".Name");
             int maxPlayers = this.getInt(path + ".MaxPlayers");
-            this.CHANNELS_CACHE.put(uuid, new ChatChannel(uuid, name, maxPlayers));
+            long createdAt = this.getLong(path + ".CreatedAt");
+            this.CHANNELS_CACHE.put(uuid, new ChatChannel(uuid, name, maxPlayers, createdAt));
         }
         return this.CHANNELS_CACHE.containsKey(uuid) ? this.CHANNELS_CACHE.get(uuid) : this.getChannel(uuid);
     }
@@ -100,11 +106,11 @@ public class ChatChannelsDataManager extends YMLConfig {
 
     public ChatChannel[] getChannels(){
         LinkedList<ChatChannel> list = new LinkedList<>();
-        for(String key : this.getSection("Channels").getKeys(false)){
-            UUID uuid = UUID.fromString(key);
-            list.add(this.getChannel(uuid));
+        if(this.getSection("Channels") != null){
+            for(String key : this.getSection("Channels").getKeys(false)){
+                list.add(this.getChannel(UUID.fromString(key)));
+            }
         }
-
         return list.toArray(new ChatChannel[0]);
     }
 
@@ -161,12 +167,13 @@ public class ChatChannelsDataManager extends YMLConfig {
 
     public OfflinePlayer[] getPlayersInChannel(ChatChannel channel){
         LinkedList<OfflinePlayer> players = new LinkedList<>();
-        this.getSection("Players").getKeys(false).forEach(key -> {
-            UUID uuid = UUID.fromString(key);
-            if(channel.getUuid().toString() == this.getString("Players." + key + ".CurrentChannel")){
-                players.add(Bukkit.getOfflinePlayer(uuid));
-            }
-        });
+        if(this.getSection("Players") != null){
+            this.getSection("Players").getKeys(false).forEach(key -> {
+                if(channel.getUuid().toString() == this.getString("Players." + key + ".CurrentChannel")){
+                    players.add(Bukkit.getOfflinePlayer(UUID.fromString(key)));
+                }
+            });
+        }
 
         return players.toArray(new OfflinePlayer[0]);
     }
@@ -176,6 +183,7 @@ public class ChatChannelsDataManager extends YMLConfig {
     }
 
     public int getOnlineInChannel(ChatChannel channel){
+        if(this.getSection("Players") == null) return 0;
         return ((int) this.getSection("Players").getKeys(false).stream().filter(key -> this.getString("Players." + key + ".CurrentChannel") == channel.getUuid().toString()).count());
     }
 }

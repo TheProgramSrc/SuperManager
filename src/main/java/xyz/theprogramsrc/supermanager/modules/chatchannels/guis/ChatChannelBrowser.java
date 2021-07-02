@@ -45,12 +45,16 @@ public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
         if(!this.chatChannelsDataManager.globalChannel().equals(chatChannel.getName())){
             item.addLoreLine("&9" + Base.LEFT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_LEFT_ACTION);
         }
-        item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION);
-        item.addPlaceholder("{ChannelName}", chatChannel.getName());
+        if(!chatChannel.isGlobal()){
+            item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION);
+        }
+        item.addPlaceholder("{ChannelName}", chatChannel.getName())
+            .addPlaceholder("{ChannelId}", chatChannel.getUuid().toString());
+            // TODO: Add formatted creation date.
         return new GUIButton(item, a->{
             if(a.getAction() == ClickType.LEFT_CLICK){
-                this.chatChannelsDataManager.setGlobalChannel(chatChannel.getName());
-            }else if(a.getAction() == ClickType.RIGHT_CLICK){
+                this.chatChannelsDataManager.setGlobalChannel(chatChannel.getUuid().toString());
+            }else if(a.getAction() == ClickType.RIGHT_CLICK && !chatChannel.isGlobal()){
                 this.chatChannelsDataManager.removeChannel(chatChannel.getUuid());
             }
             this.open();
