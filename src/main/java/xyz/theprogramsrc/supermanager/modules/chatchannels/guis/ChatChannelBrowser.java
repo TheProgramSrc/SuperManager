@@ -48,12 +48,14 @@ public class ChatChannelBrowser extends BrowserGUI<ChatChannel> {
                     "&7" + L.CHAT_CHANNELS_BROWSER_ITEM_ID,
                     "&7"
                 );
-        if(!this.chatChannelsDataManager.globalChannel().equals(chatChannel.getName())){
-            item.addLoreLine("&9" + Base.LEFT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_LEFT_ACTION);
-        }
+        
         if(!chatChannel.isGlobal()){
-            item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION);
+            item.addLoreLines(
+                "&9" + Base.LEFT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_LEFT_ACTION,
+                "&9" + Base.RIGHT_CLICK + "&7 " + L.CHAT_CHANNELS_BROWSER_ITEM_RIGHT_ACTION
+            );
         }
+        
         item.addPlaceholder("{ChannelName}", chatChannel.getName())
             .addPlaceholder("{ChannelId}", chatChannel.getUuid().toString())
             .addPlaceholder("{CreatedAt}", DateTimeFormatter.ofPattern(this.chatChannelsDataManager.globalDateFormat()).format(chatChannel.getInstantCreated()));

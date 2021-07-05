@@ -27,7 +27,7 @@ public class UserStorage extends YMLConfig {
     }
 
     public boolean exists(UUID uuid){
-        return this.contains(uuid.toString());
+        return this.contains("Users." + uuid);
     }
 
     public User get(UUID uuid){

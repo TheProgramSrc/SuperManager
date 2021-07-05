@@ -37,7 +37,7 @@ public class PluginMarketplace extends Module {
         // Some of these product won't even show because they're not approved
         bannedProducts = new LinkedList<>(Utils.toList(545, 268, 425, 43, 594, 411, 438, 262, 403, 354, 388, 450, 529, 416, 377, 511, 324, 319));
         lastCheck = 0L;
-        new Thread(() -> {
+        this.getSpigotTasks().runAsyncTask(() -> {
             try{
                 loadProducts();
             }catch (IOException e){
@@ -45,7 +45,7 @@ public class PluginMarketplace extends Module {
                 e.printStackTrace();
                 this.plugin.addError(e);
             }
-        }).start();
+        });
     }
 
     @Override

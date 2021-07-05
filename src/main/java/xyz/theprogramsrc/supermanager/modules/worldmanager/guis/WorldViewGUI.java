@@ -57,11 +57,13 @@ public class WorldViewGUI extends GUI {
         return new GUIButton(0, item, a-> {
             this.close();
             this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.WORLD_MANAGER_BACKUP_CREATING);
-            if(this.sWorld.backup()){
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.WORLD_MANAGER_BACKUP_SUCCESS);
-            }else{
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + L.WORLD_MANAGER_BACKUP_FAILED);
-            }
+            this.getSpigotTasks().runAsyncTask(() -> {
+                if(this.sWorld.backup()){
+                    this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.WORLD_MANAGER_BACKUP_SUCCESS.options().placeholder("{Path}", this.sWorld.getLastBackupPath()));
+                }else{
+                    this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + L.WORLD_MANAGER_BACKUP_FAILED);
+                }
+            });
         });
     }
 }

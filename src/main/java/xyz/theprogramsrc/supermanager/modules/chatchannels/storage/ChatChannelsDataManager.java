@@ -1,13 +1,18 @@
 package xyz.theprogramsrc.supermanager.modules.chatchannels.storage;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Optional;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
-import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.*;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
+import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannelsSetting;
 
 public class ChatChannelsDataManager extends YMLConfig {
 
@@ -95,7 +100,7 @@ public class ChatChannelsDataManager extends YMLConfig {
             String path = "Channels." + uuid;
             String name = this.getString(path + ".Name");
             int maxPlayers = this.getInt(path + ".MaxPlayers");
-            long createdAt = this.getLong(path + ".CreatedAt");
+            String createdAt = this.getString(path + ".CreatedAt");
             this.CHANNELS_CACHE.put(uuid, new ChatChannel(uuid, name, maxPlayers, createdAt));
         }
         return this.CHANNELS_CACHE.containsKey(uuid) ? this.CHANNELS_CACHE.get(uuid) : this.getChannel(uuid);

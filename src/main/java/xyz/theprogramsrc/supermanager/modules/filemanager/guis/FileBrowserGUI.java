@@ -33,7 +33,7 @@ public class FileBrowserGUI extends BrowserGUI<File> {
     public File[] getObjects() {
         File[] files = this.file.listFiles();
         if(files == null) files = new File[0];
-        return Arrays.stream(files).filter(Utils::nonNull).toArray(File[]::new);
+        return Arrays.stream(files).filter(Utils::nonNull).sorted((f1, f2) -> (f2.isDirectory() ? 1 : 0) - (f1.isDirectory() ? 1 : 0)).toArray(File[]::new);
     }
 
     @Override

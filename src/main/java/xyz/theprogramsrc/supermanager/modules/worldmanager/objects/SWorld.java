@@ -23,6 +23,7 @@ public class SWorld {
         this.worldManager = worldManager;
         this.backupsFolder = Utils.folder(new File(worldManager.getModuleFolder(), "backups/"));
         this.cfg = new JsonConfig(new File(this.getBukkitWorld().getWorldFolder(), "WorldManager.json"));
+        System.out.println("Loading world '" + name + "' with the data: §6" + this.getLastBackupPath());
     }
 
     public WorldManager getWorldManager() {
@@ -46,12 +47,12 @@ public class SWorld {
     }
 
     public String getLastBackupPath(){
-        return this.cfg.contains("last_backups") ? this.cfg.getString("last_backup") : "N/A";
+        return this.cfg.contains("last_backup") ? this.cfg.getString("last_backup") : "N/A";
     }
 
     public String getLastBackupTime(){
         if(this.getLastBackupPath().endsWith(".zip")){
-            String fileName = this.getLastBackupPath().replace("_backup.zip", "");
+            String fileName = new File(this.getLastBackupPath()).getName().replace("_backup.zip", "");
             String time = fileName.substring(fileName.lastIndexOf('-'));
             TemporalAccessor date = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm.ss").parse(time);
             return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(date);
@@ -63,17 +64,17 @@ public class SWorld {
     public boolean backup(){
         File worldFolder = this.getBukkitWorld().getWorldFolder();
         if(worldFolder.exists()){
-            File backupsFolder = this.backupsFolder;
-            if(!backupsFolder.exists()) backupsFolder.mkdirs();
+            File backupsFolder = Utils.folder(this.backupsFolder);
             String time = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm.ss").format(LocalDateTime.now());
             String fileName = String.format("%s-%s_backup.zip", worldFolder.getName(), time);
-            String lastBackup = this.cfg.contains("last_backup") ? this.cfg.getString("last_backup") : null;
             try{
-                this.cfg.set("last_backup", new File(backupsFolder, fileName).getPath());
                 File file = ZipUtils.zipFiles(backupsFolder, fileName, worldFolder);
-                return file.exists();
+                if(file.exists()){
+                    this.cfg.set("last_backup", file.getPath());
+                    this.cfg.reload();
+                    return true;
+                }
             }catch (Exception e){
-                this.cfg.set("last_backup", lastBackup);
                 this.worldManager.getPlugin().addError(e);
                 this.worldManager.log("&cFailed to backup world '" + this.getName() + "'", true);
                 e.printStackTrace();
