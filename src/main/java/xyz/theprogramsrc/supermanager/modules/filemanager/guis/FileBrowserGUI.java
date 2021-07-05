@@ -1,21 +1,23 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.guis;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.stream.Collectors;
+
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils;
+
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
-import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors.YMLEditor;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
 
 public class FileBrowserGUI extends BrowserGUI<File> {
 
@@ -31,9 +33,22 @@ public class FileBrowserGUI extends BrowserGUI<File> {
 
     @Override
     public File[] getObjects() {
-        File[] files = this.file.listFiles();
-        if(files == null) files = new File[0];
-        return Arrays.stream(files).filter(Utils::nonNull).sorted((f1, f2) -> (f2.isDirectory() ? 1 : 0) - (f1.isDirectory() ? 1 : 0)).toArray(File[]::new);
+        File[] listFiles = this.file.listFiles();
+        if(listFiles == null) listFiles = new File[0];
+        LinkedList<File> files = new LinkedList<File>();
+        LinkedList<File> folders = new LinkedList<File>();
+        Arrays.stream(listFiles).forEach(f-> {
+            if(f.isDirectory()){
+                folders.add(f);
+            }else{
+                files.add(f);
+            }
+        });
+
+        LinkedList<File> result = new LinkedList<>();
+        result.addAll(folders.stream().sorted((f1, f2) -> f1.getName().hashCode() - f2.getName().hashCode()).collect(Collectors.toList()));
+        result.addAll(files.stream().sorted((f1, f2) -> f1.getName().hashCode() - f2.getName().hashCode()).collect(Collectors.toList()));
+        return result.toArray(new File[0]);
     }
 
     @Override

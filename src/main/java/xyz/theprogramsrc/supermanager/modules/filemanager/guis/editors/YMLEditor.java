@@ -1,5 +1,9 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors;
 
+import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
@@ -13,10 +17,6 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.filemanager.objects.YMLField;
-
-import java.io.File;
-import java.util.LinkedHashMap;
-import java.util.List;
 
 public class YMLEditor extends BrowserGUI<YMLField> {
 
@@ -35,7 +35,7 @@ public class YMLEditor extends BrowserGUI<YMLField> {
 
     @Override
     public YMLField[] getObjects() {
-        return this.cfg.getKeys(true).stream().map(path -> new YMLField(this.file, path)).toArray(YMLField[]::new);
+        return this.cfg.getKeys(true).stream().map(path -> new YMLField(this.file, path)).sorted((f1, f2) -> (f2.isEditable() ? 1 : 0) - (f1.isEditable() ? 1 : 0)).toArray(YMLField[]::new);
     }
 
     @Override
@@ -170,7 +170,7 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     }.addPlaceholder("{CurrentValue}", n+"").setRecall(p-> this.open());
                 }
             });
-        }else if(ymlField.get() instanceof List<?> && isStringList(ymlField.asList())){
+        }else if(ymlField.isStringList()){
             List<String> list = ymlField.asStringList();
             if(!this.currentLine.containsKey(ymlField.getPath())){
                 this.currentLine.put(ymlField.getPath(), 0);
@@ -280,8 +280,4 @@ public class YMLEditor extends BrowserGUI<YMLField> {
         return L.FILE_MANAGER_YML_EDITOR_TITLE.options().placeholder("{FileName}", this.file.getName()).get();
     }
 
-    private boolean isStringList(List<?> list){
-        if(!list.isEmpty()) return list.get(0) instanceof String;
-        return false;
-    }
 }

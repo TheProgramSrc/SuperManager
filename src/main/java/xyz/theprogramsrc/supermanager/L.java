@@ -1,12 +1,12 @@
 package xyz.theprogramsrc.supermanager;
 
-import xyz.theprogramsrc.supercoreapi.global.translations.Translation;
-import xyz.theprogramsrc.supercoreapi.global.translations.TranslationManager;
-import xyz.theprogramsrc.supercoreapi.global.translations.TranslationPack;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import xyz.theprogramsrc.supercoreapi.global.translations.Translation;
+import xyz.theprogramsrc.supercoreapi.global.translations.TranslationManager;
+import xyz.theprogramsrc.supercoreapi.global.translations.TranslationPack;
 
 public enum L implements TranslationPack {
 
@@ -282,6 +282,24 @@ public enum L implements TranslationPack {
     WORLD_MANAGER_WORLD_VIEW_GUI_CREATE_BACKUP_LORE_CREATE("GUI.Modules.WorldManager.WorldView.CreateBackup.Create","&7Click to create a Backup"),
     WORLD_MANAGER_WORLD_VIEW_GUI_CREATE_BACKUP_LORE_LAST_TIME("GUI.Modules.WorldManager.WorldView.CreateBackup.LastBackupTime","&7Last Backup At: &9{LastBackupAt}"),
     WORLD_MANAGER_WORLD_VIEW_GUI_CREATE_BACKUP_LORE_LAST_PATH("GUI.Modules.WorldManager.WorldView.CreateBackup.LastBackupPath","&7Last Backup Path: &9{LastBackupPath}"),
+
+    /* Backup Manager */
+    BACKUP_MANAGER_DISPLAY("GUI.Modules.BackupManager.Display","Backup Manager"),
+    BACKUP_MANAGER_NAME("GUI.Modules.BackupManager.Name","&aBackup Manager"),
+    BACKUP_MANAGER_LORE("GUI.Modules.BackupManager.Lore","&7Click to manage backups"),
+
+    BACKUP_MANAGER_BROWSER_TITLE("GUI.Modules.BackupManager.BackupBrowser.Title", "&aBackup Browser"),
+    BACKUP_MANAGER_BROWSER_ITEM_NAME("GUI.Modules.BackupManager.BackupBrowser.Item.Name", "&a{BackupFileName}"),
+    BACKUP_MANAGER_BROWSER_ITEM_RENAME("GUI.Modules.BackupManager.BackupBrowser.Item.Rename", "&7Click to Rename"),
+    BACKUP_MANAGER_BROWSER_ITEM_CREATED_AT("GUI.Modules.BackupManager.BackupBrowser.Item.CreatedAt", "&7Created At: &9{CreatedAt}"),
+    BACKUP_MANAGER_BROWSER_ITEM_PATH("GUI.Modules.BackupManager.BackupBrowser.Item.Path", "&7Path: &9{BackupPath}"),
+    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_NAME("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Name", "&aBackups Folder"),
+    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_LORE("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Lore", "&7Click to modify the backups folder."),
+    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_PATH("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Path", "&7Current Path: &9{BackupsFolderPath}"),
+
+    // TODO: Add settings item like in chatchannels and add button for scheduled backups
+
+
     ;
 
     private TranslationManager translationManager;

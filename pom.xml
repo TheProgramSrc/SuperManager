@@ -45,7 +45,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>xyz.theprogramsrc.supercoreapi</pattern>
-                                    <shadedPattern>xyz.theprogramsrc.supermanager.supercoreapi</shadedPattern>
+                                    <shadedPattern>xyz.theprogramsrc.supermanager.libs.supercoreapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -131,21 +131,21 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.16.5-R0.1-20210407.051511-11</version>
+            <version>1.16.5-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- BUNGEE -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.16-R0.4-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- PlaceholderAPI -->

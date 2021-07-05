@@ -1,5 +1,10 @@
 package xyz.theprogramsrc.supermanager;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+
 import xyz.theprogramsrc.supercoreapi.global.storage.DataBase;
 import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
@@ -14,11 +19,6 @@ import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplac
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
 import xyz.theprogramsrc.supermanager.modules.worldmanager.WorldManager;
 import xyz.theprogramsrc.supermanager.objects.Module;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
 
 public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 

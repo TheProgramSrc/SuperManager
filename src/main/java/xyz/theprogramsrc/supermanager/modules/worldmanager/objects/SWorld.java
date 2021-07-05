@@ -53,7 +53,7 @@ public class SWorld {
     public String getLastBackupTime(){
         if(this.getLastBackupPath().endsWith(".zip")){
             String fileName = new File(this.getLastBackupPath()).getName().replace("_backup.zip", "");
-            String time = fileName.substring(fileName.lastIndexOf('-'));
+            String time = fileName.substring(fileName.lastIndexOf('-')+1);
             TemporalAccessor date = DateTimeFormatter.ofPattern("dd.MM.yyyy-HH.mm.ss").parse(time);
             return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(date);
         }else{
