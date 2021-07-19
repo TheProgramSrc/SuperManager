@@ -4,15 +4,18 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.skintexture.SkinTexture;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserStorage;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 
+import java.util.*;
+
 public class PlayerListener extends SpigotModule {
 
+    public static final LinkedHashMap<UUID, UUID> following = new LinkedHashMap<>();
     private final UserStorage userStorage;
 
     public PlayerListener(UserStorage userStorage){
@@ -27,15 +30,17 @@ public class PlayerListener extends SpigotModule {
                     });
                 }
     
-                for(User user : this.userStorage.get()){
-                    if(!user.hasSkin() && user.isOnline()){
-                        SkinTexture skin = null;
-                        try {
-                            skin = this.spigotPlugin.getSkinManager().getSkin(user.getPlayer());
-                        }catch(Exception ignored){}
-                        if(skin != null){
-                            user.setSkinTexture(skin);
-                            userStorage.save(user);
+                if(Utils.isConnected()){
+                    for(User user : this.userStorage.get()){
+                        if(!user.hasSkin() && user.isOnline()){
+                            SkinTexture skin = null;
+                            try {
+                                skin = this.spigotPlugin.getSkinManager().getSkin(user.getPlayer());
+                            }catch(Exception ignored){}
+                            if(skin != null){
+                                user.setSkinTexture(skin);
+                                userStorage.save(user);
+                            }
                         }
                     }
                 }

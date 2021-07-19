@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.*;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.skintexture.SkinTexture;
+import xyz.theprogramsrc.supermanager.SuperManager;
 
 import java.util.LinkedHashMap;
 import java.util.UUID;
@@ -16,6 +17,7 @@ public class User {
     private final String name;
     private SkinTexture skinTexture;
     private final LinkedHashMap<String, Object> data;
+    private final SuperManager plugin;
 
     public User(UUID uuid, String name) {
         this(uuid, name, null);
@@ -26,6 +28,7 @@ public class User {
         this.name = name;
         this.skinTexture = skinTexture;
         this.data = new LinkedHashMap<>();
+        this.plugin = SuperManager.i;
     }
 
     public boolean getDataAsBoolean(String key){
@@ -156,6 +159,13 @@ public class User {
         });
         json.add("data", data);
         return json.toString();
+    }
+
+    public void sendMessage(String message, Object... replacements){
+        if(this.isOnline()){
+            String msg = String.format(message, replacements);
+            this.plugin.getSuperUtils().sendMessage(this.getPlayer(), msg);
+        }
     }
 
     public static User fromJSON(String data){

@@ -289,15 +289,30 @@ public enum L implements TranslationPack {
     BACKUP_MANAGER_LORE("GUI.Modules.BackupManager.Lore","&7Click to manage backups"),
 
     BACKUP_MANAGER_BROWSER_TITLE("GUI.Modules.BackupManager.BackupBrowser.Title", "&aBackup Browser"),
-    BACKUP_MANAGER_BROWSER_ITEM_NAME("GUI.Modules.BackupManager.BackupBrowser.Item.Name", "&a{BackupFileName}"),
-    BACKUP_MANAGER_BROWSER_ITEM_RENAME("GUI.Modules.BackupManager.BackupBrowser.Item.Rename", "&7Click to Rename"),
-    BACKUP_MANAGER_BROWSER_ITEM_CREATED_AT("GUI.Modules.BackupManager.BackupBrowser.Item.CreatedAt", "&7Created At: &9{CreatedAt}"),
+    BACKUP_MANAGER_BROWSER_ITEM_NAME("GUI.Modules.BackupManager.BackupBrowser.Item.Name", "&a{BackupName}"),
+    BACKUP_MANAGER_BROWSER_ITEM_DELETE("GUI.Modules.BackupManager.BackupBrowser.Item.Rename", "Delete Backup"),
+    BACKUP_MANAGER_BROWSER_ITEM_LAST_BACKUP_AT("GUI.Modules.BackupManager.BackupBrowser.Item.LastBackupAt", "&7Last Backup At: &9{LastBackupAt}"),
+    BACKUP_MANAGER_BROWSER_ITEM_NEXT_BACKUP_AT("GUI.Modules.BackupManager.BackupBrowser.Item.NextBackupAt", "&7Next Backup At: &9{NextBackupAt}"),
     BACKUP_MANAGER_BROWSER_ITEM_PATH("GUI.Modules.BackupManager.BackupBrowser.Item.Path", "&7Path: &9{BackupPath}"),
-    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_NAME("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Name", "&aBackups Folder"),
-    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_LORE("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Lore", "&7Click to modify the backups folder."),
-    BACKUP_MANAGER_BROWSER_BACKUPS_FOLDER_PATH("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Path", "&7Current Path: &9{BackupsFolderPath}"),
 
-    // TODO: Add settings item like in chatchannels and add button for scheduled backups
+    BACKUP_MANAGER_BROWSER_SETTINGS_NAME("GUI.Modules.BackupManager.BackupBrowser.Settings.Name", "&aSettings"),
+    BACKUP_MANAGER_BROWSER_SETTINGS_LORE("GUI.Modules.BackupManager.BackupBrowser.Settings.Lore", "&7Click to manage settings"),
+
+    BACKUP_MANAGER_SETTINGS_TITLE("GUI.Modules.BackupManager.Settings.Title","&aBackups &7> &cSettings"),
+
+    BACKUP_MANAGER_SETTINGS_BACKUPS_FOLDER_NAME("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Name", "&aBackups Folder"),
+    BACKUP_MANAGER_SETTINGS_BACKUPS_FOLDER_LORE("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Lore", "&7Click to modify the backups folder."),
+    BACKUP_MANAGER_SETTINGS_BACKUPS_FOLDER_PATH("GUI.Modules.BackupManager.BackupBrowser.BackupsFolder.Path", "&7Current Path: &9{BackupsFolderPath}"),
+
+    BACKUP_MANAGER_SETTINGS_SCHEDULE_NAME("GUI.Modules.BackupManager.Settings.Schedule.Name","&aNew Scheduled Backup"),
+    BACKUP_MANAGER_SETTINGS_SCHEDULE_LORE("GUI.Modules.BackupManager.Settings.Schedule.Lore","&7Click to schedule a new backup"),
+
+    BACKUP_MANAGER_SCHEDULE_TITLE("GUI-Modules.BackupManager.Schedule.Title", "&aBackups &7> &cSchedule"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_NAME("GUI-Modules.BackupManager.Schedule.SelectFiles.Name", "&aSelect Files/Folders"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_LORE("GUI-Modules.BackupManager.Schedule.SelectFiles.Lore", "&7Click to select the &6Files/Folders&7 to backup."),
+
+    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_NAME("GUI-Modules.BackupManager.Schedule.SelectTime.Name", "&aSelect Name"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_LORE("GUI-Modules.BackupManager.Schedule.SelectTime.Lore", "&7Click to select the backup time."),
 
 
     ;
