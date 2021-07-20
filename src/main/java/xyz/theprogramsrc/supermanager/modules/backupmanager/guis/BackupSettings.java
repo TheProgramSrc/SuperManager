@@ -2,17 +2,16 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager.guis;
 
 import org.bukkit.entity.Player;
 
-import xyz.theprogramsrc.supercoreapi.Recall;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
 import xyz.theprogramsrc.supermanager.L;
 
 public class BackupSettings extends GUI {
 
-    private Recall<ClickAction> onBack;
-    public BackupSettings(Player player, Recall<ClickAction> onBack) {
+    private Runnable onBack;
+
+    public BackupSettings(Player player, Runnable onBack) {
         super(player);
         this.onBack = onBack;
         this.open();
@@ -31,7 +30,7 @@ public class BackupSettings extends GUI {
     @Override
     protected GUIButton[] getButtons() {
         return new GUIButton[]{
-            new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), this.onBack::run),
+            new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), a-> this.onBack.run())
         };
     }
     

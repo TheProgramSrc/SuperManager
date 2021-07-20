@@ -11,8 +11,11 @@ import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supercoreapi.global.objects.RecurringTask;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.guis.MainGUI;
+import xyz.theprogramsrc.supermanager.modules.backupmanager.guis.BackupBrowser;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.objects.Backup;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
@@ -51,7 +54,7 @@ public class BackupManager extends Module{
     @Override
     public SimpleItem getDisplayItem() {
         return new SimpleItem(XMaterial.ENDER_CHEST)
-            .setDisplayName("&a" + L.BACKUP_MANAGER_NAME)
+            .setDisplayName("&5" + L.BACKUP_MANAGER_NAME)
             .setLore(
                 "&7",
                 "&7" + L.BACKUP_MANAGER_LORE
@@ -60,7 +63,12 @@ public class BackupManager extends Module{
 
     @Override
     public void onAction(Player player) {
-        
+        new BackupBrowser(player){
+            @Override
+            public void onBack(ClickAction clickAction) {
+                new MainGUI(clickAction.getPlayer());
+            }
+        };
     }
 
   

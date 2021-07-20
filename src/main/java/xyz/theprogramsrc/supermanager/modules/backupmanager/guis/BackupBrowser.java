@@ -1,12 +1,12 @@
 package xyz.theprogramsrc.supermanager.modules.backupmanager.guis;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.List;
+import java.util.LinkedList;
 
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
@@ -23,6 +23,7 @@ public class BackupBrowser extends BrowserGUI<Backup> {
 
     public BackupBrowser(Player player) {
         super(player);
+        this.backEnabled = true;
         this.backupManager = BackupManager.i;
         this.formatter = DateTimeFormatter.ofPattern(this.backupManager.backupStorage.getDateFormatter());
         this.open();
@@ -30,16 +31,14 @@ public class BackupBrowser extends BrowserGUI<Backup> {
 
     @Override
     protected GUIButton[] getButtons() {
-        List<GUIButton> list = Arrays.asList(super.getButtons());
+        LinkedList<GUIButton> list = new LinkedList<>(Utils.toList(super.getButtons()));
         SimpleItem settingsItem = new SimpleItem(XMaterial.COMMAND_BLOCK)
             .setDisplayName("&c" + L.BACKUP_MANAGER_BROWSER_SETTINGS_NAME)
             .setLore(
                 "&7",
                 "&7" + L.BACKUP_MANAGER_BROWSER_SETTINGS_LORE
             );
-        list.add(new GUIButton(47, settingsItem, a-> new BackupSettings(a.getPlayer(), a2-> {
-            this.open();
-        })));
+        list.add(new GUIButton(47, settingsItem, a-> new BackupSettings(a.getPlayer(), this::open)));
         return list.toArray(new GUIButton[0]);
     }
 

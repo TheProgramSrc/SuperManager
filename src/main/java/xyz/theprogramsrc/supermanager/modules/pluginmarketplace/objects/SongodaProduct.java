@@ -1,9 +1,13 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
+
 import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.networking.CustomConnection;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
@@ -13,9 +17,6 @@ import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.utils.PluginUtils;
-
-import java.io.File;
-import java.io.IOException;
 
 public class SongodaProduct {
 
@@ -74,6 +75,14 @@ public class SongodaProduct {
 
     public String getPaymentMethod() {
         return paymentMethod;
+    }
+
+    public boolean isFree(){
+        return this.getPaymentMethod() == "None" || this.getPrice() == "0.0";
+    }
+
+    public boolean isSongodaPlus(){
+        return this.getPaymentMethod() == "Songoda+" || (this.getOwner() == "Songoda" && this.getPrice() == "0.1");
     }
 
     public int getId() {
