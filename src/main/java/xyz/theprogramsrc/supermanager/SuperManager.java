@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 import xyz.theprogramsrc.supercoreapi.global.storage.DataBase;
 import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
@@ -116,6 +117,23 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     public LinkedList<Module> getEnabledModules(){
         return new LinkedList<>(this.enabledModules.values());
+    }
+
+    // Utils
+    public static long getTimeSecondsFromString(String string) {
+        return Arrays.stream(string.split(" ")).mapToLong(s -> getTimeFromWord(s)).sum();
+    }
+
+    private static long getTimeFromWord(String word) {
+        if (word.length() < 2) return 0L;
+        String timeUnitString = word.toCharArray()[word.length() - 1] + "";
+        TimeUnit timeUnit = Arrays.stream(new TimeUnit[] { TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS }).filter((t) -> t.toString().toLowerCase().startsWith(timeUnitString)).findFirst().orElse(null);
+        if(timeUnit == null) return 0L;
+        try{
+            return timeUnit == null ? 0L : timeUnit.toSeconds((long) Integer.parseInt(word.substring(0, word.length() - 1)));
+        }catch(NumberFormatException e){
+            return 0L;
+        }
     }
 
 }

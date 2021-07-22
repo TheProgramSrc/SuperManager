@@ -121,20 +121,6 @@
     </repositories>
 
     <dependencies>
-        <!-- SuperCoreAPI -->
-        <dependency>
-            <groupId>xyz.theprogramsrc</groupId>
-            <artifactId>SuperCoreAPI</artifactId>
-            <version>5.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- NMS -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
@@ -148,6 +134,13 @@
             <artifactId>bungeecord-api</artifactId>
             <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- SuperCoreAPI -->
+        <dependency>
+            <groupId>xyz.theprogramsrc</groupId>
+            <artifactId>SuperCoreAPI</artifactId>
+            <version>5.0.1-SNAPSHOT</version>
+            <scope>compile</scope>
         </dependency>
         <!-- PlaceholderAPI -->
         <dependency>

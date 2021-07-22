@@ -1,5 +1,6 @@
 package xyz.theprogramsrc.supermanager.modules.backupmanager;
 
+import java.io.File;
 import java.sql.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.objects.Backup;
 
@@ -17,6 +19,15 @@ public class BackupStorage extends SpigotModule {
     public BackupStorage(YMLConfig cfg){
         this.cfg = cfg;
         this.cfg.add("DateFormatter", "dd/MM/yyyy HH:mm:ss");
+        this.cfg.add("BackupsFolder", new File("BackupManager/Backups/").getAbsolutePath());
+    }
+
+    public File getBackupsFolder() {
+        return Utils.folder(new File(this.cfg.getString("BackupsFolder")));
+    }
+
+    public void setBackupsFolder(String path){
+        this.cfg.set("BackupsFolder", Utils.folder(new File(path)).getAbsolutePath());
     }
 
     public String getDateFormatter(){
