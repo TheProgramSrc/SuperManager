@@ -4,7 +4,6 @@ import java.io.File;
 import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -70,15 +69,6 @@ public class BackupManager extends Module{
                 new MainGUI(clickAction.getPlayer());
             }
         };
-    }
-
-    public void createBackup(long timeBetweenBackups, LinkedList<String> files){
-        UUID uuid = UUID.randomUUID();
-        String path = new File(this.backupStorage.getBackupsFolder(), uuid + "-" + "DATE").getAbsolutePath();
-        Instant now = Instant.now();
-        Backup backup = new Backup(uuid, uuid.toString(), path, files, Integer.parseInt((timeBetweenBackups/1000) + ""), Date.from(now), Date.from(now));
-        this.backupStorage.save(backup);
-        backup.backup();
     }
   
 }
