@@ -2,6 +2,8 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager.guis;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -9,6 +11,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
+import xyz.theprogramsrc.supercoreapi.global.utils.StringUtils;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
@@ -18,6 +21,8 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.SuperManager;
+import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
+import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupStorage;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.objects.Backup;
 
 public class BackupFileBrowser extends BrowserGUI<File>{
@@ -84,11 +89,40 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                     atomicSeconds.set(seconds);
                     return true;
                 }
-            }.setRecall(p-> { 
-                // First we turn the seconds into millis
-                long millis = atomicSeconds.get() * 1000L;
-                // Now we create a backup object
-                Backup backup = new Backup(UUID.randomUUID().toString(), currentFolder.getName(), millis);
+            }.setRecall(player-> { 
+                // We let know to the player that we initialized the backup creation
+                this.getSuperUtils().sendMessage(player, "&aCreating new backup. This may take a while.");
+                // We retrieve the time in seconds
+                long seconds = atomicSeconds.get();
+                // Get the current date using calendar
+                Calendar calendar = Calendar.getInstance();
+                // Parse into date
+                Date now = calendar.getTime();
+                // Generate UUID
+                UUID uuid = UUID.randomUUID();
+                // Get backup storage
+                BackupStorage backupStorage = BackupManager.i.backupStorage;
+
+                // Create backup file name
+                String backupFileName = new StringUtils(backupStorage.getBackupFileName())
+                    .placeholder("{UUID}", uuid.toString())
+                    .placeholder("{Day}", calendar.get(Calendar.DAY_OF_MONTH)+"")
+                    .placeholder("{Month}", calendar.get(Calendar.MONTH)+"")
+                    .placeholder("{Year}", calendar.get(Calendar.YEAR)+"")
+                    .placeholder("{Hour}", calendar.get(Calendar.HOUR_OF_DAY)+"")
+                    .placeholder("{Minute}", calendar.get(Calendar.MINUTE)+"")
+                    .placeholder("{Second}", calendar.get(Calendar.SECOND)+"")
+                    .get();
+                // Create backup file
+                File backupFile = new File(backupStorage.getBackupsFolder(), backupFileName);
+                // Create backup
+                Backup backup = new Backup(uuid, uuid.toString(), backupFile.getAbsolutePath(), this.filesToBackup, seconds, now, now);
+                // Add backup to storage
+                backupStorage.save(backup);
+                // Notify player
+                this.getSuperUtils().sendMessage(a.getPlayer(), "&aBackup created! Now we will backup the data! This may take a while.");
+                // Generate new backup
+                backup.backup(player);
             });
         }));
 

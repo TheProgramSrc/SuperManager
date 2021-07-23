@@ -10,6 +10,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import org.bukkit.command.CommandSender;
+
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.global.utils.files.ZipUtils;
 import xyz.theprogramsrc.supermanager.SuperManager;
@@ -20,10 +22,10 @@ public class Backup {
     private final UUID uuid;
     private String name, backupPath;
     private final LinkedList<String> paths;
-    private int timeBetweenBackups;
+    private long timeBetweenBackups;
     private Date lastBackup, nextBackup;
 
-    public Backup(UUID uuid, String name, String backupPath, LinkedList<String> paths, int timeBetweenBackups, Date lastBackup, Date nextBackup) {
+    public Backup(UUID uuid, String name, String backupPath, LinkedList<String> paths, long timeBetweenBackups, Date lastBackup, Date nextBackup) {
         this.uuid = uuid;
         this.name = name;
         this.backupPath = backupPath;
@@ -56,7 +58,7 @@ public class Backup {
         return this.nextBackup;
     }
 
-    public int getTimeBetweenBackups() {
+    public long getTimeBetweenBackups() {
         return this.timeBetweenBackups;
     }
 
@@ -64,7 +66,7 @@ public class Backup {
         return this.paths;
     }
 
-    public void backup() {
+    public void backup(CommandSender sender) {
         SuperManager.i.getSpigotTasks().runAsyncTask(() -> {
             try{
                 Instant instant = Instant.now();
@@ -77,8 +79,12 @@ public class Backup {
                     this.nextBackup = Date.from(LocalDateTime.from(date.toInstant()).plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant());
                     this.lastBackup = date;
                     BackupManager.i.backupStorage.save(this);
+                    if(sender != null) sender.sendMessage(Utils.ct("&aSuccessfully backed up " + this.paths.size() + " files. Next backup at &c" + this.nextBackup.toString() + "&a."));
+                }else{
+                    if(sender != null) sender.sendMessage(Utils.ct("&cAn error occured while backing up your files! Please check the console for more information."));
                 }
             }catch(Exception e){
+                if(sender != null) sender.sendMessage(Utils.ct("&cAn error occured while backing up your files! Please check the console for more information."));
                 BackupManager.i.log("&cFailed to execute backup '" + this.getUuid() + "':", true);
                 BackupManager.i.getPlugin().addError(e);
                 e.printStackTrace();

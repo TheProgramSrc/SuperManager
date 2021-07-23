@@ -20,6 +20,20 @@ public class BackupStorage extends SpigotModule {
         this.cfg = cfg;
         this.cfg.add("DateFormatter", "dd/MM/yyyy HH:mm:ss");
         this.cfg.add("BackupsFolder", new File("BackupManager/Backups/").getAbsolutePath());
+        this.cfg.add("BackupFileName", "Backup-{UUID}-{Day}.{Month}.{Year}_{Hour}.{Minute}.{Second}");
+
+        this.cfg.addComment("DateFormatter", "This is the format of the date that will be shown in the in-game gui.");
+        this.cfg.addComment("BackupsFolder", "This is the folder where the backups will be located.");
+        this.cfg.addComment("BackupFileName", "Format of the backup file name. The .zip extension is added automatically.");
+    }
+
+    public String getBackupFileName(){
+        String name = this.cfg.getString("BackupFileName");
+        // Check if the name ends with .zip, if it doesn't then add it, if it does then do nothing
+        if(!name.endsWith(".zip")){
+            name += ".zip";
+        }
+        return name;
     }
 
     public File getBackupsFolder() {
@@ -55,7 +69,7 @@ public class BackupStorage extends SpigotModule {
             String path = "Backups." + uuid.toString();
             if(!this.cfg.contains(path + ".Paths")) return null;
             List<String> paths = this.cfg.getStringList(path + ".Paths");
-            int timeBetweenBackups = this.cfg.getInt(path + ".TimeBetweenBackups");
+            long timeBetweenBackups = this.cfg.getLong(path + ".TimeBetweenBackups");
             Date lastBackup = Date.valueOf(this.cfg.getString(path + ".LastBackup"));
             Date nextBackup = Date.valueOf(this.cfg.getString(path + ".NextBackup"));
             String name = this.cfg.getString(path + ".Name");

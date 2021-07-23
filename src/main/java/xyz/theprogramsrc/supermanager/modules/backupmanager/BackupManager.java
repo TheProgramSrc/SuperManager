@@ -35,7 +35,7 @@ public class BackupManager extends Module{
             RecurringTask task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 20L, () -> {
                 Date now = Date.from(Instant.now());
                 if(backup.getNextBackup().after(now)){
-                    backup.backup();
+                    backup.backup(null);
                 }
             });
             this.SCHEDULED_BACKUPS.put(backup.getUuid(), task);
