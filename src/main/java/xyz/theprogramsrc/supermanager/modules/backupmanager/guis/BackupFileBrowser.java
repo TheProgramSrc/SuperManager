@@ -1,9 +1,9 @@
 package xyz.theprogramsrc.supermanager.modules.backupmanager.guis;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
@@ -20,6 +20,7 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
+import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupStorage;
@@ -42,22 +43,21 @@ public class BackupFileBrowser extends BrowserGUI<File>{
     protected GUIButton[] getButtons() {
         LinkedList<GUIButton> buttons = new LinkedList<>(Utils.toList(super.getButtons()));
         SimpleItem item = new SimpleItem(XMaterial.EMERALD)
-            .setDisplayName("&aSave")
+            .setDisplayName("&a" + L.BACKUP_MANAGER_FILE_BROWSER_SAVE_NAME)
             .setLore(
                 "&7",
-                "&7Save the selected files (" + this.filesToBackup.size() + ")"
-            );
+                "&7" + L.BACKUP_MANAGER_FILE_BROWSER_SAVE_LORE
+            ).addPlaceholder("{SelectedFilesAmount}", this.filesToBackup.size()+"");
         buttons.add(new GUIButton(47, item, a-> {
             this.getSpigotTasks().runAsyncTask(() -> {
-                String[] msg = new String[]{
-                    "&6Available Format >> &7Amount&8TimeUnit&6 << Examples:",
-                    "&7- &c1s -> 1 Second",
-                    "&7- &c1m -> 1 Minute",
-                    "&7- &c1h -> 1 Hour",
-                    "&7- &c1d -> 1 Day",
+                L[] msg = new L[]{
+                    L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS,
+                    L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS_SECOND,
+                    L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS_MINUTE,
+                    L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS_HOUR
                 };
-                for(String s : msg){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), s);
+                for(L l : msg){
+                    this.getSuperUtils().sendMessage(a.getPlayer(), l.toString());
                 }
             });
 
@@ -66,24 +66,24 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 
                 @Override
                 public String getTitle(){
-                    return "&eSchedule Backup";
+                    return L.BACKUP_MANAGER_SCHEDULE_BACKUP_TITLE.toString();
                 }
 
                 @Override
                 public String getSubtitle(){
-                    return "&7Write the time between backups.";
+                    return L.BACKUP_MANAGER_SCHEDULE_BACKUP_SUBTITLE.toString();
                 }
 
                 @Override
                 public String getActionbar(){
-                    return "&cMake sure to use the given format";
+                    return L.BACKUP_MANAGER_SCHEDULE_BACKUP_ACTIONBAR.toString();
                 }
 
                 @Override
                 public boolean onResult(String input){
                     long seconds = SuperManager.getTimeSecondsFromString(input);
                     if(seconds == 0L){
-                        this.getSuperUtils().sendMessage(a.getPlayer(), "&cInvalid time format.");
+                        this.getSuperUtils().sendMessage(a.getPlayer(), L.INVALID_TIME_FORMAT.toString());
                         return false;
                     }
                     atomicSeconds.set(seconds);
@@ -91,13 +91,13 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 }
             }.setRecall(player-> { 
                 // We let know to the player that we initialized the backup creation
-                this.getSuperUtils().sendMessage(player, "&aCreating new backup. This may take a while.");
+                this.getSuperUtils().sendMessage(player, L.BACKUP_MANAGER_CREATING_BACKUP.toString());
                 // We retrieve the time in seconds
                 long seconds = atomicSeconds.get();
                 // Get the current date using calendar
                 Calendar calendar = Calendar.getInstance();
                 // Parse into date
-                Date now = calendar.getTime();
+                Instant now = calendar.getTime().toInstant();
                 // Generate UUID
                 UUID uuid = UUID.randomUUID();
                 // Get backup storage
@@ -105,6 +105,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
 
                 // Create backup file name
                 String backupFileName = new StringUtils(backupStorage.getBackupFileName())
+                    .placeholder("{Name}", uuid.toString())
                     .placeholder("{UUID}", uuid.toString())
                     .placeholder("{Day}", calendar.get(Calendar.DAY_OF_MONTH)+"")
                     .placeholder("{Month}", calendar.get(Calendar.MONTH)+"")
@@ -120,7 +121,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 // Add backup to storage
                 backupStorage.save(backup);
                 // Notify player
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&aBackup created! Now we will backup the data! This may take a while.");
+                this.getSuperUtils().sendMessage(a.getPlayer(), L.BACKUP_MANAGER_BACKUP_CREATED.toString());
                 // Generate new backup
                 backup.backup(player);
             });
@@ -132,15 +133,16 @@ public class BackupFileBrowser extends BrowserGUI<File>{
     @Override
     public GUIButton getButton(File file) {
         SimpleItem item = new SimpleItem(file.isDirectory() ? XMaterial.CHEST : XMaterial.PAPER)
-            .setDisplayName("&a" + file.getName())
+            .setDisplayName("&a" + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_NAME)
             .setLore(
                 "&7",
-                this.filesToBackup.contains(file.getAbsolutePath()) ? "&9Left Click&c Remove&7 from the backup list" : "&9Left Click&a Add&7 to the list"
+                "&9" + Base.LEFT_CLICK + "&7 " + (!this.filesToBackup.contains(file.getAbsolutePath()) ? L.BACKUP_MANAGER_FILE_BROWSER_ITEM_ADD_TO_LIST : L.BACKUP_MANAGER_FILE_BROWSER_ITEM_REMOVE_FROM_LIST)
             );
         
         if(file.isDirectory()){
-            item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 Open Folder");
+            item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_OPEN_FOLDER);
         }
+        item.addPlaceholder("{FileName}", file.getName());
 
         return new GUIButton(item, a-> {
             if(file.isDirectory() && a.getAction() == ClickType.RIGHT_CLICK){
@@ -170,7 +172,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
 
     @Override
     protected String getTitle() {
-        return "&9Backups &7> &cSelect files";
+        return L.BACKUP_MANAGER_FILE_BROWSER_TITLE.toString();
     }
     
 }

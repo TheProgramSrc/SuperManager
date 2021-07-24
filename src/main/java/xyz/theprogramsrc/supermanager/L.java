@@ -31,6 +31,7 @@ public enum L implements TranslationPack {
     NO_CONNECTION("Messages.NoConnection","&cThere is no internet connection. Please try later"),
     TOKEN_WILL_NOT_BE_SHARED("Messages.TokenWillNotBeShared","&aDon't worry, your token will only be available in the config file and we won't share it to anyone."),
     TOKEN_SAVED("Messages.TokenSaved","&aThe token was saved in the config."),
+    INVALID_TIME_FORMAT("Messages.InvalidTimeFormat","&cThe time format is invalid."),
 
     /* Plugin Manager - Main */
     PLUGIN_MANAGER_BROWSER_CACHE_RELOAD_REQUEST_SENT("Modules.PluginManager.ReloadCache", "&aCache reload request sent."),
@@ -91,39 +92,60 @@ public enum L implements TranslationPack {
     WORLD_MANAGER_BACKUP_FAILED("Modules.WorldManager.BackupCreationFailed","&cFailed to create backup. You'll find more info in the console"),
     WORLD_MANAGER_BACKUP_SUCCESS("Modules.WorldManager.BackupCreated","&aSuccessfully created and saved the backup to the path &b{Path}&a."),
 
+    /* BackupManager */
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS("Modules.BackupManager.TimeUnits.Available","&7Available time units: &6&l(SEPARATE THEM USING A SPACE ' ')"),
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS_SECOND("Modules.BackupManager.TimeUnits.Second", "&7- &c1s -> 1 Second"),
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS_MINUTE("Modules.BackupManager.TimeUnits.Minute", "&7- &c1m -> 1 Minute"),
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS_HOUR("Modules.BackupManager.TimeUnits.Hour", "&7- &c1h -> 1 Hour"),
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS_DAY("Modules.BackupManager.TimeUnits.Day", "&7- &c1d -> 1 Day"),
+    BACKUP_MANAGER_AVAILABLE_TIME_UNITS_EXAMPLE("Modules.BackupManager.TimeUnits.Example","&7Example: &6&l1s 4m 6h 4d"),
+    BACKUP_MANAGER_CREATING_BACKUP("Modules.BackupManager.CreatingBackup","&aCreating backup, please wait..."),
+    BACKUP_MANAGER_BACKUP_CREATED("Modules.BackupManager.BackupCreated","&aSuccessfully created and saved the backup! Now we will start the backup process. Please wait..."),
+    BACKUP_MANAGER_FAILED_TO_BACKUP_DATA("Modules.BackupManager.FailedToBackupData","&cFailed to backup the data! Please check the console for more info."),
+    BACKUP_MANAGER_SUCCESSFULLY_BACKED_UP_DATA("Modules.BackupManager.SuccessfullyBackedUpData","&aSuccessfully backed up &c{FilesAmount}&a files! The next backup will be created at &b{NextBackupAt}&a."),
+    BACKUP_MANAGER_BACKUP_IN_PROCESS("Modules.BackupManager.BackupInProcess","Backup in Process..."),
+
     /* Dialogs */
 
     DIALOG_TOKEN_INPUT_TITLE("Dialogs.EditToken.Title","&9Token"),
     DIALOG_TOKEN_INPUT_SUBTITLE("Dialogs.EditToken.Subtitle","&7Type in your Songoda token (You can create one here: http://songoda.com/account/api-tokens)"),
     DIALOG_TOKEN_INPUT_ACTIONBAR("Dialogs.EditToken.Actionbar","&aThis will let the plugin download premium products."),
 
-    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_TITLE("Dialogs.SendMessage.Title","&9Send Message"),
-    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_SUBTITLE("Dialogs.SendMessage.Subtitle","&7Send a message to &a{UserName}"),
-    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_ACTIONBAR("Dialogs.SendMessage.Actionbar","&aWrite a message in the chat to send to &7{UserName}"),
+    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_TITLE("Dialogs.UserManager.SendMessage.Title","&9Send Message"),
+    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_SUBTITLE("Dialogs.UserManager.SendMessage.Subtitle","&7Send a message to &a{UserName}"),
+    USER_MANAGER_EDITOR_SEND_MESSAGE_DIALOG_ACTIONBAR("Dialogs.UserManager.SendMessage.Actionbar","&aWrite a message in the chat to send to &7{UserName}"),
 
-    CHAT_CHANNELS_CREATOR_DIALOG_TITLE("Dialogs.CreateChatChannel.Title","&9Create Chat Channel"),
-    CHAT_CHANNELS_CREATOR_DIALOG_SUBTITLE("Dialogs.CreateChatChannel.Subtitle","&7Write the channel name"),
-    CHAT_CHANNELS_CREATOR_DIALOG_ACTIONBAR("Dialogs.CreateChatChannel.Actionbar","&aThis will be the name of the chat channel."),
+    CHAT_CHANNELS_CREATOR_DIALOG_TITLE("Dialogs.ChatChannels.CreateChatChannel.Title","&9Create Chat Channel"),
+    CHAT_CHANNELS_CREATOR_DIALOG_SUBTITLE("Dialogs.ChatChannels.CreateChatChannel.Subtitle","&7Write the channel name"),
+    CHAT_CHANNELS_CREATOR_DIALOG_ACTIONBAR("Dialogs.ChatChannels.CreateChatChannel.Actionbar","&aThis will be the name of the chat channel."),
 
-    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_TITLE("Dialogs.UpdateChatFormat.Title","&9Update Format"),
-    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_SUBTITLE("Dialogs.UpdateChatFormat.Subtitle","&7Write the new chat format"),
-    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_ACTIONBAR("Dialogs.ChatChannels_UpdateChatFormat.Actionbar","&7Current format: &r{ChatFormat}"),
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_TITLE("Dialogs.ChatChannels.UpdateChatFormat.Title","&9Update Format"),
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_SUBTITLE("Dialogs.ChatChannels.UpdateChatFormat.Subtitle","&7Write the new chat format"),
+    CHAT_CHANNELS_UPDATE_FORMAT_DIALOG_ACTIONBAR("Dialogs.ChatChannels.UpdateChatFormat.Actionbar","&7Current format: &r{ChatFormat}"),
 
-    FILE_MANAGER_SET_STRING_TITLE("Dialogs.FileManager_SetString.Title","&9Set String"),
-    FILE_MANAGER_SET_STRING_SUBTITLE("Dialogs.FileManager_SetString.Subtitle","&7Write the new value"),
-    FILE_MANAGER_SET_STRING_ACTIONBAR("Dialogs.FileManager_SetString.Actionbar","&aCurrent Value: &r{CurrentValue}"),
+    FILE_MANAGER_SET_STRING_TITLE("Dialogs.FileManager.SetString.Title","&9Set String"),
+    FILE_MANAGER_SET_STRING_SUBTITLE("Dialogs.FileManager.SetString.Subtitle","&7Write the new value"),
+    FILE_MANAGER_SET_STRING_ACTIONBAR("Dialogs.FileManager.SetString.Actionbar","&aCurrent Value: &r{CurrentValue}"),
 
-    FILE_MANAGER_SET_NUMBER_TITLE("Dialogs.FileManager_SetNumber.Title","&9Set Number"),
-    FILE_MANAGER_SET_NUMBER_SUBTITLE("Dialogs.FileManager_SetNumber.Subtitle","&7Write the new number"),
-    FILE_MANAGER_SET_NUMBER_ACTIONBAR("Dialogs.FileManager_SetNumber.Actionbar","&aCurrent Value: &r{CurrentValue}"),
+    FILE_MANAGER_SET_NUMBER_TITLE("Dialogs.FileManager.SetNumber.Title","&9Set Number"),
+    FILE_MANAGER_SET_NUMBER_SUBTITLE("Dialogs.FileManager.SetNumber.Subtitle","&7Write the new number"),
+    FILE_MANAGER_SET_NUMBER_ACTIONBAR("Dialogs.FileManager.SetNumber.Actionbar","&aCurrent Value: &r{CurrentValue}"),
 
-    FILE_MANAGER_ADD_TO_LIST_TITLE("Dialogs.FileManager_AddToList.Title","&9Add to list"),
-    FILE_MANAGER_ADD_TO_LIST_SUBTITLE("Dialogs.FileManager_AddToList.Subtitle","&7Write the new value"),
-    FILE_MANAGER_ADD_TO_LIST_ACTIONBAR("Dialogs.FileManager_AddToList.Actionbar","&aThe new value will be added to the list."),
+    FILE_MANAGER_ADD_TO_LIST_TITLE("Dialogs.FileManager.AddToList.Title","&9Add to list"),
+    FILE_MANAGER_ADD_TO_LIST_SUBTITLE("Dialogs.FileManager.AddToList.Subtitle","&7Write the new value"),
+    FILE_MANAGER_ADD_TO_LIST_ACTIONBAR("Dialogs.FileManager.AddToList.Actionbar","&aThe new value will be added to the list."),
 
-    FILE_MANAGER_SET_TO_LIST_TITLE("Dialogs.FileManager_SetToList.Title","&9Set to list"),
-    FILE_MANAGER_SET_TO_LIST_SUBTITLE("Dialogs.FileManager_SetToList.Subtitle","&7Write the new value"),
-    FILE_MANAGER_SET_TO_LIST_ACTIONBAR("Dialogs.FileManager_SetToList.Actionbar","&aCurrent value in list: &r{CurrentValue}"),
+    FILE_MANAGER_SET_TO_LIST_TITLE("Dialogs.FileManager.SetToList.Title","&9Set to list"),
+    FILE_MANAGER_SET_TO_LIST_SUBTITLE("Dialogs.FileManager.SetToList.Subtitle","&7Write the new value"),
+    FILE_MANAGER_SET_TO_LIST_ACTIONBAR("Dialogs.FileManager.SetToList.Actionbar","&aCurrent value in list: &r{CurrentValue}"),
+
+    BACKUP_MANAGER_SCHEDULE_BACKUP_TITLE("Dialogs.BackupManager.ScheduleBackup.Title", "&eSchedule Backup"),
+    BACKUP_MANAGER_SCHEDULE_BACKUP_SUBTITLE("Dialogs.BackupManager.ScheduleBackup.Subtitle", "&7Write the time between backups"),
+    BACKUP_MANAGER_SCHEDULE_BACKUP_ACTIONBAR("Dialogs.BackupManager.ScheduleBackup.Actionbar", "&cMake sure to use the given format"),
+
+    BACKUP_MANAGER_RENAME_BACKUP_TITLE("Dialogs.BackupManager.RenameBackup.Title", "&bRename Backup"),
+    BACKUP_MANAGER_RENAME_BACKUP_SUBTITLE("Dialogs.BackupManager.RenameBackup.Subtitle", "&7Write the new backup name"),
+    BACKUP_MANAGER_RENAME_BACKUP_ACTIONBAR("Dialogs.BackupManager.RenameBackup.Actionbar", "&cCurrent Name: &7{BackupName}"),
 
     /* Modules */
 
@@ -290,10 +312,13 @@ public enum L implements TranslationPack {
 
     BACKUP_MANAGER_BROWSER_TITLE("GUI.Modules.BackupManager.BackupBrowser.Title", "&aBackup Browser"),
     BACKUP_MANAGER_BROWSER_ITEM_NAME("GUI.Modules.BackupManager.BackupBrowser.Item.Name", "&a{BackupName}"),
-    BACKUP_MANAGER_BROWSER_ITEM_DELETE("GUI.Modules.BackupManager.BackupBrowser.Item.Rename", "Delete Backup"),
+    BACKUP_MANAGER_BROWSER_ITEM_BACKUP_NOW("GUI.Modules.BackupManager.BackupBrowser.Item.Backup Now", "Backup Now"),
+    BACKUP_MANAGER_BROWSER_ITEM_RENAME("GUI.Modules.BackupManager.BackupBrowser.Item.Rename", "Rename Backup"),
+    BACKUP_MANAGER_BROWSER_ITEM_DELETE("GUI.Modules.BackupManager.BackupBrowser.Item.Delete Backup", "Delete Backup"),
     BACKUP_MANAGER_BROWSER_ITEM_LAST_BACKUP_AT("GUI.Modules.BackupManager.BackupBrowser.Item.LastBackupAt", "&7Last Backup At: &9{LastBackupAt}"),
     BACKUP_MANAGER_BROWSER_ITEM_NEXT_BACKUP_AT("GUI.Modules.BackupManager.BackupBrowser.Item.NextBackupAt", "&7Next Backup At: &9{NextBackupAt}"),
-    BACKUP_MANAGER_BROWSER_ITEM_PATH("GUI.Modules.BackupManager.BackupBrowser.Item.Path", "&7Path: &9{BackupPath}"),
+    BACKUP_MANAGER_BROWSER_ITEM_NEXT_BACKUP_IN("GUI.Modules.BackupManager.BackupBrowser.Item.NextBackupIn", "&7Next Backup In: &9{NextBackupIn}"),
+    BACKUP_MANAGER_BROWSER_ITEM_SECONDS_LEFT("GUI.Modules.BackupManager.BackupBrowser.Item.SecondsLeft", "&9{SecondsLeftForNextBackup}&7 seconds left"),
 
     BACKUP_MANAGER_BROWSER_SETTINGS_NAME("GUI.Modules.BackupManager.BackupBrowser.Settings.Name", "&aSettings"),
     BACKUP_MANAGER_BROWSER_SETTINGS_LORE("GUI.Modules.BackupManager.BackupBrowser.Settings.Lore", "&7Click to manage settings"),
@@ -307,12 +332,29 @@ public enum L implements TranslationPack {
     BACKUP_MANAGER_SETTINGS_SCHEDULE_NAME("GUI.Modules.BackupManager.Settings.Schedule.Name","&aNew Scheduled Backup"),
     BACKUP_MANAGER_SETTINGS_SCHEDULE_LORE("GUI.Modules.BackupManager.Settings.Schedule.Lore","&7Click to schedule a new backup"),
 
-    BACKUP_MANAGER_SCHEDULE_TITLE("GUI-Modules.BackupManager.Schedule.Title", "&aBackups &7> &cSchedule"),
-    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_NAME("GUI-Modules.BackupManager.Schedule.SelectFiles.Name", "&aSelect Files/Folders"),
-    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_LORE("GUI-Modules.BackupManager.Schedule.SelectFiles.Lore", "&7Click to select the &6Files/Folders&7 to backup."),
+    BACKUP_MANAGER_SETTINGS_SELECT_BACKUPS_FOLDER_NAME("GUI.Modules.BackupManager.Settings.SelectBackupsFolder.Name","&aSelect Backups Folder"),
+    BACKUP_MANAGER_SETTINGS_SELECT_BACKUPS_FOLDER_LORE("GUI.Modules.BackupManager.Settings.SelectBackupsFolder.Lore","&7Click to select a new backups folder"),
 
-    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_NAME("GUI-Modules.BackupManager.Schedule.SelectTime.Name", "&aSelect Name"),
-    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_LORE("GUI-Modules.BackupManager.Schedule.SelectTime.Lore", "&7Click to select the backup time."),
+    BACKUP_MANAGER_SCHEDULE_TITLE("GUI.Modules.BackupManager.Schedule.Title", "&aBackups &7> &cSchedule"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_NAME("GUI.Modules.BackupManager.Schedule.SelectFiles.Name", "&aSelect Files/Folders"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_FILES_LORE("GUI.Modules.BackupManager.Schedule.SelectFiles.Lore", "&7Click to select the &6Files/Folders&7 to backup."),
+
+    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_NAME("GUI.Modules.BackupManager.Schedule.SelectTime.Name", "&aSelect Name"),
+    BACKUP_MANAGER_SCHEDULE_SELECT_TIME_LORE("GUI.Modules.BackupManager.Schedule.SelectTime.Lore", "&7Click to select the backup time."),
+
+    BACKUP_MANAGER_FILE_BROWSER_TITLE("GUI.Modules.BackupManager.FileBrowser.Title","&aBackups &7> &cFile Browser"),
+    BACKUP_MANAGER_FILE_BROWSER_ITEM_NAME("GUI.Modules.BackupManager.FileBrowser.Item.Name", "&a{FileName}"),
+    BACKUP_MANAGER_FILE_BROWSER_ITEM_OPEN_FOLDER("GUI.Modules.BackupManager.FileBrowser.Item.OpenFolder", "&7Click to open the folder."),
+    BACKUP_MANAGER_FILE_BROWSER_ITEM_ADD_TO_LIST("GUI.Modules.BackupManager.FileBrowser.Item.AddToList", "&7Click to add to the list."),
+    BACKUP_MANAGER_FILE_BROWSER_ITEM_REMOVE_FROM_LIST("GUI.Modules.BackupManager.FileBrowser.Item.RemoveFromList", "&7Click to remove from the list."),
+
+    BACKUP_MANAGER_FILE_BROWSER_SAVE_NAME("GUI.Modules.BackupManager.FileBrowser.Save.Name", "&aSave"),
+    BACKUP_MANAGER_FILE_BROWSER_SAVE_LORE("GUI.Modules.BackupManager.FileBrowser.Save.Lore", "&7Click to save the selected files (&c{SelectedFilesAmount}&7)"),
+
+    BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_TITLE("GUI.Modules.BackupManager.BackupFolderSelector.Title", "&aBackups &7> &cBackup Folder Selector"),
+    BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_NAME("GUI.Modules.BackupManager.BackupFolderSelector.Item.Name", "&a{FileName}"),
+    BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_OPEN_FOLDER("GUI.Modules.BackupManager.BackupFolderSelector.Item.OpenFolder", "&7Click to open the folder."),
+    BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_SELECT_FOLDER("GUI.Modules.BackupManager.BackupFolderSelector.Item.SelectFolder", "&7Click to select the folder."),
 
 
     ;

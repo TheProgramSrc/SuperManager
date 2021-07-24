@@ -1,7 +1,8 @@
 package xyz.theprogramsrc.supermanager.modules.backupmanager;
 
 import java.io.File;
-import java.sql.Date;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class BackupStorage extends SpigotModule {
         this.cfg = cfg;
         this.cfg.add("DateFormatter", "dd/MM/yyyy HH:mm:ss");
         this.cfg.add("BackupsFolder", new File("BackupManager/Backups/").getAbsolutePath());
-        this.cfg.add("BackupFileName", "Backup-{UUID}-{Day}.{Month}.{Year}_{Hour}.{Minute}.{Second}");
+        this.cfg.add("BackupFileName", "{Name}-{UUID}-{Day}.{Month}.{Year}_{Hour}.{Minute}.{Second}");
 
         this.cfg.addComment("DateFormatter", "This is the format of the date that will be shown in the in-game gui.");
         this.cfg.addComment("BackupsFolder", "This is the folder where the backups will be located.");
@@ -48,30 +49,37 @@ public class BackupStorage extends SpigotModule {
         return this.cfg.getString("DateFormatter");
     }
 
+    public boolean has(UUID uuid) {
+        return this.cfg.contains("Backups." + uuid);
+    }
+
     public void delete(Backup backup){
         this.cfg.getConfig().remove("Backups." + backup.getUuid());
         this.cfg.save();
     }
 
     public void save(Backup backup){
+        DateTimeFormatter saveFormat = DateTimeFormatter.ISO_INSTANT;
         String path = "Backups." + backup.getUuid();
         this.cfg.set(path + ".Name", backup.getName());
         this.cfg.set(path + ".BackupPath", backup.getBackupPath());
         this.cfg.set(path + ".Paths", backup.getPaths());
         this.cfg.set(path + ".TimeBetweenBackups", backup.getTimeBetweenBackups());
-        this.cfg.set(path + ".LastBackup", backup.getLastBackup().toString());
-        this.cfg.set(path + ".NextBackup", backup.getNextBackup().toString());
+        this.cfg.set(path + ".LastBackup", saveFormat.format(backup.getLastBackup()));
+        this.cfg.set(path + ".NextBackup", saveFormat.format(backup.getNextBackup()));
         this.CACHE.remove(backup.getUuid());
     }
 
     public Backup get(UUID uuid){
         if(!this.CACHE.containsKey(uuid)){
+            DateTimeFormatter saveFormat = DateTimeFormatter.ISO_INSTANT;
             String path = "Backups." + uuid.toString();
             if(!this.cfg.contains(path + ".Paths")) return null;
             List<String> paths = this.cfg.getStringList(path + ".Paths");
             long timeBetweenBackups = this.cfg.getLong(path + ".TimeBetweenBackups");
-            Date lastBackup = Date.valueOf(this.cfg.getString(path + ".LastBackup"));
-            Date nextBackup = Date.valueOf(this.cfg.getString(path + ".NextBackup"));
+            
+            Instant lastBackup = Instant.from(saveFormat.parse(this.cfg.getString(path + ".LastBackup")));
+            Instant nextBackup = Instant.from(saveFormat.parse(this.cfg.getString(path + ".NextBackup")));
             String name = this.cfg.getString(path + ".Name");
             String backupPath = this.cfg.getString(path + ".BackupPath");
             this.CACHE.put(uuid, new Backup(uuid, name, backupPath, new LinkedList<String>(paths), timeBetweenBackups, lastBackup, nextBackup));

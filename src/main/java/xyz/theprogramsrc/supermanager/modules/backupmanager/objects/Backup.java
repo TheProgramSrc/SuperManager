@@ -2,20 +2,22 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager.objects;
 
 import java.io.File;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.UUID;
 
 import org.bukkit.command.CommandSender;
 
+import xyz.theprogramsrc.supercoreapi.global.utils.StringUtils;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.global.utils.files.ZipUtils;
+import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
+import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupStorage;
 
 public class Backup {
 
@@ -23,9 +25,10 @@ public class Backup {
     private String name, backupPath;
     private final LinkedList<String> paths;
     private long timeBetweenBackups;
-    private Date lastBackup, nextBackup;
+    private Instant lastBackup, nextBackup;
+    private final BackupStorage backupStorage;
 
-    public Backup(UUID uuid, String name, String backupPath, LinkedList<String> paths, long timeBetweenBackups, Date lastBackup, Date nextBackup) {
+    public Backup(UUID uuid, String name, String backupPath, LinkedList<String> paths, long timeBetweenBackups, Instant lastBackup, Instant nextBackup) {
         this.uuid = uuid;
         this.name = name;
         this.backupPath = backupPath;
@@ -33,6 +36,7 @@ public class Backup {
         this.timeBetweenBackups = timeBetweenBackups;
         this.lastBackup = lastBackup;
         this.nextBackup = nextBackup;
+        this.backupStorage = BackupManager.i.backupStorage;
     }
 
     public UUID getUuid() {
@@ -51,10 +55,10 @@ public class Backup {
         return this.backupPath;
     }
 
-    public Date getLastBackup() {
+    public Instant getLastBackup() {
         return this.lastBackup;
     }
-    public Date getNextBackup() {
+    public Instant getNextBackup() {
         return this.nextBackup;
     }
 
@@ -69,23 +73,36 @@ public class Backup {
     public void backup(CommandSender sender) {
         SuperManager.i.getSpigotTasks().runAsyncTask(() -> {
             try{
-                Instant instant = Instant.now();
-                Date date = Date.from(instant);
-                String now = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss").format(instant);
-                File[] files = this.getPaths().stream().map(path -> new File(path)).toArray(File[]::new);
-                File backup = ZipUtils.zipFiles(Utils.folder(new File(BackupManager.i.getModuleFolder(), "backups/")), (this.getUuid() + now + ".zip"), files);
-                if(backup != null){
-                    this.backupPath = backup.getAbsolutePath();
-                    this.nextBackup = Date.from(LocalDateTime.from(date.toInstant()).plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant());
-                    this.lastBackup = date;
-                    BackupManager.i.backupStorage.save(this);
-                    if(sender != null) sender.sendMessage(Utils.ct("&aSuccessfully backed up " + this.paths.size() + " files. Next backup at &c" + this.nextBackup.toString() + "&a."));
-                }else{
-                    if(sender != null) sender.sendMessage(Utils.ct("&cAn error occured while backing up your files! Please check the console for more information."));
-                }
-            }catch(Exception e){
-                if(sender != null) sender.sendMessage(Utils.ct("&cAn error occured while backing up your files! Please check the console for more information."));
-                BackupManager.i.log("&cFailed to execute backup '" + this.getUuid() + "':", true);
+                // Get the current date using calendar
+                Calendar calendar = Calendar.getInstance();
+                // Parse into date
+                Date now = calendar.getTime();
+
+                String backupFileName = new StringUtils(this.backupStorage.getBackupFileName())
+                    .placeholder("{Name}", this.getName())
+                    .placeholder("{UUID}", uuid.toString())
+                    .placeholder("{Day}", calendar.get(Calendar.DAY_OF_MONTH)+"")
+                    .placeholder("{Month}", calendar.get(Calendar.MONTH)+"")
+                    .placeholder("{Year}", calendar.get(Calendar.YEAR)+"")
+                    .placeholder("{Hour}", calendar.get(Calendar.HOUR_OF_DAY)+"")
+                    .placeholder("{Minute}", calendar.get(Calendar.MINUTE)+"")
+                    .placeholder("{Second}", calendar.get(Calendar.SECOND)+"")
+                    .get();
+                
+                    File[] files = this.getPaths().stream().map(path -> new File(path)).toArray(File[]::new);
+                    File backup = ZipUtils.zipFiles(Utils.folder(this.backupStorage.getBackupsFolder()), (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip")), files);
+                    if(backup != null){
+                        this.backupPath = backup.getAbsolutePath();
+                        this.nextBackup = now.toInstant().plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant();
+                        this.lastBackup = now.toInstant();
+                        BackupManager.i.backupStorage.save(this);
+                        if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_SUCCESSFULLY_BACKED_UP_DATA.options().placeholder("{FilesAmount}", files.length + "").placeholder("{NextBackupAt}", Date.from(this.nextBackup).toString()).get()));
+                    } else{
+                        if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_FAILED_TO_BACKUP_DATA.toString()));
+                    }
+            } catch(Exception e) {
+                if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_FAILED_TO_BACKUP_DATA.toString()));
+                BackupManager.i.log("&cFailed to execute backup '" + this.getName() + "':", true);
                 BackupManager.i.getPlugin().addError(e);
                 e.printStackTrace();
             }

@@ -3,13 +3,10 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
-import xyz.theprogramsrc.supercoreapi.global.objects.RecurringTask;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
@@ -23,22 +20,27 @@ public class BackupManager extends Module{
 
     public static BackupManager i;
     public BackupStorage backupStorage;
-    private final LinkedHashMap<UUID, RecurringTask> SCHEDULED_BACKUPS = new LinkedHashMap<>();
 
     @Override
     public void onEnable(){
         i = this;
         YMLConfig cfg = new YMLConfig(new File(this.getModuleFolder(), "Backups.yml"));
         this.backupStorage = new BackupStorage(cfg);
-        for(Backup backup : this.backupStorage.getAll()){
-            RecurringTask task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 20L, () -> {
+        this.loadScheduledBackups();
+    }
+
+    public void loadScheduledBackups(){
+        // Check every second if we have new backups to be added
+        this.getSpigotTasks().runAsyncRepeatingTask(0L, 20L, () -> {
+            for(Backup backup : this.backupStorage.getAll()){
+                if(!this.backupStorage.has(backup.getUuid())) continue;
+                Backup b = this.backupStorage.get(backup.getUuid());
                 Date now = Date.from(Instant.now());
-                if(backup.getNextBackup().after(now)){
-                    backup.backup(null);
+                if (now.after(Date.from(b.getNextBackup()))) {
+                    b.backup(null);
                 }
-            });
-            this.SCHEDULED_BACKUPS.put(backup.getUuid(), task);
-        }
+            }
+        });
     }
 
     @Override
