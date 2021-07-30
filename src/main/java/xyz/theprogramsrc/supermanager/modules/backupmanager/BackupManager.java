@@ -32,12 +32,11 @@ public class BackupManager extends Module{
     public void loadScheduledBackups(){
         // Check every second if we have new backups to be added
         this.getSpigotTasks().runAsyncRepeatingTask(0L, 20L, () -> {
+            Date now = Date.from(Instant.now());
             for(Backup backup : this.backupStorage.getAll()){
                 if(!this.backupStorage.has(backup.getUuid())) continue;
-                Backup b = this.backupStorage.get(backup.getUuid());
-                Date now = Date.from(Instant.now());
-                if (now.after(Date.from(b.getNextBackup()))) {
-                    b.backup(null);
+                if (now.after(Date.from(backup.getNextBackup()))) {
+                    backup.backup(null);
                 }
             }
         });

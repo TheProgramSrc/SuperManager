@@ -104,6 +104,7 @@ public enum L implements TranslationPack {
     BACKUP_MANAGER_FAILED_TO_BACKUP_DATA("Modules.BackupManager.FailedToBackupData","&cFailed to backup the data! Please check the console for more info."),
     BACKUP_MANAGER_SUCCESSFULLY_BACKED_UP_DATA("Modules.BackupManager.SuccessfullyBackedUpData","&aSuccessfully backed up &c{FilesAmount}&a files! The next backup will be created at &b{NextBackupAt}&a."),
     BACKUP_MANAGER_BACKUP_IN_PROCESS("Modules.BackupManager.BackupInProcess","Backup in Process..."),
+    BACKUP_MANAGER_BACKUP_DELETED("Modules.BackupManager.BackupDeleted", "Backup deleted"),
 
     /* Dialogs */
 

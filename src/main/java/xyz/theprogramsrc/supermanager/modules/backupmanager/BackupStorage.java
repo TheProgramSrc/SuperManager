@@ -20,12 +20,20 @@ public class BackupStorage extends SpigotModule {
     public BackupStorage(YMLConfig cfg){
         this.cfg = cfg;
         this.cfg.add("DateFormatter", "dd/MM/yyyy HH:mm:ss");
-        this.cfg.add("BackupsFolder", new File("BackupManager/Backups/").getAbsolutePath());
+        this.cfg.add("BackupsFolder", new File("BackupManager/Backups/").getPath());
         this.cfg.add("BackupFileName", "{Name}-{UUID}-{Day}.{Month}.{Year}_{Hour}.{Minute}.{Second}");
 
         this.cfg.addComment("DateFormatter", "This is the format of the date that will be shown in the in-game gui.");
         this.cfg.addComment("BackupsFolder", "This is the folder where the backups will be located.");
         this.cfg.addComment("BackupFileName", "Format of the backup file name. The .zip extension is added automatically.");
+
+        this.getSpigotTasks().runAsyncRepeatingTask(0L, 50L, () -> {
+            for(UUID uuid : CACHE.keySet()){
+                if(!this.has(uuid)){
+                    this.CACHE.remove(uuid);
+                }
+            }
+        });
     }
 
     public String getBackupFileName(){
@@ -42,7 +50,7 @@ public class BackupStorage extends SpigotModule {
     }
 
     public void setBackupsFolder(String path){
-        this.cfg.set("BackupsFolder", Utils.folder(new File(path)).getAbsolutePath());
+        this.cfg.set("BackupsFolder", Utils.folder(new File(path)).getPath());
     }
 
     public String getDateFormatter(){
@@ -54,6 +62,7 @@ public class BackupStorage extends SpigotModule {
     }
 
     public void delete(Backup backup){
+        this.CACHE.remove(backup.getUuid());
         this.cfg.getConfig().remove("Backups." + backup.getUuid());
         this.cfg.save();
     }
@@ -90,7 +99,7 @@ public class BackupStorage extends SpigotModule {
 
     public Backup[] getAll(){
         if(this.cfg.getSection("Backups") == null) return new Backup[0];
-        return this.cfg.getSection("Backups").getKeys(false).stream().map(UUID::fromString).map(this::get).toArray(Backup[]::new);
+        return this.cfg.getSection("Backups").getKeys(false).stream().map(UUID::fromString).filter(this::has).map(this::get).toArray(Backup[]::new);
     }
     
 }

@@ -92,7 +92,7 @@ public class Backup {
                     File[] files = this.getPaths().stream().map(path -> new File(path)).toArray(File[]::new);
                     File backup = ZipUtils.zipFiles(Utils.folder(this.backupStorage.getBackupsFolder()), (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip")), files);
                     if(backup != null){
-                        this.backupPath = backup.getAbsolutePath();
+                        this.backupPath = backup.getPath();
                         this.nextBackup = now.toInstant().plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant();
                         this.lastBackup = now.toInstant();
                         BackupManager.i.backupStorage.save(this);

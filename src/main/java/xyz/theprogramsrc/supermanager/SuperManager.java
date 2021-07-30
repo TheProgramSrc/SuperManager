@@ -2,7 +2,6 @@ package xyz.theprogramsrc.supermanager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -27,13 +26,11 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
     public static SuperManager i;
     private ModuleManager moduleManager;
     private LinkedList<Module> modules;
-    private LinkedHashMap<String, Module> enabledModules;
 
     @Override
     public void onPluginLoad() {
         i = this;
         this.modules = new LinkedList<>();
-        this.enabledModules = new LinkedHashMap<>();
         this.moduleManager = new ModuleManager();
     }
 
@@ -88,14 +85,6 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
                             module.disable();
                         }
                     }
-
-                    if(module.isEnabled() && module.isRunning()){
-                        if(!this.enabledModules.containsKey(module.getIdentifier())){
-                            this.enabledModules.put(module.getIdentifier(), module);
-                        }
-                    }else{
-                        this.enabledModules.remove(module.getIdentifier());
-                    }
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -115,8 +104,8 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         return Arrays.stream(this.getModules()).filter(m-> m.getIdentifier().equals(id)).findFirst().orElse(null);
     }
 
-    public LinkedList<Module> getEnabledModules(){
-        return new LinkedList<>(this.enabledModules.values());
+    public Module[] getEnabledModules(){
+        return this.modules.stream().filter(Module::isEnabled).toArray(Module[]::new);
     }
 
     // Utils

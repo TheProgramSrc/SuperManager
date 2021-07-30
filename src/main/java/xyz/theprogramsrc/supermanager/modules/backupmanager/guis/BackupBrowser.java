@@ -70,11 +70,12 @@ public class BackupBrowser extends BrowserGUI<Backup> {
             .addPlaceholder("{SecondsLeftForNextBackup}", seconds + "");
         return new GUIButton(item, a -> {
             if(a.getAction() == ClickType.RIGHT_CLICK){
+                this.close();
                 this.backupManager.backupStorage.delete(backup);
-                this.open();
+                this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.BACKUP_MANAGER_BACKUP_DELETED);
             }else if(a.getAction() == ClickType.MIDDLE_CLICK){
                 this.close();
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&aBacking up &c" + backup.getPaths().size() + "&afiles...");
+                this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.BACKUP_MANAGER_BACKUP_IN_PROCESS);
                 backup.backup(a.getPlayer());
             }else if(a.getAction() == ClickType.LEFT_CLICK){
                 new Dialog(a.getPlayer()){

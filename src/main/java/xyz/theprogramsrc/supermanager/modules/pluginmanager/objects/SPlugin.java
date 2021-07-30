@@ -20,15 +20,15 @@ public class SPlugin {
 
     private final int id;
     private final String name;
-    private final boolean songoda;
+    private final String platform;
     private String latestVersion;
     private boolean updateAvailable, premium;
     private long lastCheck = 0L, lastPremiumCheck;
 
-    public SPlugin(int id, String name, boolean songoda) {
+    public SPlugin(int id, String name, String platform) {
         this.id = id;
         this.name = name;
-        this.songoda = songoda;
+        this.platform = platform;
         this.latestVersion = null;
     }
 
@@ -40,8 +40,28 @@ public class SPlugin {
         return this.name;
     }
 
-    public boolean isSongoda() {
-        return this.songoda;
+    public String getPlatform() {
+        return this.platform;
+    }
+
+    public boolean isSongoda(){
+        return this.getPlatform().equals("Songoda");
+    }
+
+    public boolean isSpigot(){
+        return this.getPlatform().equals("Spigot");
+    }
+
+    public boolean isMCMarket(){
+        return this.getPlatform().equals("MCMarket");
+    }
+
+    public boolean isBukkit(){
+        return this.getPlatform().equals("Bukkit");
+    }
+
+    public boolean isTheProgramSrc(){
+        return this.getPlatform().equals("TheProgramSrc");
     }
 
     public String getCurrentVersion(){

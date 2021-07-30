@@ -117,7 +117,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 // Create backup file
                 File backupFile = new File(backupStorage.getBackupsFolder(), backupFileName);
                 // Create backup
-                Backup backup = new Backup(uuid, uuid.toString(), backupFile.getAbsolutePath(), this.filesToBackup, seconds, now, now);
+                Backup backup = new Backup(uuid, uuid.toString(), backupFile.getPath(), this.filesToBackup, seconds, now, now);
                 // Add backup to storage
                 backupStorage.save(backup);
                 // Notify player
@@ -136,13 +136,13 @@ public class BackupFileBrowser extends BrowserGUI<File>{
             .setDisplayName("&a" + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_NAME)
             .setLore(
                 "&7",
-                "&9" + Base.LEFT_CLICK + "&7 " + (!this.filesToBackup.contains(file.getAbsolutePath()) ? L.BACKUP_MANAGER_FILE_BROWSER_ITEM_ADD_TO_LIST : L.BACKUP_MANAGER_FILE_BROWSER_ITEM_REMOVE_FROM_LIST)
+                "&9" + Base.LEFT_CLICK + "&7 " + (!this.filesToBackup.contains(file.getPath()) ? L.BACKUP_MANAGER_FILE_BROWSER_ITEM_ADD_TO_LIST : L.BACKUP_MANAGER_FILE_BROWSER_ITEM_REMOVE_FROM_LIST)
             );
         
         if(file.isDirectory()){
             item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_OPEN_FOLDER);
         }
-        item.addPlaceholder("{FileName}", file.getName());
+        item.addPlaceholder("{FileName}", file.getName()).setGlowing(this.filesToBackup.contains(file.getPath()));
 
         return new GUIButton(item, a-> {
             if(file.isDirectory() && a.getAction() == ClickType.RIGHT_CLICK){
@@ -153,10 +153,10 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                     }
                 };
             }else{
-                if(this.filesToBackup.contains(file.getAbsolutePath())){
-                    this.filesToBackup.remove(file.getAbsolutePath());
+                if(this.filesToBackup.contains(file.getPath())){
+                    this.filesToBackup.remove(file.getPath());
                 }else{
-                    this.filesToBackup.add(file.getAbsolutePath());
+                    this.filesToBackup.add(file.getPath());
                 }
                 this.open();
             }

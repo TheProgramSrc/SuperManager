@@ -56,7 +56,7 @@ public class BackupsFolderSelector extends BrowserGUI<File>{
                     }
                 };
             }else if(a.getAction() == ClickType.RIGHT_CLICK){
-                BackupManager.i.backupStorage.setBackupsFolder(f.getAbsolutePath());
+                BackupManager.i.backupStorage.setBackupsFolder(f.getPath());
                 this.close();
                 this.getSuperUtils().sendMessage(a.getPlayer(), Base.DONE.toString());
             }

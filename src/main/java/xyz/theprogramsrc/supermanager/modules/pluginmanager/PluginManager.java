@@ -1,54 +1,70 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils;
-import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supermanager.L;
-import xyz.theprogramsrc.supermanager.guis.MainGUI;
-import xyz.theprogramsrc.supermanager.modules.pluginmanager.guis.PluginBrowser;
-import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
-import xyz.theprogramsrc.supermanager.objects.Module;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.server.ServerLoadEvent;
+import org.bukkit.plugin.Plugin;
+
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.global.utils.files.FileUtils;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
+import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.SuperManager;
+import xyz.theprogramsrc.supermanager.guis.MainGUI;
+import xyz.theprogramsrc.supermanager.modules.pluginmanager.guis.PluginBrowser;
+import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
+import xyz.theprogramsrc.supermanager.objects.Module;
+
 public class PluginManager extends Module {
 
-    public static LinkedHashMap<String, SPlugin> plugins;
-    public static String token;
+    public static LinkedHashMap<String, SPlugin> plugins = new LinkedHashMap<>();
+    public static String token = SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token", "");
 
-    @Override
-    public void onEnable() {
-        if(plugins == null) plugins = new LinkedHashMap<>();
-        token = this.getSettings().getConfig().contains("songoda-token") ? this.getSettings().getConfig().getString("songoda-token") : null;
-        for(Plugin plugin : Bukkit.getPluginManager().getPlugins()){
-            File pluginFolder = plugin.getDataFolder();
-            File superManagerFile = new File(pluginFolder, "SuperManager.json");
-            if(superManagerFile.exists()){
-                try {
-                    String data = FileUtils.readFileToString(superManagerFile, Charset.defaultCharset());
-                    JsonObject json = new JsonParser().parse(data).getAsJsonObject();
-                    int id = json.get("id").getAsInt();
-                    String name = json.get("name").getAsString();
-                    boolean songoda = json.get("songoda").getAsBoolean();
-                    plugins.put(name, new SPlugin(id, name, songoda));
-                } catch (IOException e) {
-                    this.plugin.addError(e);
-                    this.log("&cError while reading file SuperManager.json from " + plugin.getName() + " (" + plugin.getDescription().getVersion() + ")");
-                    e.printStackTrace();
+    @EventHandler
+    public void onServerLoad(ServerLoadEvent event){
+        Plugin[] pluginsArray = Bukkit.getPluginManager().getPlugins();
+        this.getSpigotTasks().runAsyncTask(() -> {
+            for(Plugin plugin : pluginsArray){
+                File pluginFolder = plugin.getDataFolder();
+                File superManagerFile = new File(pluginFolder, "SuperManager.json");
+                if(Utils.isConnected()){
+                    try{
+                        if(!superManagerFile.exists()){
+                            FileUtils.downloadUsingCommons(("https://raw.githubusercontent.com/TheProgramSrc/PluginsResources/master/SuperManager/PluginManager/{Plugin}.json".replace("{Plugin}", plugin.getDescription().getName())), superManagerFile);
+                        }
+                    }catch(IOException ignored){}
+                }
+    
+                if(superManagerFile.exists()){
+                    try {
+                        String data = xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils.readFileToString(superManagerFile, Charset.defaultCharset());
+                        JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+                        int id = json.get("id").getAsInt();
+                        String name = json.get("name").getAsString();
+                        String platform = json.get("platform").getAsString();
+                        plugins.put(name, new SPlugin(id, name, platform));
+                    } catch (IOException e) {
+                        this.plugin.addError(e);
+                        this.log("&cError while reading file SuperManager.json from " + plugin.getName() + " (" + plugin.getDescription().getVersion() + ")");
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-
-        this.log("&aLoaded &c" + plugins.size() + "&a plugins.");
+    
+            if(plugins.size() > 0){
+                this.log("&aLoaded &c" + plugins.size() + "&a plugins.");
+            }
+        });
     }
 
     public static boolean validateToken(){
