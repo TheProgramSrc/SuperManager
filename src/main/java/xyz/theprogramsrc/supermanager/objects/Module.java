@@ -11,6 +11,10 @@ import java.io.File;
 
 public abstract class Module extends SpigotModule {
 
+    public Module(){
+        super(false);
+    }
+
     private final SuperManager superManager = SuperManager.i; // Declare main plugin instance
     private boolean running; // If true the module is currently running, otherwise is not
 

@@ -89,8 +89,9 @@ public class Backup {
                     .placeholder("{Second}", calendar.get(Calendar.SECOND)+"")
                     .get();
                 
-                    File[] files = this.getPaths().stream().map(path -> new File(path)).toArray(File[]::new);
-                    File backup = ZipUtils.zipFiles(Utils.folder(this.backupStorage.getBackupsFolder()), (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip")), files);
+                    File[] files = this.getPaths().stream().map(path -> new File(path)).filter(File::exists).toArray(File[]::new);
+                    File backupsFolder = Utils.folder(this.backupStorage.getBackupsFolder());
+                    File backup = ZipUtils.zipFiles(backupsFolder, (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip")), files);
                     if(backup != null){
                         this.backupPath = backup.getPath();
                         this.nextBackup = now.toInstant().plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant();

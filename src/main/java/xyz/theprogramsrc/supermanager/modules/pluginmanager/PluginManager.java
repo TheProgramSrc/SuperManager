@@ -2,6 +2,8 @@ package xyz.theprogramsrc.supermanager.modules.pluginmanager;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
 import java.nio.charset.Charset;
 import java.util.LinkedHashMap;
 
@@ -11,8 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.Plugin;
 
+import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.global.utils.files.FileUtils;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
@@ -29,20 +31,29 @@ public class PluginManager extends Module {
 
     public static LinkedHashMap<String, SPlugin> plugins = new LinkedHashMap<>();
     public static String token = SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token", "");
+    public static CookieManager cookieManager = new CookieManager();
+
+    @Override
+    public void onEnable() {
+        CookieHandler.setDefault(cookieManager);
+    }
 
     @EventHandler
     public void onServerLoad(ServerLoadEvent event){
         Plugin[] pluginsArray = Bukkit.getPluginManager().getPlugins();
         this.getSpigotTasks().runAsyncTask(() -> {
-            for(Plugin plugin : pluginsArray){
-                File pluginFolder = plugin.getDataFolder();
-                File superManagerFile = new File(pluginFolder, "SuperManager.json");
-                if(Utils.isConnected()){
-                    try{
-                        if(!superManagerFile.exists()){
-                            FileUtils.downloadUsingCommons(("https://raw.githubusercontent.com/TheProgramSrc/PluginsResources/master/SuperManager/PluginManager/{Plugin}.json".replace("{Plugin}", plugin.getDescription().getName())), superManagerFile);
-                        }
-                    }catch(IOException ignored){}
+            for(Plugin bukkitPlugin : pluginsArray){
+                File superManagerFile = new File(Utils.folder(bukkitPlugin.getDataFolder()), "SuperManager.json");
+                if(Utils.isConnected() && !superManagerFile.exists()){
+                    String url = "https://raw.githubusercontent.com/TheProgramSrc/PluginsResources/master/SuperManager/PluginManager/{Plugin}.json".replace("{Plugin}", bukkitPlugin.getName());
+                    if(this.isValidUrl(url)){
+                        try{
+                            String data = Utils.readWithInputStream(url);
+                            if(data != null){
+                                xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils.writeStringToFile(superManagerFile, data, Charset.defaultCharset(), false);
+                            }
+                        }catch(IOException ignored){}
+                    }
                 }
     
                 if(superManagerFile.exists()){
@@ -55,10 +66,14 @@ public class PluginManager extends Module {
                         plugins.put(name, new SPlugin(id, name, platform));
                     } catch (IOException e) {
                         this.plugin.addError(e);
-                        this.log("&cError while reading file SuperManager.json from " + plugin.getName() + " (" + plugin.getDescription().getVersion() + ")");
+                        this.log("&cError while reading file SuperManager.json from " + bukkitPlugin.getName() + " (" + bukkitPlugin.getDescription().getVersion() + ")");
                         e.printStackTrace();
                     }
                 }
+            }
+
+            for(SPlugin plugin : plugins.values()){
+                plugin.parseProduct(); // Here we just pre load the products from their respective api.
             }
     
             if(plugins.size() > 0){
@@ -67,6 +82,13 @@ public class PluginManager extends Module {
         });
     }
 
+    private boolean isValidUrl(String url){
+        try{
+            return ConnectionBuilder.connect(url).getResponseCode().startsWith("2");
+        }catch(IOException e){
+            return false;
+        }
+    }
     public static boolean validateToken(){
         if(token == null) return false;
         if(token.equals("")) return false;

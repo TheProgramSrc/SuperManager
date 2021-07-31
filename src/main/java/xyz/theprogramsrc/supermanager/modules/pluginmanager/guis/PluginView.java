@@ -1,6 +1,9 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager.guis;
 
+import java.util.LinkedList;
+
 import org.bukkit.entity.Player;
+
 import xyz.theprogramsrc.supercoreapi.Recall;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
@@ -13,8 +16,6 @@ import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
-
-import java.util.LinkedList;
 
 public class PluginView extends GUI {
 
@@ -67,7 +68,7 @@ public class PluginView extends GUI {
                     this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.PLUGIN_MANAGER_FAILED_TO_CHECK_FOR_UPDATES.options().placeholder("{PluginName}", this.sPlugin.getName()));
                 }else{
                     if(updateAvailable){
-                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{LatestVersion}", this.sPlugin.getLatestVersion()));
+                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{NewVersion}", this.sPlugin.getLatestVersion()));
                     }else{
                         this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_ALREADY_UP_TO_DATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
                     }
@@ -125,11 +126,6 @@ public class PluginView extends GUI {
 
     private void startDownload(ClickAction a){
         this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_DOWNLOADING_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        boolean download = this.sPlugin.downloadUpdate();
-        if(download) {
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        }else{
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        }
+        this.sPlugin.downloadUpdate(a.getPlayer());
     }
 }

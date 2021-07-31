@@ -45,7 +45,7 @@ public enum L implements TranslationPack {
     /* Plugin Manager - Updater */
     PLUGIN_MANAGER_CHECKING_FOR_UPDATES("Modules.PluginManager.CheckingForUpdates","&aChecking for &7{PluginName}&a updates..."),
     PLUGIN_MANAGER_FAILED_TO_CHECK_FOR_UPDATES("Modules.PluginManager.UpdateCheckFailed","&cFailed to check for &7{PluginName}&c updates."),
-    PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE("Modules.PluginManager.UpdateAvailable","&aA new update (&7{NewVersion}&a)is available for &7{PluginName}&a!"),
+    PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE("Modules.PluginManager.UpdateAvailable","&aA new update (&7{NewVersion}&a) is available for &7{PluginName}&a!"),
     PLUGIN_MANAGER_ALREADY_UP_TO_DATE("Modules.PluginManager.UpToDate","&aPlugin already up to date!"),
     PLUGIN_MANAGER_DOWNLOADING_UPDATE("Modules.PluginUpdater.DownloadingUpdate","&aThe update download for &7{PluginName}&a has been started."),
     PLUGIN_MANAGER_SUCCESS_DOWNLOAD("Modules.PluginUpdater.SuccessDownload","&aThe download for the plugin &7{PluginName}&a has been successfully finished. Please restart the server to apply the changes."),
