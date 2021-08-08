@@ -1,13 +1,16 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager.objects;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jsoup.Connection.Response;
+import org.jsoup.Jsoup;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
@@ -16,7 +19,6 @@ import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
-import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.apiwrappers.SongodaAPI;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.apiwrappers.SpigotAPI;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.apiwrappers.objects.Product;
@@ -117,49 +119,42 @@ public class SPlugin {
         File pluginsFolder = new File(SuperManager.i.getServerFolder(), "plugins/"); // Don't need to mkdir since this plugin won't be working if there is no plugins folder
         File updateFolder = Utils.folder(new File(pluginsFolder, cfg.getString("settings.update-folder") + "/"));
         final SuperManager pl = SuperManager.i;
-        final String downloadUrl = followRedirects(url);
+        final String downloadUrl = url + "";
         pl.getSpigotTasks().runAsyncTask(() -> {
             try {
-                CookieManager cm = PluginManager.cookieManager;
-                ConnectionBuilder cb = new ConnectionBuilder(downloadUrl);
-                if(cm.getCookieStore().getCookies().size() > 0){
-                    cb.addProperty("Cookie", cm.getCookieStore().getCookies().stream().map(HttpCookie::toString).collect(Collectors.joining(";")));
-                }
-                cb.addProperty("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.106 Safari/537.36");
-                CustomConnection cc = cb.connect();
-                if(cc.isResponseNotNull()){
-                    String contents = cc.getResponseString().toLowerCase();
-                    if(contents.contains("ddos protection by cloudflare") && contents.contains("this process is automatic.") && contents.contains("your browser will redirect to your requested content shortly")){
-                        // Wait 7 secs and start again
-                        pl.getSpigotTasks().runTaskLater(Utils.toTicks(7), () -> {
-                            Map<String, List<String>> headerFields = cc.getConnection().getHeaderFields();
-                            List<String> cookiesHeader = headerFields.get("Set-Cookie");
-                            if(cookiesHeader == null) cookiesHeader = new ArrayList<String>();
-                            for(String cookie : cookiesHeader){
-                                cm.getCookieStore().add(null, HttpCookie.parse(cookie).get(0));
-                            }
-
-                            this.downloadUpdate(player);
-                        });
-                    }else{
-                        // Now we just download the file with the cookies applied
-                        BufferedInputStream bufferedInputStream = new BufferedInputStream(cc.getInputStream());
-                        FileOutputStream fileInputStream = new FileOutputStream(new File(updateFolder, this.getName() + ".jar"));
-                        byte[] buffer = new byte[1024];
-
-                        int count;
-                        while((count = bufferedInputStream.read(buffer, 0, 1024)) != -1) {
-                            fileInputStream.write(buffer, 0, count);
+                Response response = Jsoup.connect(downloadUrl) // Always try to bypass cloudflare just in case
+                    .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                    .ignoreHttpErrors(true)
+                    .followRedirects(true)
+                    .timeout(30000)
+                    .execute();
+                pl.getSpigotTasks().runTaskLater(Utils.toTicks(7), () -> {
+                    pl.getSpigotTasks().runAsyncTask(() -> {
+                        try{
+                            Response downloadResponse = Jsoup.connect(downloadUrl)
+                                .userAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36")
+                                .ignoreHttpErrors(true)
+                                .followRedirects(true)
+                                .timeout(30000)
+                                .cookies(response.cookies())
+                                .execute();
+                                if(response.statusCode() == 200){
+                                    FileOutputStream fileOutputStream = new FileOutputStream(new File(updateFolder, this.name + ".jar"));
+                                    fileOutputStream.write(downloadResponse.bodyAsBytes());
+                                    fileOutputStream.close();
+                                    pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
+                                }else{
+                                    pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
+                                }
+                        }catch (Exception e){
+                            pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
+                            pl.addError(e);
+                            pl.log("&cFailed to download plugin update:");
+                            e.printStackTrace();
                         }
-
-                        fileInputStream.close();
-                        bufferedInputStream.close();
-                        pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
-                    }
-                }else{
-                    pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
-                }
-            }catch (IOException e){
+                    });
+                });
+            }catch (Exception e){
                 pl.getSuperUtils().sendMessage(player, pl.getSettingsStorage().getPrefix() + L.PLUGIN_MANAGER_ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));
                 pl.addError(e);
                 pl.log("&cFailed to download plugin update:");

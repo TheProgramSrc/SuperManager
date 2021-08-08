@@ -107,6 +107,8 @@ public class Backup {
                 BackupManager.i.getPlugin().addError(e);
                 e.printStackTrace();
             }
+
+            BackupManager.queue.remove(this.getUuid());
         });
     }
 

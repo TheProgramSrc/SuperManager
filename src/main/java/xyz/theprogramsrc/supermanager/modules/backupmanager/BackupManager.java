@@ -3,6 +3,8 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
@@ -18,6 +20,7 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 
 public class BackupManager extends Module{
 
+    public static LinkedList<UUID> queue = new LinkedList<UUID>();
     public static BackupManager i;
     public BackupStorage backupStorage;
 
@@ -35,6 +38,8 @@ public class BackupManager extends Module{
             Date now = Date.from(Instant.now());
             for(Backup backup : this.backupStorage.getAll()){
                 if(!this.backupStorage.has(backup.getUuid())) continue;
+                if(queue.contains(backup.getUuid())) continue;
+                queue.add(backup.getUuid());
                 if (now.after(Date.from(backup.getNextBackup()))) {
                     backup.backup(null);
                 }
