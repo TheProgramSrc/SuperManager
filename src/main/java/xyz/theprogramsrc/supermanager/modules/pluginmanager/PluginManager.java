@@ -30,7 +30,7 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 public class PluginManager extends Module {
 
     public static LinkedHashMap<String, SPlugin> plugins = new LinkedHashMap<>();
-    public static String token = SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token", "");
+    public static String token = SuperManager.token;
     public static CookieManager cookieManager = new CookieManager();
 
     @Override
@@ -44,7 +44,7 @@ public class PluginManager extends Module {
         this.getSpigotTasks().runAsyncTask(() -> {
             for(Plugin bukkitPlugin : pluginsArray){
                 File superManagerFile = new File(Utils.folder(bukkitPlugin.getDataFolder()), "SuperManager.json");
-                if(Utils.isConnected() && !superManagerFile.exists()){
+                if(Utils.isConnected()){ // Always download in case of updates
                     String url = "https://raw.githubusercontent.com/TheProgramSrc/PluginsResources/master/SuperManager/PluginManager/{Plugin}.json".replace("{Plugin}", bukkitPlugin.getName());
                     if(this.isValidUrl(url)){
                         try{
@@ -63,7 +63,9 @@ public class PluginManager extends Module {
                         int id = json.get("id").getAsInt();
                         String name = json.get("name").getAsString();
                         String platform = json.get("platform").getAsString();
-                        plugins.put(name, new SPlugin(id, name, platform));
+                        String fileName = json.has("fileName") ? json.get("fileName").getAsString() : name + ".jar";
+                        String downloadUrl = json.has("downloadUrl") ? json.get("downloadUrl").getAsString() : null; 
+                        plugins.put(name, new SPlugin(id, name, platform, fileName, downloadUrl));
                     } catch (IOException e) {
                         this.plugin.addError(e);
                         this.log("&cError while reading file SuperManager.json from " + bukkitPlugin.getName() + " (" + bukkitPlugin.getDescription().getVersion() + ")");
@@ -90,11 +92,7 @@ public class PluginManager extends Module {
         }
     }
     public static boolean validateToken(){
-        if(token == null) return false;
-        if(token.equals("")) return false;
-        if(token.equals(" ")) return false;
-
-        return token.matches("^[a-fA-F0-9]{32}$");
+        return SuperManager.validateToken();
     }
 
     @Override

@@ -17,6 +17,7 @@ import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsD
 
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 public class ChatChannelsManager extends SpigotModule {
 
@@ -32,10 +33,8 @@ public class ChatChannelsManager extends SpigotModule {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        Optional<ChatChannel> optional = this.chatChannelsDataManager.getChannel(this.chatChannelsDataManager.globalChannel());
-        if(optional.isPresent()){
-            this.chatChannelsDataManager.joinChannel(e.getPlayer(), optional.get());
-        }
+        ChatChannel channel = this.chatChannelsDataManager.getChannel(UUID.fromString(this.chatChannelsDataManager.globalChannel()));
+        this.chatChannelsDataManager.joinChannel(e.getPlayer(), channel);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -59,6 +58,7 @@ public class ChatChannelsManager extends SpigotModule {
                 Arrays.stream(this.chatChannelsDataManager.getPlayersInChannel(channel)).filter(OfflinePlayer::isOnline).map(OfflinePlayer::getPlayer).forEach(p -> {
                     p.sendMessage(toSend);
                 });
+                player.sendMessage(toSend);
             }else{
                 this.getSuperUtils().sendMessage(player, Base.NO_PERMISSION.toString());
             }

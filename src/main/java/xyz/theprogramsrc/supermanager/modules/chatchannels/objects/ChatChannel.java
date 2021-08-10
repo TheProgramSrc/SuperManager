@@ -33,9 +33,7 @@ public class ChatChannel {
     }
 
     public boolean isGlobal(){
-        boolean global = this.dataManager.globalChannel() == this.getUuid().toString();
-        System.out.println("§6IS GLOBAL? " + (global ? 'y' : 'n') + "; " + this.dataManager.globalChannel() + " == " + this.getUuid().toString());
-        return global;
+        return UUID.fromString(this.dataManager.globalChannel()).equals(this.getUuid());
     }
 
     public LocalDateTime getInstantCreated(){

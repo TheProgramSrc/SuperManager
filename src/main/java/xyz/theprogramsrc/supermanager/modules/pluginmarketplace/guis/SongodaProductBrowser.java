@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
@@ -66,9 +67,39 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
                 this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + songodaProduct.getName() + ":");
                 this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + songodaProduct.getUrl());
             }else if(a.getAction() == ClickType.RIGHT_CLICK){
-                this.close();
-                SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PRODUCT.options().placeholder("{ProductName}", songodaProduct.getName()).get());
-                songodaProduct.download(a.getPlayer());
+                if(!songodaProduct.isFree() && !SuperManager.validateToken()){
+                    // Ask for token
+                    this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
+                    new Dialog(a.getPlayer()){
+                        @Override
+                        public String getTitle() {
+                            return L.DIALOG_TOKEN_INPUT_TITLE.toString();
+                        }
+
+                        @Override
+                        public String getSubtitle() {
+                            return L.DIALOG_TOKEN_INPUT_SUBTITLE.toString();
+                        }
+
+                        @Override
+                        public String getActionbar() {
+                            return L.DIALOG_TOKEN_INPUT_ACTIONBAR.toString();
+                        }
+
+                        @Override
+                        public boolean onResult(String s) {
+                            this.getSettings().getConfig().set("songoda-token", s);
+                            this.getSettings().getConfig().load();
+                            SuperManager.token = s;
+                            this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_SAVED);
+                            return true;
+                        }
+                    };
+                }else{
+                    this.close();
+                    SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PRODUCT.options().placeholder("{ProductName}", songodaProduct.getName()).get());
+                    songodaProduct.download(a.getPlayer());
+                }
             }
         });
     }

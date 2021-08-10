@@ -43,9 +43,10 @@ public class SongodaAPI {
                 String id = json.get("id").getAsInt() + "";
                 String name = json.get("version").getAsString();
                 long createdAt = json.get("created_at").getAsInt() * 1000L;
-                int downloads = json.get("downloads").getAsInt();
+                int downloads = json.get("downloads").getAsInt(); 
                 String downloadUrl = json.get("url").getAsString().replace("/version/", "/download/");
-                versions.add(new Version(productId, id, name, createdAt, downloads, downloadUrl));
+                String fileName = json.get("filename").getAsString();
+                versions.add(new Version(productId, id, name, createdAt, downloads, downloadUrl, fileName));
             }
 
             return versions.toArray(new Version[0]);

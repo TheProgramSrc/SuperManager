@@ -14,6 +14,7 @@ import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
 import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
 
@@ -85,9 +86,10 @@ public class PluginView extends GUI {
                         "&7" + L.PLUGIN_VIEW_DOWNLOAD_UPDATE_ITEM_LORE
                 ).addPlaceholder("{PluginName}", this.sPlugin.getName());
         return new GUIButton(15, item, a-> {
+            this.close();
             boolean premium = this.sPlugin.isPremium();
             if(premium){
-                if(!PluginManager.validateToken()){
+                if(!SuperManager.validateToken()){
                     // Ask for token
                     this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
                     new Dialog(a.getPlayer()){
@@ -110,11 +112,11 @@ public class PluginView extends GUI {
                         public boolean onResult(String s) {
                             this.getSettings().getConfig().set("songoda-token", s);
                             this.getSettings().getConfig().load();
-                            PluginManager.token = s;
+                            SuperManager.token = s;
                             this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_SAVED);
                             return true;
                         }
-                    }.setRecall(p-> this.getSpigotTasks().runTaskLater(5L, PluginView.this::open));
+                    };
                 }else{
                     this.startDownload(a);
                 }

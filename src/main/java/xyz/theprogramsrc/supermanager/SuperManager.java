@@ -23,6 +23,7 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 
 public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
+    public static String token;
     public static SuperManager i;
     private ModuleManager moduleManager;
     private LinkedList<Module> modules;
@@ -36,6 +37,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     @Override
     public void onPluginEnable() {
+        token = this.getSettingsStorage().getConfig().contains("songoda-token") ? this.getSettingsStorage().getConfig().getString("songoda-token") : "";
         UniversalStorage.register(this);
         this.registerTranslation(L.class);
         this.registerModules();
@@ -123,6 +125,14 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         }catch(NumberFormatException e){
             return 0L;
         }
+    }
+
+    public static boolean validateToken(){
+        if(token == null) return false;
+        if(token.equals("")) return false;
+        if(token.equals(" ")) return false;
+
+        return token.matches("^[a-fA-F0-9]{32}$");
     }
 
 }

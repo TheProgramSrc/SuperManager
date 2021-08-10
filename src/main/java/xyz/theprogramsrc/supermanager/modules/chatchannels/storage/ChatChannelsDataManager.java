@@ -107,7 +107,7 @@ public class ChatChannelsDataManager extends YMLConfig {
     }
 
     public Optional<ChatChannel> getChannel(String name){
-        return Arrays.stream(this.getChannels()).filter(channel -> channel.getName() == name).findFirst();
+        return Arrays.stream(this.getChannels()).filter(channel -> channel.getName().equalsIgnoreCase(name)).findFirst();
     }
 
     public ChatChannel[] getChannels(){
@@ -136,12 +136,8 @@ public class ChatChannelsDataManager extends YMLConfig {
     public ChatChannel currentChannel(OfflinePlayer player){
         String path = "Players." + player.getUniqueId();
         if(!this.contains(path)){
-            Optional<ChatChannel> optional = this.getChannel(this.globalChannel());
-            if(optional.isPresent()){
-                this.joinChannel(player, optional.get());
-            }else{
-                throw new RuntimeException("Couldn't find the Global Channel, make sure it exists!");
-            }
+            ChatChannel channel = this.getChannel(UUID.fromString(this.globalChannel()));
+            this.joinChannel(player, channel);
         }
 
         return this.getChannel(UUID.fromString(this.getString(path + ".CurrentChannel")));
@@ -151,7 +147,7 @@ public class ChatChannelsDataManager extends YMLConfig {
         LinkedList<OfflinePlayer> players = new LinkedList<>();
         if(this.getSection("Players") != null){
             this.getSection("Players").getKeys(false).forEach(key -> {
-                if(channel.getUuid().toString() == this.getString("Players." + key + ".CurrentChannel")){
+                if(channel.getUuid().equals(UUID.fromString(this.getString("Players." + key + ".CurrentChannel")))){
                     players.add(Bukkit.getOfflinePlayer(UUID.fromString(key)));
                 }
             });
@@ -166,7 +162,7 @@ public class ChatChannelsDataManager extends YMLConfig {
 
     public int getOnlineInChannel(ChatChannel channel){
         if(this.getSection("Players") == null) return 0;
-        return ((int) this.getSection("Players").getKeys(false).stream().filter(key -> this.getString("Players." + key + ".CurrentChannel") == channel.getUuid().toString()).count());
+        return ((int) this.getSection("Players").getKeys(false).stream().filter(key -> UUID.fromString(this.getString("Players." + key + ".CurrentChannel")).equals(channel.getUuid())).count());
     }
 
     public String format(){

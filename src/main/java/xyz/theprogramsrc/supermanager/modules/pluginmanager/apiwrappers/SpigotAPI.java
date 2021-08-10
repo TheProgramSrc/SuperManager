@@ -44,8 +44,8 @@ public class SpigotAPI {
                 String name = json.get("name").getAsString();
                 long createdAt = json.get("releaseDate").getAsInt() * 1000L;
                 int downloads = json.get("downloads").getAsInt();
-                String downloadUrl = base + "resources/" + productId + "/versions/" + id + "/download";
-                versions.add(new Version(productId, id, name, createdAt, downloads, downloadUrl));
+                String downloadUrl = String.format("https://www.spigotmc.org/resources/%s/download?version=%s", productId, id);
+                versions.add(new Version(productId, id, name, createdAt, downloads, downloadUrl, null));
             }
 
             return versions.toArray(new Version[0]);
