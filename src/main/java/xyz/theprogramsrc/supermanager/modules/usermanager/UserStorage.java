@@ -24,6 +24,7 @@ public class UserStorage extends YMLConfig {
         this.set(path + ".Name", user.getName());
         this.set(path + ".Skin", user.getSkin() != null ? user.getSkin().toString() : null);
         this.set(path + ".Data", Utils.encodeBase64(user.dataToString()));
+        this.CACHE.put(user.getUUID(), user);
     }
 
     public boolean exists(UUID uuid){

@@ -16,7 +16,6 @@ import xyz.theprogramsrc.supermanager.modules.chatchannels.objects.ChatChannel;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.storage.ChatChannelsDataManager;
 
 import java.util.Arrays;
-import java.util.Optional;
 import java.util.UUID;
 
 public class ChatChannelsManager extends SpigotModule {
@@ -58,7 +57,6 @@ public class ChatChannelsManager extends SpigotModule {
                 Arrays.stream(this.chatChannelsDataManager.getPlayersInChannel(channel)).filter(OfflinePlayer::isOnline).map(OfflinePlayer::getPlayer).forEach(p -> {
                     p.sendMessage(toSend);
                 });
-                player.sendMessage(toSend);
             }else{
                 this.getSuperUtils().sendMessage(player, Base.NO_PERMISSION.toString());
             }

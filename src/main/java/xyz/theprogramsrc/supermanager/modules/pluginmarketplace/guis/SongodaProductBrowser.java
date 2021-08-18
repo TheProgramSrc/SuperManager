@@ -8,21 +8,22 @@ import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects.SongodaProduct;
 
-public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
+public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
 
     private final LinkedHashMap<String, String> currencySymbols = new LinkedHashMap<>();
 
     public SongodaProductBrowser(Player player) {
-        super(player);
+        super(player, false);
         this.backEnabled = true;
         currencySymbols.put("EUR", "€");
         currencySymbols.put("USD", "$");
@@ -37,7 +38,17 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
     }
 
     @Override
-    public GUIButton getButton(SongodaProduct songodaProduct) {
+    public String[] getSearchTags(SongodaProduct p) {
+        return new String[]{
+            p.getName(),
+            p.getDescription(),
+            p.getTagline(),
+            p.getOwner(),
+        };
+    }
+
+    @Override
+    public GuiEntry getEntry(SongodaProduct songodaProduct) {
         SimpleItem item = new SimpleItem(XMaterial.CHEST)
                 .setDisplayName("&a" + (songodaProduct.getTagline() != null ? L.PLUGIN_MARKETPLACE_CARD_NAME : L.PLUGIN_MARKETPLACE_CARD_NAME_NO_TAGLINE))
                 .setLore(
@@ -61,16 +72,16 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
         .addPlaceholder("{SupportedVersions}", songodaProduct.getSupportedVersions());
 
         item.addLoreLines(Utils.breakText(songodaProduct.getDescription(), 40, "&7"));
-        return new GUIButton(item).setAction(a-> {
-            if(a.getAction() == ClickType.LEFT_CLICK){
+        return new GuiEntry(item, a-> {
+            if(a.clickType == ClickType.LEFT_CLICK){
                 this.close();
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + songodaProduct.getName() + ":");
-                this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + songodaProduct.getUrl());
-            }else if(a.getAction() == ClickType.RIGHT_CLICK){
+                this.getSuperUtils().sendMessage(a.player, "&a" + songodaProduct.getName() + ":");
+                this.getSuperUtils().sendMessage(a.player, "&c" + songodaProduct.getUrl());
+            }else if(a.clickType == ClickType.RIGHT_CLICK){
                 if(!songodaProduct.isFree() && !SuperManager.validateToken()){
                     // Ask for token
-                    this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
-                    new Dialog(a.getPlayer()){
+                    this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
+                    new Dialog(a.player){
                         @Override
                         public String getTitle() {
                             return L.DIALOG_TOKEN_INPUT_TITLE.toString();
@@ -97,15 +108,15 @@ public class SongodaProductBrowser extends BrowserGUI<SongodaProduct> {
                     };
                 }else{
                     this.close();
-                    SuperManager.i.getSuperUtils().sendMessage(a.getPlayer(), SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PRODUCT.options().placeholder("{ProductName}", songodaProduct.getName()).get());
-                    songodaProduct.download(a.getPlayer());
+                    SuperManager.i.getSuperUtils().sendMessage(a.player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_DOWNLOADING_PRODUCT.options().placeholder("{ProductName}", songodaProduct.getName()).get());
+                    songodaProduct.download(a.player);
                 }
             }
         });
     }
 
     @Override
-    protected String getTitle() {
-        return L.PLUGIN_MARKETPLACE_TITLE.toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.PLUGIN_MARKETPLACE_TITLE.toString());
     }
 }

@@ -63,8 +63,7 @@ public class BackupStorage extends SpigotModule {
 
     public void delete(Backup backup){
         this.CACHE.remove(backup.getUuid());
-        this.cfg.getConfig().remove("Backups." + backup.getUuid());
-        this.cfg.save();
+        this.cfg.remove("Backups." + backup.getUuid());
     }
 
     public void save(Backup backup){
@@ -76,11 +75,15 @@ public class BackupStorage extends SpigotModule {
         this.cfg.set(path + ".TimeBetweenBackups", backup.getTimeBetweenBackups());
         this.cfg.set(path + ".LastBackup", saveFormat.format(backup.getLastBackup()));
         this.cfg.set(path + ".NextBackup", saveFormat.format(backup.getNextBackup()));
-        this.CACHE.remove(backup.getUuid());
+        this.CACHE.put(backup.getUuid(), backup);
     }
 
     public Backup get(UUID uuid){
-        if(!this.CACHE.containsKey(uuid)){
+        return this.get(uuid, false);
+    }
+
+    public Backup get(UUID uuid, boolean skipCache){
+        if(!this.CACHE.containsKey(uuid) || skipCache){
             DateTimeFormatter saveFormat = DateTimeFormatter.ISO_INSTANT;
             String path = "Backups." + uuid.toString();
             if(!this.cfg.contains(path + ".Paths")) return null;
@@ -99,7 +102,7 @@ public class BackupStorage extends SpigotModule {
 
     public Backup[] getAll(){
         if(this.cfg.getSection("Backups") == null) return new Backup[0];
-        return this.cfg.getSection("Backups").getKeys(false).stream().map(UUID::fromString).filter(this::has).map(this::get).toArray(Backup[]::new);
+        return this.cfg.getSection("Backups").getKeys(false).stream().map(UUID::fromString).filter(this::has).map(uuid -> this.get(uuid, true)).toArray(Backup[]::new);
     }
     
 }

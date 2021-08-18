@@ -3,15 +3,13 @@ package xyz.theprogramsrc.supermanager.modules.backupmanager;
 import java.io.File;
 import java.time.Instant;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 import xyz.theprogramsrc.supercoreapi.global.objects.RecurringTask;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
@@ -21,7 +19,6 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 
 public class BackupManager extends Module{
 
-    public static LinkedList<UUID> queue = new LinkedList<UUID>();
     public static BackupManager i;
     public BackupStorage backupStorage;
     private RecurringTask task;
@@ -32,12 +29,10 @@ public class BackupManager extends Module{
         YMLConfig cfg = new YMLConfig(new File(this.getModuleFolder(), "Backups.yml"));
         this.backupStorage = new BackupStorage(cfg);
         // Check every second if we have new backups to be added
-        this.task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 20L, () -> {
+        this.task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 10L, () -> {
             Date now = Date.from(Instant.now());
             for(Backup backup : this.backupStorage.getAll()){
                 if(!this.backupStorage.has(backup.getUuid())) continue;
-                if(queue.contains(backup.getUuid())) continue;
-                queue.add(backup.getUuid());
                 if (now.after(Date.from(backup.getNextBackup()))) {
                     backup.backup(null);
                 }
@@ -75,8 +70,8 @@ public class BackupManager extends Module{
     public void onAction(Player player) {
         new BackupBrowser(player){
             @Override
-            public void onBack(ClickAction clickAction) {
-                new MainGUI(clickAction.getPlayer());
+            public void onBack(GuiAction clickAction) {
+                new MainGUI(clickAction.player);
             }
         };
     }

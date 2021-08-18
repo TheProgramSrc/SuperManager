@@ -15,10 +15,12 @@ import xyz.theprogramsrc.supercoreapi.global.utils.StringUtils;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiModel;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
@@ -26,13 +28,13 @@ import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupStorage;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.objects.Backup;
 
-public class BackupFileBrowser extends BrowserGUI<File>{
+public class BackupFileBrowser extends BrowserGui<File>{
 
     private final LinkedList<String> filesToBackup;
     private File currentFolder;
 
     public BackupFileBrowser(Player player, File folder, LinkedList<String> filesToBackup){
-        super(player);
+        super(player, false);
         this.filesToBackup = filesToBackup;
         this.currentFolder = folder;
         this.backEnabled = true;
@@ -40,15 +42,15 @@ public class BackupFileBrowser extends BrowserGUI<File>{
     }
 
     @Override
-    protected GUIButton[] getButtons() {
-        LinkedList<GUIButton> buttons = new LinkedList<>(Utils.toList(super.getButtons()));
+    public void onBuild(GuiModel model) {
+        super.onBuild(model);
         SimpleItem item = new SimpleItem(XMaterial.EMERALD)
             .setDisplayName("&a" + L.BACKUP_MANAGER_FILE_BROWSER_SAVE_NAME)
             .setLore(
                 "&7",
                 "&7" + L.BACKUP_MANAGER_FILE_BROWSER_SAVE_LORE
             ).addPlaceholder("{SelectedFilesAmount}", this.filesToBackup.size()+"");
-        buttons.add(new GUIButton(47, item, a-> {
+        model.setButton(47, new GuiEntry(item, a-> {
             this.getSpigotTasks().runAsyncTask(() -> {
                 L[] msg = new L[]{
                     L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS,
@@ -57,12 +59,12 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                     L.BACKUP_MANAGER_AVAILABLE_TIME_UNITS_HOUR
                 };
                 for(L l : msg){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), l.toString());
+                    this.getSuperUtils().sendMessage(a.player, l.toString());
                 }
             });
 
             final AtomicLong atomicSeconds = new AtomicLong();
-            new Dialog(a.getPlayer()){
+            new Dialog(a.player){
                 
                 @Override
                 public String getTitle(){
@@ -83,7 +85,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 public boolean onResult(String input){
                     long seconds = SuperManager.getTimeSecondsFromString(input);
                     if(seconds == 0L){
-                        this.getSuperUtils().sendMessage(a.getPlayer(), L.INVALID_TIME_FORMAT.toString());
+                        this.getSuperUtils().sendMessage(a.player, L.INVALID_TIME_FORMAT.toString());
                         return false;
                     }
                     atomicSeconds.set(seconds);
@@ -121,34 +123,36 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 // Add backup to storage
                 backupStorage.save(backup);
                 // Notify player
-                this.getSuperUtils().sendMessage(a.getPlayer(), L.BACKUP_MANAGER_BACKUP_CREATED.toString());
+                this.getSuperUtils().sendMessage(a.player, L.BACKUP_MANAGER_BACKUP_CREATED.toString());
                 // Generate new backup
                 backup.backup(player);
             });
         }));
-
-        return buttons.toArray(new GUIButton[0]);
     }
 
     @Override
-    public GUIButton getButton(File file) {
+    public String[] getSearchTags(File f) {
+        return new String[]{f.getName()};
+    }
+
+    @Override
+    public GuiEntry getEntry(File file) {
         SimpleItem item = new SimpleItem(file.isDirectory() ? XMaterial.CHEST : XMaterial.PAPER)
             .setDisplayName("&a" + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_NAME)
             .setLore(
                 "&7",
                 "&9" + Base.LEFT_CLICK + "&7 " + (!this.filesToBackup.contains(file.getPath()) ? L.BACKUP_MANAGER_FILE_BROWSER_ITEM_ADD_TO_LIST : L.BACKUP_MANAGER_FILE_BROWSER_ITEM_REMOVE_FROM_LIST)
-            );
+            ).setGlowing(this.filesToBackup.contains(file.getPath()));
         
         if(file.isDirectory()){
             item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.BACKUP_MANAGER_FILE_BROWSER_ITEM_OPEN_FOLDER);
         }
         item.addPlaceholder("{FileName}", file.getName()).setGlowing(this.filesToBackup.contains(file.getPath()));
-
-        return new GUIButton(item, a-> {
-            if(file.isDirectory() && a.getAction() == ClickType.RIGHT_CLICK){
-                new BackupFileBrowser(a.getPlayer(), file, this.filesToBackup){
+        return new GuiEntry(item, a-> {
+            if(file.isDirectory() && a.clickType == ClickType.RIGHT_CLICK){
+                new BackupFileBrowser(a.player, file, this.filesToBackup){
                     @Override
-                    public void onBack(ClickAction clickAction) {
+                    public void onBack(GuiAction clickAction) {
                         BackupFileBrowser.this.open();
                     }
                 };
@@ -161,6 +165,7 @@ public class BackupFileBrowser extends BrowserGUI<File>{
                 this.open();
             }
         });
+            
     }
 
     @Override
@@ -171,8 +176,8 @@ public class BackupFileBrowser extends BrowserGUI<File>{
     }
 
     @Override
-    protected String getTitle() {
-        return L.BACKUP_MANAGER_FILE_BROWSER_TITLE.toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.BACKUP_MANAGER_FILE_BROWSER_TITLE.toString());
     }
     
 }

@@ -4,19 +4,20 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.worldmanager.WorldManager;
 import xyz.theprogramsrc.supermanager.modules.worldmanager.objects.SWorld;
 
-public class WorldBrowserGUI extends BrowserGUI<SWorld> {
+public class WorldBrowserGUI extends BrowserGui<SWorld> {
 
     private final WorldManager worldManager;
 
     public WorldBrowserGUI(Player player, WorldManager worldManager) {
-        super(player);
+        super(player, false);
         this.worldManager = worldManager;
         this.backEnabled = true;
         this.open();
@@ -28,7 +29,12 @@ public class WorldBrowserGUI extends BrowserGUI<SWorld> {
     }
 
     @Override
-    public GUIButton getButton(SWorld sWorld) {
+    public String[] getSearchTags(SWorld w) {
+        return new String[]{w.getName()};
+    }
+
+    @Override
+    public GuiEntry getEntry(SWorld sWorld) {
         World.Environment env = sWorld.getEnvironment();
         XMaterial material;
         if(env == World.Environment.NORMAL){
@@ -50,13 +56,13 @@ public class WorldBrowserGUI extends BrowserGUI<SWorld> {
                 )
                 .addPlaceholder("{WorldName}", sWorld.getName())
                 .addPlaceholder("{LastBackup}", sWorld.getLastBackupTime());
-        return new GUIButton(item, a->{
-            new WorldViewGUI(a.getPlayer(), sWorld, a1-> this.open());
+        return new GuiEntry(item, a->{
+            new WorldViewGUI(a.player, sWorld, a1-> this.open());
         });
     }
 
     @Override
-    protected String getTitle() {
-        return L.WORLD_MANAGER_BROWSER_GUI_TITLE.options().placeholder("{WorldAmount}", this.getObjects().length+"").get();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.WORLD_MANAGER_BROWSER_GUI_TITLE.options().placeholder("{WorldAmount}", this.getObjects().length+"").get());
     }
 }

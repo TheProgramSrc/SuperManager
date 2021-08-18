@@ -18,10 +18,9 @@ import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
-import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.guis.PluginBrowser;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
@@ -30,7 +29,6 @@ import xyz.theprogramsrc.supermanager.objects.Module;
 public class PluginManager extends Module {
 
     public static LinkedHashMap<String, SPlugin> plugins = new LinkedHashMap<>();
-    public static String token = SuperManager.token;
     public static CookieManager cookieManager = new CookieManager();
 
     @Override
@@ -91,9 +89,6 @@ public class PluginManager extends Module {
             return false;
         }
     }
-    public static boolean validateToken(){
-        return SuperManager.validateToken();
-    }
 
     @Override
     public String getDisplay() {
@@ -119,8 +114,8 @@ public class PluginManager extends Module {
     public void onAction(Player player) {
         new PluginBrowser(player){
             @Override
-            public void onBack(ClickAction clickAction) {
-                new MainGUI(clickAction.getPlayer());
+            public void onBack(GuiAction clickAction) {
+                new MainGUI(clickAction.player);
             }
         };
     }

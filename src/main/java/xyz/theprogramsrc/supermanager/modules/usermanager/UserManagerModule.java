@@ -1,8 +1,12 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager;
 
+import java.io.File;
+import java.util.Arrays;
+
 import org.bukkit.entity.Player;
+
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
@@ -10,9 +14,6 @@ import xyz.theprogramsrc.supermanager.modules.usermanager.guis.UserBrowser;
 import xyz.theprogramsrc.supermanager.modules.usermanager.listeners.PlayerListener;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 import xyz.theprogramsrc.supermanager.objects.Module;
-
-import java.io.File;
-import java.util.Arrays;
 
 public class UserManagerModule extends Module {
 
@@ -54,8 +55,8 @@ public class UserManagerModule extends Module {
     public void onAction(Player player) {
         new UserBrowser(player, this){
             @Override
-            public void onBack(ClickAction clickAction) {
-                new MainGUI(clickAction.getPlayer());
+            public void onBack(GuiAction clickAction) {
+                new MainGUI(clickAction.player);
             }
         };
     }

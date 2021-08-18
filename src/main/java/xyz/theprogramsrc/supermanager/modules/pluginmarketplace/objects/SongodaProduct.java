@@ -46,19 +46,19 @@ public class SongodaProduct {
     }
 
     public String getName() {
-        return name;
+        return name != null ? name : "";
     }
 
     public String getTagline(){
-        return tagline;
+        return tagline != null ? tagline : "";
     }
 
     public String getDescription() {
-        return description;
+        return description != null ? description : "";
     }
 
     public String getOwner() {
-        return owner;
+        return owner != null ? owner : "";
     }
 
     public String getUrl() {

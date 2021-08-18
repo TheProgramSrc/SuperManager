@@ -69,7 +69,7 @@ public class ChatChannelsDataManager extends YMLConfig {
             if(!this.hasChannel(channel.getName())){
                 this.saveChannel(channel);
             }
-            this.CHANNELS_CACHE.remove(channel.getUuid());
+            this.CHANNELS_CACHE.put(channel.getUuid(), channel);
         }
     }
 
@@ -79,7 +79,7 @@ public class ChatChannelsDataManager extends YMLConfig {
             this.set(path + ".Name", channel.getName());
             this.set(path + ".MaxPlayers", channel.getMaxPlayers());
             this.set(path + ".CreatedAt", channel.getCreatedAt());
-            this.CHANNELS_CACHE.remove(channel.getUuid());
+            this.CHANNELS_CACHE.put(channel.getUuid(), channel);
         }
     }
 

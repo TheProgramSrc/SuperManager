@@ -11,24 +11,30 @@ import org.bukkit.entity.Player;
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors.YMLEditor;
 
-public class FileBrowserGUI extends BrowserGUI<File> {
+public class FileBrowserGUI extends BrowserGui<File> {
 
     private final File file, rootFolder;
 
     public FileBrowserGUI(Player player, File currentFolder) {
-        super(player);
+        super(player, false);
         this.file = currentFolder;
         this.rootFolder = new File(".");
         this.backEnabled = true;
         this.open();
+    }
+
+    @Override
+    public String[] getSearchTags(File f) {
+        return new String[]{f.getName()};
     }
 
     @Override
@@ -52,7 +58,7 @@ public class FileBrowserGUI extends BrowserGUI<File> {
     }
 
     @Override
-    public GUIButton getButton(File file) {
+    public GuiEntry getEntry(File file) {
         SimpleItem item;
         boolean editable = canEdit(file);
         if(file.isDirectory()){ // Directory
@@ -81,13 +87,13 @@ public class FileBrowserGUI extends BrowserGUI<File> {
         }
 
         item.addPlaceholder("{FileName}", file.getName()).addPlaceholder("{FilePath}", file.getPath());
-        return new GUIButton(item, a-> {
-            ClickType clickType = a.getAction();
+        return new GuiEntry(item, a-> {
+            ClickType clickType = a.clickType;
             if(file.isDirectory()){
                 if(clickType == ClickType.LEFT_CLICK){
-                    new FileBrowserGUI(a.getPlayer(), file){
+                    new FileBrowserGUI(a.player, file){
                         @Override
-                        public void onBack(ClickAction clickAction) {
+                        public void onBack(GuiAction clickAction) {
                             FileBrowserGUI.this.open();
                         }
                     };
@@ -95,14 +101,14 @@ public class FileBrowserGUI extends BrowserGUI<File> {
                     File parent = file.getParentFile();
                     if(parent == null || parent == this.rootFolder || file == this.spigotPlugin.getPluginFile() || file == this.spigotPlugin.getPluginFolder()){
                         this.close();
-                        this.getSuperUtils().sendMessage(a.getPlayer(), L.FILE_MANAGER_PROTECTED_FILE.options().placeholder("{FileName}", file.getName()).toString());
+                        this.getSuperUtils().sendMessage(a.player, L.FILE_MANAGER_PROTECTED_FILE.options().placeholder("{FileName}", file.getName()).toString());
                     }else{
                         try{
                             FileUtils.deleteDirectory(file);
                             this.open();
                         }catch (IOException e){
                             this.close();
-                            this.getSuperUtils().sendMessage(a.getPlayer(), L.FILE_MANAGER_FAILED_TO_DELETE_DIRECTORY.options().placeholder("{FileName}", file.getName()).toString());
+                            this.getSuperUtils().sendMessage(a.player, L.FILE_MANAGER_FAILED_TO_DELETE_DIRECTORY.options().placeholder("{FileName}", file.getName()).toString());
                             this.plugin.addError(e);
                             this.log("&cFailed to delete directory:");
                             e.printStackTrace();
@@ -111,9 +117,9 @@ public class FileBrowserGUI extends BrowserGUI<File> {
                 }
             }else if(editable){
                 if(file.getName().endsWith(".yml")){ // Open YML File Editor
-                    new YMLEditor(a.getPlayer(), file){
+                    new YMLEditor(a.player, file){
                         @Override
-                        public void onBack(ClickAction clickAction) {
+                        public void onBack(GuiAction clickAction) {
                             FileBrowserGUI.this.open();
                         }
                     };
@@ -128,9 +134,9 @@ public class FileBrowserGUI extends BrowserGUI<File> {
     }
 
     @Override
-    protected String getTitle() {
+    public GuiTitle getTitle() {
         String path = this.file.equals(this.rootFolder) ? "." : this.file.getPath();
-        return "&aFile Browser &7> &9{Path}".replace("{Path}", path);
+        return GuiTitle.of(L.FILE_MANAGER_FILE_BROWSER_TITLE.options().placeholder("{Path}", path).get());
     }
 
     private boolean canEdit(final File file){

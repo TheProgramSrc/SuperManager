@@ -1,19 +1,22 @@
 package xyz.theprogramsrc.supermanager.modules.backupmanager.objects;
 
 import java.io.File;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.CommandSender;
 
 import xyz.theprogramsrc.supercoreapi.global.utils.StringUtils;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.global.utils.files.ZipUtils;
+import xyz.theprogramsrc.supercoreapi.libs.zip4j.ZipFile;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
@@ -70,6 +73,10 @@ public class Backup {
         return this.paths;
     }
 
+    public long getSecondsLeftBeforeBackup(){
+        return Duration.between(Instant.now(), this.getNextBackup()).getSeconds();
+    }
+
     public void backup(CommandSender sender) {
         SuperManager.i.getSpigotTasks().runAsyncTask(() -> {
             try{
@@ -88,27 +95,22 @@ public class Backup {
                     .placeholder("{Minute}", calendar.get(Calendar.MINUTE)+"")
                     .placeholder("{Second}", calendar.get(Calendar.SECOND)+"")
                     .get();
-                
-                    File[] files = this.getPaths().stream().map(path -> new File(path)).filter(File::exists).toArray(File[]::new);
-                    File backupsFolder = Utils.folder(this.backupStorage.getBackupsFolder());
-                    File backup = ZipUtils.zipFiles(backupsFolder, (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip")), files);
-                    if(backup != null){
-                        this.backupPath = backup.getPath();
-                        this.nextBackup = now.toInstant().plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant();
-                        this.lastBackup = now.toInstant();
-                        BackupManager.i.backupStorage.save(this);
-                        if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_SUCCESSFULLY_BACKED_UP_DATA.options().placeholder("{FilesAmount}", files.length + "").placeholder("{NextBackupAt}", Date.from(this.nextBackup).toString()).get()));
-                    } else{
-                        if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_FAILED_TO_BACKUP_DATA.toString()));
-                    }
+                List<File> files = this.getPaths().stream().map(path -> new File(path)).filter(File::exists).collect(Collectors.toList());
+                File backupsFolder = Utils.folder(this.backupStorage.getBackupsFolder());
+                ZipFile backup = new ZipFile(new File(backupsFolder, (backupFileName.endsWith(".zip") ? backupFileName : (backupFileName + ".zip"))));
+                backup.addFiles(files);
+                backup.close();
+                this.backupPath = backup.getFile().getPath();
+                this.nextBackup = now.toInstant().plus(this.timeBetweenBackups, ChronoUnit.SECONDS).atZone(ZoneId.systemDefault()).toInstant();
+                this.lastBackup = now.toInstant();
+                BackupManager.i.backupStorage.save(this);
+                if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_SUCCESSFULLY_BACKED_UP_DATA.options().placeholder("{FilesAmount}", files.size() + "").placeholder("{NextBackupAt}", Date.from(this.nextBackup).toString()).get()));
             } catch(Exception e) {
                 if(sender != null) sender.sendMessage(Utils.ct(L.BACKUP_MANAGER_FAILED_TO_BACKUP_DATA.toString()));
                 BackupManager.i.log("&cFailed to execute backup '" + this.getName() + "':", true);
                 BackupManager.i.getPlugin().addError(e);
                 e.printStackTrace();
             }
-
-            BackupManager.queue.remove(this.getUuid());
         });
     }
 

@@ -7,21 +7,22 @@ import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
 
-public class BackupsFolderSelector extends BrowserGUI<File>{
+public class BackupsFolderSelector extends BrowserGui<File>{
 
 
     private File currentFolder;
 
     public BackupsFolderSelector(Player player, File currentFolder) {
-        super(player);
+        super(player, false);
         this.backEnabled = true;
         this.currentFolder = currentFolder;
         this.open();
@@ -35,7 +36,12 @@ public class BackupsFolderSelector extends BrowserGUI<File>{
     }
 
     @Override
-    public GUIButton getButton(File f) {
+    public String[] getSearchTags(File file) {
+        return new String[]{file.getName()};
+    }
+
+    @Override
+    public GuiEntry getEntry(File f) {
         SimpleItem item = new SimpleItem(XMaterial.CHEST)
             .setDisplayName("&6" + L.BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_NAME)
             .setLore("&7");
@@ -47,25 +53,25 @@ public class BackupsFolderSelector extends BrowserGUI<File>{
         }
 
         item.addLoreLine("&9" + Base.RIGHT_CLICK + "&7 " + L.BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_SELECT_FOLDER).addPlaceholder("{FileName}", f.getName());
-        return new GUIButton(item, a-> {
-            if(a.getAction() == ClickType.LEFT_CLICK && hasFolders){
-                new BackupsFolderSelector(a.getPlayer(), f){
+        return new GuiEntry(item, a-> {
+            if(a.clickType == ClickType.LEFT_CLICK && hasFolders){
+                new BackupsFolderSelector(a.player, f){
                     @Override
-                    public void onBack(ClickAction clickAction) {
+                    public void onBack(GuiAction guiAction) {
                         BackupsFolderSelector.this.open();
                     }
                 };
-            }else if(a.getAction() == ClickType.RIGHT_CLICK){
+            }else if(a.clickType == ClickType.RIGHT_CLICK){
                 BackupManager.i.backupStorage.setBackupsFolder(f.getPath());
                 this.close();
-                this.getSuperUtils().sendMessage(a.getPlayer(), Base.DONE.toString());
+                this.getSuperUtils().sendMessage(a.player, Base.DONE.toString());
             }
         });
     }
 
     @Override
-    protected String getTitle() {
-        return L.BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_TITLE.toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_TITLE.toString());
     }
     
 }

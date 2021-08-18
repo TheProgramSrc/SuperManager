@@ -6,73 +6,73 @@ import java.util.LinkedList;
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.Gui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiModel;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 
-public class BackupSettings extends GUI {
+public class BackupSettings extends Gui {
 
     private Runnable onBack;
 
     public BackupSettings(Player player, Runnable onBack) {
-        super(player);
+        super(player, false);
         this.onBack = onBack;
         this.open();
     }
 
     @Override
-    protected GUIRows getRows() {
-        return GUIRows.FOUR;
+    public GuiRows getRows() {
+        return GuiRows.FOUR;
     }
 
     @Override
-    protected String getTitle() {
-        return L.BACKUP_MANAGER_SETTINGS_TITLE.toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.BACKUP_MANAGER_SETTINGS_TITLE.toString());
     }
 
     @Override
-    protected GUIButton[] getButtons() {
-        return new GUIButton[]{
-            this.getScheduleButton(),
-            this.getSelectBackupsFolderButton(),
-            new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), a-> this.onBack.run())
-        };
+    public void onBuild(GuiModel model) {
+        model.setButton(11, this.getScheduleButton());
+        model.setButton(15, this.getSelectBackupsFolderButton());
+        model.setButton(this.getRows().size-1, new GuiEntry(this.getPreloadedItems().getBackItem(), a-> this.onBack.run()));
     }
 
-    private GUIButton getSelectBackupsFolderButton(){
+    private GuiEntry getSelectBackupsFolderButton(){ // 15
         SimpleItem item = new SimpleItem(XMaterial.CHEST)
             .setDisplayName("&6" + L.BACKUP_MANAGER_SETTINGS_SELECT_BACKUPS_FOLDER_NAME)
             .setLore(
                 "&7",
                 "&7" + L.BACKUP_MANAGER_SETTINGS_SELECT_BACKUPS_FOLDER_LORE
             );
-        return new GUIButton(15, item, a-> {
-            new BackupsFolderSelector(a.getPlayer(), new File(".")){
+        return new GuiEntry(item, a-> {
+            new BackupsFolderSelector(a.player, new File(".")){
                 
                 @Override
-                public void onBack(ClickAction action) {
+                public void onBack(GuiAction action) {
                     BackupSettings.this.open();
                 }
             };
         });
     }
 
-    private GUIButton getScheduleButton(){
+    private GuiEntry getScheduleButton(){ // 11
         SimpleItem item = new SimpleItem(XMaterial.CLOCK)
             .setDisplayName("&e" + L.BACKUP_MANAGER_SETTINGS_SCHEDULE_NAME)
             .setLore(
                 "&7",
                 "&7" + L.BACKUP_MANAGER_SETTINGS_SCHEDULE_LORE
             );
-        return new GUIButton(11, item, a-> {
+        return new GuiEntry(item, a-> {
             LinkedList<String> paths = new LinkedList<>();
-            new BackupFileBrowser(a.getPlayer(), new File("."), paths){
+            new BackupFileBrowser(a.player, new File("."), paths){
                 
                 @Override
-                public void onBack(ClickAction clickAction) {
+                public void onBack(GuiAction clickAction) {
                     BackupSettings.this.open();
                 }
             };

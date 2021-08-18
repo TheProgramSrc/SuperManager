@@ -13,7 +13,7 @@ import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonArray;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonElement;
 import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
@@ -94,8 +94,8 @@ public class PluginMarketplace extends Module {
 
         new SongodaProductBrowser(player){
             @Override
-            public void onBack(ClickAction clickAction) {
-                new MainGUI(clickAction.getPlayer());
+            public void onBack(GuiAction clickAction) {
+                new MainGUI(clickAction.player);
             }
         };
     }

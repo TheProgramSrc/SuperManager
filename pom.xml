@@ -144,8 +144,8 @@
         <dependency>
             <groupId>xyz.theprogramsrc</groupId>
             <artifactId>SuperCoreAPI</artifactId>
-            <version>5.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
+            <version>5.2.0-SNAPSHOT</version>
+            <scope>compile</scope> 
         </dependency>
         <!-- PlaceholderAPI -->
         <dependency>

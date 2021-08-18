@@ -1,47 +1,49 @@
 package xyz.theprogramsrc.supermanager.modules.worldmanager.guis;
 
+import java.util.function.Consumer;
+
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.Recall;
+
 import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.Gui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiModel;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.worldmanager.objects.SWorld;
 
-public class WorldViewGUI extends GUI {
+public class WorldViewGUI extends Gui {
 
     private final SWorld sWorld;
-    private final Recall<ClickAction> onBack;
+    private final Consumer<GuiAction> onBack;
 
-    public WorldViewGUI(Player player, SWorld sWorld, Recall<ClickAction> onBack) {
-        super(player);
+    public WorldViewGUI(Player player, SWorld sWorld, Consumer<GuiAction> onBack) {
+        super(player, false);
         this.sWorld = sWorld;
         this.onBack = onBack;
         this.open();
     }
 
     @Override
-    protected GUIRows getRows() {
-        return GUIRows.ONE;
+    public GuiRows getRows() {
+        return GuiRows.ONE;
     }
 
     @Override
-    protected String getTitle() {
-        return L.WORLD_MANAGER_WORLD_VIEW_GUI_TITLE.options().placeholder("{WorldName}", this.sWorld.getName()).toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.WORLD_MANAGER_WORLD_VIEW_GUI_TITLE.options().placeholder("{WorldName}", this.sWorld.getName()).toString());
     }
 
     @Override
-    protected GUIButton[] getButtons() {
-        return new GUIButton[]{
-                new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), this.onBack::run),
-                this.getBackupButton()
-        };
+    public void onBuild(GuiModel m) {
+        m.setButton(this.getRows().size, new GuiEntry(this.getPreloadedItems().getBackItem(), this.onBack::accept));
+        m.setButton(0, this.getBackupButton());
     }
 
-    private GUIButton getBackupButton(){
+    private GuiEntry getBackupButton(){
         SimpleItem item = new SimpleItem(XMaterial.ANVIL)
                 .setDisplayName("&a" + L.WORLD_MANAGER_WORLD_VIEW_GUI_CREATE_BACKUP_NAME)
                 .setLore(
@@ -54,14 +56,14 @@ public class WorldViewGUI extends GUI {
                 .addPlaceholder("{LastBackupAt}", this.sWorld.getLastBackupTime())
                 .addPlaceholder("{LastBackupPath}", this.sWorld.getLastBackupPath());
 
-        return new GUIButton(0, item, a-> {
+        return new GuiEntry(item, a-> {
             this.close();
-            this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.WORLD_MANAGER_BACKUP_CREATING);
+            this.getSuperUtils().sendMessage(a.player, "&a" + L.WORLD_MANAGER_BACKUP_CREATING);
             this.getSpigotTasks().runAsyncTask(() -> {
                 if(this.sWorld.backup()){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), "&a" + L.WORLD_MANAGER_BACKUP_SUCCESS.options().placeholder("{Path}", this.sWorld.getLastBackupPath()));
+                    this.getSuperUtils().sendMessage(a.player, "&a" + L.WORLD_MANAGER_BACKUP_SUCCESS.options().placeholder("{Path}", this.sWorld.getLastBackupPath()));
                 }else{
-                    this.getSuperUtils().sendMessage(a.getPlayer(), "&c" + L.WORLD_MANAGER_BACKUP_FAILED);
+                    this.getSuperUtils().sendMessage(a.player, "&c" + L.WORLD_MANAGER_BACKUP_FAILED);
                 }
             });
         });
