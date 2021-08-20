@@ -1,9 +1,8 @@
 package xyz.theprogramsrc.supermanager.modules.worldmanager.objects;
 
 import java.io.File;
-import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;
@@ -53,22 +52,14 @@ public class SWorld {
     }
 
     public String getLastBackupTime(){
-        if(this.getLastBackupPath().endsWith(".zip")){
-            String fileName = new File(this.getLastBackupPath()).getName().replace("_backup.zip", "");
-            String worldName = this.getBukkitWorld().getWorldFolder().getName() + "-";
-            String time = fileName.replace(worldName, "");
-            return DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(this.fileTimeFormat.parse(time));
-        }else{
-            return "N/A";
-        }
+        return this.cfg.contains("last_backup_time") ? DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss").format(ZonedDateTime.parse(this.cfg.getString("last_backup_time"))) : "N/A";
     }
 
     public boolean backup(){
         File worldFolder = this.getBukkitWorld().getWorldFolder();
         if(worldFolder.exists()){
             File backupsFolder = Utils.folder(this.backupsFolder);
-            Calendar calendar = Calendar.getInstance();
-            Instant now = calendar.getTime().toInstant();
+            ZonedDateTime now = ZonedDateTime.now();
             String time = this.fileTimeFormat.format(now);
             String fileName = String.format("%s-%s_backup.zip", worldFolder.getName(), time);
             try{
@@ -76,6 +67,7 @@ public class SWorld {
                 zip.addFolder(worldFolder);
                 zip.close();
                 this.cfg.set("last_backup", zip.getFile().getPath());
+                this.cfg.set("last_backup_time", now.toString());
                 this.cfg.reload();
                 return true;
             }catch (Exception e){

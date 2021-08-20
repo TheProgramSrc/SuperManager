@@ -1,5 +1,6 @@
 package xyz.theprogramsrc.supermanager.modules.worldmanager.guis;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.bukkit.entity.Player;
@@ -39,7 +40,7 @@ public class WorldViewGUI extends Gui {
 
     @Override
     public void onBuild(GuiModel m) {
-        m.setButton(this.getRows().size, new GuiEntry(this.getPreloadedItems().getBackItem(), this.onBack::accept));
+        m.setButton(this.getRows().size-1, new GuiEntry(this.getPreloadedItems().getBackItem(), this.onBack::accept));
         m.setButton(0, this.getBackupButton());
     }
 
@@ -54,7 +55,7 @@ public class WorldViewGUI extends Gui {
                         "&7" + L.WORLD_MANAGER_WORLD_VIEW_GUI_CREATE_BACKUP_LORE_LAST_PATH
                 )
                 .addPlaceholder("{LastBackupAt}", this.sWorld.getLastBackupTime())
-                .addPlaceholder("{LastBackupPath}", this.sWorld.getLastBackupPath());
+                .addPlaceholder("{LastBackupPath}", new File(this.sWorld.getLastBackupPath()).getPath());
 
         return new GuiEntry(item, a-> {
             this.close();
