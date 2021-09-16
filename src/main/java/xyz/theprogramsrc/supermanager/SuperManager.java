@@ -18,7 +18,6 @@ import xyz.theprogramsrc.supermanager.modules.filemanager.FileManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
-import xyz.theprogramsrc.supermanager.modules.worldmanager.WorldManager;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
 public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
@@ -56,7 +55,6 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         this.registerModule(ChatChannelsModule.class);
         this.registerModule(FileManager.class);
         this.registerModule(BackupManager.class);
-        this.registerModule(WorldManager.class);
     }
 
     public DataBase getDataBase() {
