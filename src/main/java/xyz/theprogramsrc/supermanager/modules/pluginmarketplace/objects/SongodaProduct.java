@@ -92,7 +92,7 @@ public class SongodaProduct {
     }
 
     public boolean isSongodaPlus(){
-        return this.getPaymentMethod().equalsIgnoreCase("songoda+") || (this.getOwner().equalsIgnoreCase("songoda") && this.getPriceAsDouble() == 0.1);
+        return this.getPaymentMethod().equalsIgnoreCase("songoda+") || this.getPaymentMethod().equalsIgnoreCase("songoda+ program")| (this.getOwner().equalsIgnoreCase("songoda") && this.getPriceAsDouble() == 0.1);
     }
 
     public int getId() {
