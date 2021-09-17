@@ -1,7 +1,5 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.guis;
 
-import java.util.LinkedHashMap;
-
 import org.bukkit.entity.Player;
 
 import xyz.theprogramsrc.supercoreapi.global.translations.Base;
@@ -20,15 +18,9 @@ import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects.SongodaP
 
 public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
 
-    private final LinkedHashMap<String, String> currencySymbols = new LinkedHashMap<>();
-
     public SongodaProductBrowser(Player player) {
         super(player, false);
         this.backEnabled = true;
-        currencySymbols.put("EUR", "€");
-        currencySymbols.put("USD", "$");
-        currencySymbols.put("AUD", "AU$");
-        currencySymbols.put("GBP", "£");
         this.open();
     }
 
@@ -41,9 +33,7 @@ public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
     public String[] getSearchTags(SongodaProduct p) {
         return new String[]{
             p.getName(),
-            p.getDescription(),
-            p.getTagline(),
-            p.getOwner(),
+            p.getTagline()
         };
     }
 
@@ -68,7 +58,7 @@ public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
         .addPlaceholder("{ProductAuthor}", songodaProduct.getOwner())
         .addPlaceholder("{ProductName}", songodaProduct.getName())
         .addPlaceholder("{ProductTagline}", songodaProduct.getTagline() != null ? songodaProduct.getTagline() : "")
-        .addPlaceholder("{ProductPrice}", songodaProduct.isFree() ? "&aFree" : (songodaProduct.isSongodaPlus() ? "&6&lSongoda+ Exclusive" : ("&e" + this.currencySymbols.get(songodaProduct.getCurrency()) + songodaProduct.getPrice())))
+        .addPlaceholder("{ProductPrice}", songodaProduct.getPriceString())
         .addPlaceholder("{SupportedVersions}", songodaProduct.getSupportedVersions());
 
         item.addLoreLines(Utils.breakText(songodaProduct.getDescription(), 40, "&7"));

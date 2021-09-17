@@ -2,6 +2,7 @@ package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -22,12 +23,13 @@ public class SongodaProduct {
 
     private final int id, downloads, views;
     private final String name, description, owner, url, price, currency, paymentMethod, filename, downloadUrl, tagline, supportedVersions;
+    private final LinkedHashMap<String, String> currencySymbols = new LinkedHashMap<>();
 
     public SongodaProduct(int id, String name, String description, String owner, String url, String price, String currency, String paymentMethod, String filename, String downloadUrl, int views, int downloads, String tagline, String supportedVersions){
         this.id = id;
         this.name = name;
         this.description = description;
-        this.owner = owner;
+        this.owner = (owner != null ? owner : "").replace("[\"", "").replace("\"]", "");
         this.url = url;
         this.paymentMethod = paymentMethod;
         this.downloads = downloads;
@@ -43,6 +45,10 @@ public class SongodaProduct {
             this.price = price;
             this.currency = currency;
         }
+        currencySymbols.put("EUR", "€");
+        currencySymbols.put("USD", "$");
+        currencySymbols.put("AUD", "AU$");
+        currencySymbols.put("GBP", "£");
     }
 
     public String getName() {
@@ -58,7 +64,7 @@ public class SongodaProduct {
     }
 
     public String getOwner() {
-        return owner != null ? owner : "";
+        return owner;
     }
 
     public String getUrl() {
@@ -73,16 +79,20 @@ public class SongodaProduct {
         return price;
     }
 
+    public double getPriceAsDouble(){
+        return Double.parseDouble(price);
+    }
+
     public String getPaymentMethod() {
         return paymentMethod;
     }
 
     public boolean isFree(){
-        return this.getPaymentMethod() == "None" || this.getPrice() == "0.0";
+        return this.getPaymentMethod().equalsIgnoreCase("none") || this.getPriceAsDouble() == 0.0;
     }
 
     public boolean isSongodaPlus(){
-        return this.getPaymentMethod() == "Songoda+" || (this.getOwner() == "Songoda" && this.getPrice() == "0.1");
+        return this.getPaymentMethod().equalsIgnoreCase("songoda+") || (this.getOwner().equalsIgnoreCase("songoda") && this.getPriceAsDouble() == 0.1);
     }
 
     public int getId() {
@@ -182,5 +192,11 @@ public class SongodaProduct {
         int exp = (int) (Math.log(number) / Math.log(1000));
 
         return String.format("%.1f%c", number / Math.pow(1000, exp), "kMGTPE".charAt(exp - 1));
+    }
+
+    public String getPriceString() {
+        if(this.isFree()) return "&e" + L.FREE;
+        if(this.isSongodaPlus()) return "&6&l" + L.SONGODA_PLUS;
+        return "&e" + this.currencySymbols.get(this.getCurrency()) + this.getPrice();
     }
 }

@@ -20,6 +20,8 @@ public enum L implements TranslationPack {
     WRITE("General.Write","Write"),
     CHANNELS("General.Channels","Channels"),
     PERMISSIONS("General.Permissions","Permissions"),
+    FREE("General.Free", "Free"),
+    SONGODA_PLUS("General.SongodaPlus", "Included with Songoda+"),
 
     /* Messages */
     FAILED_TO_RETRIEVE_MODULE("Errors.FailedToRetrieveModule","&cFailed to retrieve module data. Please try again later."),
