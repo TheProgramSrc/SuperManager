@@ -120,7 +120,7 @@ public class SongodaProduct {
     }
 
     public void download(Player player){
-        new Thread(() -> {
+        SuperManager.i.getSpigotTasks().runAsyncTask(() -> {
             if(!this.paymentMethod.equalsIgnoreCase("none") && !SuperManager.i.getSettingsStorage().getConfig().contains("songoda-token")){
                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_CANNOT_DOWNLOAD_PAID_PLUGIN);
             }else{
@@ -181,7 +181,7 @@ public class SongodaProduct {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     private String formatNumber(long number) {

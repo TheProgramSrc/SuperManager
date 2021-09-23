@@ -45,6 +45,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     @Override
     public void onPluginDisable() {
+        if(BackupManager.task != null) BackupManager.task.stop();
 
     }
 

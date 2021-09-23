@@ -21,7 +21,7 @@ public class BackupManager extends Module{
 
     public static BackupManager i;
     public BackupStorage backupStorage;
-    private RecurringTask task;
+    public static RecurringTask task;
 
     @Override
     public void onEnable(){
@@ -29,7 +29,8 @@ public class BackupManager extends Module{
         YMLConfig cfg = new YMLConfig(new File(this.getModuleFolder(), "Backups.yml"));
         this.backupStorage = new BackupStorage(cfg);
         // Check every second if we have new backups to be added
-        this.task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 10L, () -> {
+        task = this.getSpigotTasks().runAsyncRepeatingTask(0L, 10L, () -> {
+            if(this.backupStorage == null) return;
             Date now = Date.from(Instant.now());
             for(Backup backup : this.backupStorage.getAll()){
                 if(!this.backupStorage.has(backup.getUuid())) continue;
@@ -38,11 +39,13 @@ public class BackupManager extends Module{
                 }
             }
         });
+        Runtime.getRuntime().addShutdownHook(new Thread(task::stop));
     }
 
+    @Override
     public void onDisable() {
-        if(this.task != null) {
-            this.task.stop();
+        if(task != null) {
+            task.stop();
         }
     }
 
