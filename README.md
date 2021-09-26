@@ -48,3 +48,9 @@ Due to GitHub limitations please check the video here: [Click to Watch](https://
 
 ### Plugin Manager
 > This module won't get any preview nor "promotion", it currently just disables/enables plugins but is not recommended to be used because is using code that is not allowed by the Bukkit API, when disabling a plugin is forcing the server to unload it when it was developed to be unloaded only when the server is stopped/restarted.
+
+# Requirements
+* Spigot Server (or forks) +1.8
+
+# Contributing
+Feel free to contribute by helping us to find bugs :D report any issue in [the issues tab](https://github.com/TheProgramSrc/SuperManager/issues). You may also develop your own modules ;D please open an issue or contact us through discord to add your module here.
