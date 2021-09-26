@@ -2,14 +2,14 @@ package xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URL;
 import java.util.LinkedHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.InvalidDescriptionException;
 import org.bukkit.plugin.PluginDescriptionFile;
 
-import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
 import xyz.theprogramsrc.supercoreapi.global.networking.CustomConnection;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.global.utils.files.FileUtils;
@@ -88,11 +88,11 @@ public class SongodaProduct {
     }
 
     public boolean isFree(){
-        return this.getPaymentMethod().equalsIgnoreCase("none") || this.getPriceAsDouble() == 0.0;
+        return !this.isSongodaPlus() && (this.getPriceAsDouble() == 0.0 || this.getPaymentMethod().equalsIgnoreCase("none"));
     }
 
     public boolean isSongodaPlus(){
-        return this.getPaymentMethod().equalsIgnoreCase("songoda+") || this.getPaymentMethod().equalsIgnoreCase("songoda+ program")| (this.getOwner().equalsIgnoreCase("songoda") && this.getPriceAsDouble() == 0.1);
+        return this.getPaymentMethod().equalsIgnoreCase("songoda+") || this.getPaymentMethod().equalsIgnoreCase("songoda+ program") || (this.getOwner().equalsIgnoreCase("songoda") && this.getPriceAsDouble() == 0.1);
     }
 
     public int getId() {
@@ -121,11 +121,14 @@ public class SongodaProduct {
 
     public void download(Player player){
         SuperManager.i.getSpigotTasks().runAsyncTask(() -> {
-            if(!this.paymentMethod.equalsIgnoreCase("none") && !SuperManager.i.getSettingsStorage().getConfig().contains("songoda-token")){
+            if(!this.isFree()){
                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_CANNOT_DOWNLOAD_PAID_PLUGIN);
             }else{
                 try{
-                    CustomConnection connection = new ConnectionBuilder(this.paymentMethod.equalsIgnoreCase("none") ? this.getDownloadUrl() : (this.getDownloadUrl() + "?token=" + SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token"))).connect();
+                    // This is ready for Premium Products, BUT it's not working yet xD is always throwing error 403 (feel free to try in your browser with the product download url and attaching at the end '?token=<api-token>')
+                    URI baseUri = new URL(this.getDownloadUrl()).toURI(); 
+                    URL javaURL = new URI(baseUri.getScheme(), baseUri.getAuthority(), baseUri.getPath(), ("token=" + SuperManager.i.getSettingsStorage().getConfig().getString("songoda-token")), null).toURL();
+                    CustomConnection connection = new CustomConnection(javaURL, javaURL.openConnection());
                     if(connection.getResponseString() != null && !(connection.getResponseCode()+"").startsWith("2")){
                         if(connection.getResponseString().toLowerCase().contains("msg")){
                             JsonArray data = JsonParser.parseString(connection.getResponseString()).getAsJsonArray();
@@ -147,8 +150,7 @@ public class SongodaProduct {
                         File output = new File(downloadFolder, this.getFilename());
                         if(FileUtils.downloadUsingStream(this.downloadUrl, output)){
                             if(filename.endsWith(".jar")){
-                                try{
-                                    PluginDescriptionFile descriptionFile = SuperManager.i.getPluginLoader().getPluginDescription(output);
+                                PluginDescriptionFile descriptionFile = SuperManager.i.getPluginLoader().getPluginDescription(output);
                                     if(Bukkit.getPluginManager().getPlugin(descriptionFile.getName()) != null){
                                         SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_PLUGIN_ALREADY_INSTALLED.options().placeholder("{PluginName}", this.getName()));
                                     }else{
@@ -161,12 +163,9 @@ public class SongodaProduct {
                                                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_TO_ENABLE_PLUGIN.options().placeholder("{PluginName}", this.getName()));
                                             }
                                         }else{
-                                            throw new RuntimeException("Failed to move '" + output.getPath() + "'");
+                                            throw new IOException("Failed to move '" + output.getPath() + "'");
                                         }
                                     }
-                                }catch (InvalidDescriptionException e){
-                                    throw new RuntimeException("Failed to validate Plugin Description File");
-                                }
                             }else{
                                 SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_INVALID_FILE.options().placeholder("{Path}", output.getPath()).placeholder("{PluginName}", this.getName()));
                             }
@@ -174,7 +173,7 @@ public class SongodaProduct {
                             SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD.options().placeholder("{PluginName}", this.getName()).get());
                         }
                     }
-                }catch (IOException e){
+                }catch (Exception e){
                     SuperManager.i.addError(e);
                     SuperManager.i.log("&cFailed to download plugin '" + this.getName() + "'");
                     SuperManager.i.getSuperUtils().sendMessage(player, SuperManager.i.getSettingsStorage().getPrefix() + L.PLUGIN_MARKETPLACE_FAILED_PLUGIN_DOWNLOAD.options().placeholder("{PluginName}", this.getName()));

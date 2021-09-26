@@ -18,6 +18,8 @@ import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.objects.SongodaP
 
 public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
 
+    private boolean canDownloadPremium = false;
+
     public SongodaProductBrowser(Player player) {
         super(player, false);
         this.backEnabled = true;
@@ -68,7 +70,8 @@ public class SongodaProductBrowser extends BrowserGui<SongodaProduct> {
                 this.getSuperUtils().sendMessage(a.player, "&a" + songodaProduct.getName() + ":");
                 this.getSuperUtils().sendMessage(a.player, "&c" + songodaProduct.getUrl());
             }else if(a.clickType == ClickType.RIGHT_CLICK){
-                if(!songodaProduct.isFree() && !SuperManager.validateToken()){
+                boolean shouldAskForToken = !songodaProduct.isFree() && !SuperManager.validateToken();
+                if(shouldAskForToken && this.canDownloadPremium){
                     // Ask for token
                     this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
                     new Dialog(a.player){
