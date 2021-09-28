@@ -1,32 +1,34 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.guis.editors;
 
-import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.global.translations.Base;
-import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickType;
-import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.SpigotYMLConfig;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
-import xyz.theprogramsrc.supermanager.L;
-import xyz.theprogramsrc.supermanager.modules.filemanager.objects.YMLField;
-
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-public class YMLEditor extends BrowserGUI<YMLField> {
+import org.bukkit.entity.Player;
 
-    private final SpigotYMLConfig cfg;
+import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
+import xyz.theprogramsrc.supercoreapi.global.translations.Base;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction.ClickType;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
+import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
+import xyz.theprogramsrc.supermanager.L;
+import xyz.theprogramsrc.supermanager.modules.filemanager.objects.YMLField;
+
+public class YMLEditor extends BrowserGui<YMLField> {
+
+    private final YMLConfig cfg;
     private final File file;
     private final LinkedHashMap<String, Integer> currentLine;
 
     public YMLEditor(Player player, File file) {
-        super(player);
+        super(player, false);
         this.file = file;
-        this.cfg = new SpigotYMLConfig(this.file);
+        this.cfg = new YMLConfig(this.file);
         this.backEnabled = true;
         this.currentLine = new LinkedHashMap<>();
         this.open();
@@ -34,11 +36,16 @@ public class YMLEditor extends BrowserGUI<YMLField> {
 
     @Override
     public YMLField[] getObjects() {
-        return this.cfg.getKeys(true).stream().map(path -> new YMLField(this.file, path)).toArray(YMLField[]::new);
+        return this.cfg.getKeys(true).stream().map(path -> new YMLField(this.file, path)).sorted((f1, f2) -> (f2.isEditable() ? 1 : 0) - (f1.isEditable() ? 1 : 0)).toArray(YMLField[]::new);
     }
 
     @Override
-    public GUIButton getButton(YMLField ymlField) {
+    public String[] getSearchTags(YMLField f) {
+        return new String[]{f.getPath()};
+    }
+
+    @Override
+    public GuiEntry getEntry(YMLField ymlField) {
         SimpleItem item;
         if(ymlField.isBoolean()){
             item = new SimpleItem(XMaterial.TORCH)
@@ -52,7 +59,7 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     )
                     .addPlaceholder("{Section}", ymlField.getPath())
                     .addPlaceholder("{Preview}", Utils.parseEnabledBoolean(ymlField.asBoolean()));
-            return new GUIButton(item, a-> {
+            return new GuiEntry(item, a-> {
                 ymlField.toggle();
                 this.open();
             });
@@ -68,7 +75,7 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     )
                     .addPlaceholder("{Section}", ymlField.getPath())
                     .addPlaceholder("{Preview}", ymlField.asString());
-            return new GUIButton(item, a-> new Dialog(a.getPlayer()){
+            return new GuiEntry(item, a-> new Dialog(a.player){
                 @Override
                 public String getTitle() {
                     return L.FILE_MANAGER_SET_STRING_TITLE.toString();
@@ -107,8 +114,8 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     .addPlaceholder("{Amount}", amount)
                     .addPlaceholder("{Preview}", n+"")
                     .addPlaceholder("{Section}", ymlField.getPath());
-            return new GUIButton(item, a-> {
-                if(a.getAction() == ClickType.LEFT_CLICK){
+            return new GuiEntry(item, a-> {
+                if(a.clickType == ClickType.LEFT_CLICK){
                     if(n instanceof Double){
                         ymlField.increase(1.0D);
                     }else if(n instanceof Float){
@@ -118,7 +125,7 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     }else{
                         ymlField.increase(1);
                     }
-                }else if(a.getAction() == ClickType.RIGHT_CLICK){
+                }else if(a.clickType == ClickType.RIGHT_CLICK){
                     if(n instanceof Double){
                         ymlField.decrease(1.0D);
                     }else if(n instanceof Float){
@@ -128,8 +135,8 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                     }else{
                         ymlField.decrease(1);
                     }
-                }else if(a.getAction() == ClickType.Q){
-                    new Dialog(a.getPlayer()){
+                }else if(a.clickType == ClickType.Q){
+                    new Dialog(a.player){
                         @Override
                         public String getTitle() {
                             return L.FILE_MANAGER_SET_NUMBER_TITLE.toString();
@@ -162,14 +169,14 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                                 ymlField.set(toSet);
                                 return true;
                             }catch (NumberFormatException e){
-                                this.getSuperUtils().sendMessage(a.getPlayer(), L.FILE_MANAGER_INVALID_NUMBER.toString());
+                                this.getSuperUtils().sendMessage(a.player, L.FILE_MANAGER_INVALID_NUMBER.toString());
                                 return false;
                             }
                         }
                     }.addPlaceholder("{CurrentValue}", n+"").setRecall(p-> this.open());
                 }
             });
-        }else if(ymlField.get() instanceof List<?> && isStringList(ymlField.asList())){
+        }else if(ymlField.isStringList()){
             List<String> list = ymlField.asStringList();
             if(!this.currentLine.containsKey(ymlField.getPath())){
                 this.currentLine.put(ymlField.getPath(), 0);
@@ -198,9 +205,9 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                 }
             }
 
-            return new GUIButton(item, a-> {
-                if(a.getAction() == ClickType.LEFT_CLICK){
-                    new Dialog(a.getPlayer()){
+            return new GuiEntry(item, a-> {
+                if(a.clickType == ClickType.LEFT_CLICK){
+                    new Dialog(a.player){
                         @Override
                         public String getTitle() {
                             return L.FILE_MANAGER_ADD_TO_LIST_TITLE.toString();
@@ -226,13 +233,13 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                         this.currentLine.put(ymlField.getPath(), 0);
                         this.open();
                     });
-                }else if(a.getAction() == ClickType.Q){
+                }else if(a.clickType == ClickType.Q){
                     int next = currentLine == list.size()-1 ? 0 : currentLine+1;
                     this.currentLine.put(ymlField.getPath(), next);
                     this.open();
-                }else if(a.getAction() == ClickType.RIGHT_CLICK){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), L.FILE_MANAGER_REMOVE_FROM_LIST.toString());
-                    new Dialog(a.getPlayer()){
+                }else if(a.clickType == ClickType.RIGHT_CLICK){
+                    this.getSuperUtils().sendMessage(a.player, L.FILE_MANAGER_REMOVE_FROM_LIST.toString());
+                    new Dialog(a.player){
                         @Override
                         public String getTitle() {
                             return L.FILE_MANAGER_ADD_TO_LIST_TITLE.toString();
@@ -270,17 +277,13 @@ public class YMLEditor extends BrowserGUI<YMLField> {
                             "&7",
                             "&7" + L.FILE_MANAGER_YML_EDITOR_UNKNOWN_LORE
                     );
-            return new GUIButton(item);
+            return new GuiEntry(item);
         }
     }
 
     @Override
-    protected String getTitle() {
-        return L.FILE_MANAGER_YML_EDITOR_TITLE.options().placeholder("{FileName}", this.file.getName()).get();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.FILE_MANAGER_YML_EDITOR_TITLE.options().placeholder("{FileName}", this.file.getName()).get());
     }
 
-    private boolean isStringList(List<?> list){
-        if(!list.isEmpty()) return list.get(0) instanceof String;
-        return false;
-    }
 }

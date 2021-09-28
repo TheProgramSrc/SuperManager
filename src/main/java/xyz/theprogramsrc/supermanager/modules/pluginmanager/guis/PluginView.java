@@ -1,55 +1,55 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager.guis;
 
+import java.util.function.Consumer;
+
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.Recall;
+
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
 import xyz.theprogramsrc.supercoreapi.spigot.dialog.Dialog;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.objects.GUIRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.Gui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiModel;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiRows;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
-import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
+import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
 
-import java.util.LinkedList;
-
-public class PluginView extends GUI {
+public class PluginView extends Gui { 
 
     private final SPlugin sPlugin;
-    private final Recall<ClickAction> back;
+    private final Consumer<GuiAction> back;
 
-    public PluginView(SPlugin sPlugin, Player player, Recall<ClickAction> onBack){
-        super(player);
+    public PluginView(SPlugin sPlugin, Player player, Consumer<GuiAction> onBack){
+        super(player, false);
         this.sPlugin = sPlugin;
         this.back = onBack;
         this.open();
     }
 
     @Override
-    protected GUIRows getRows() {
-        return GUIRows.FOUR;
+    public GuiRows getRows() {
+        return GuiRows.FOUR;
     }
 
     @Override
-    protected String getTitle() {
-        return L.PLUGIN_VIEW_TITLE.options().placeholder("{PluginName}", this.sPlugin.getName()).toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.PLUGIN_VIEW_TITLE.options().placeholder("{PluginName}", this.sPlugin.getName()).toString());
     }
-
+    
     @Override
-    protected GUIButton[] getButtons() {
-        LinkedList<GUIButton> buttons = new LinkedList<>();
-        buttons.add(new GUIButton(this.getRows().getSize()-1, this.getPreloadedItems().getBackItem(), this.back::run));
-        buttons.add(this.getCheckUpdatesButton());
+    public void onBuild(GuiModel model) {
+        model.setButton(this.getRows().size -1 , new GuiEntry(this.getPreloadedItems().getBackItem(), this.back::accept));
+        model.setButton(11, this.getCheckUpdatesButton());
         if(this.sPlugin.isUpdateAvailable()){
-            buttons.add(this.getDownloadUpdateButton());
+            model.setButton(15, this.getDownloadUpdateButton());
         }
-        return buttons.toArray(new GUIButton[0]);
     }
 
-    private GUIButton getCheckUpdatesButton(){
+    private GuiEntry getCheckUpdatesButton(){
         SimpleItem item = new SimpleItem(XMaterial.EMERALD)
                 .setDisplayName("&a" + L.PLUGIN_VIEW_CHECK_UPDATE_ITEM_NAME)
                 .setLore(
@@ -57,39 +57,40 @@ public class PluginView extends GUI {
                         "&7" + L.PLUGIN_VIEW_CHECK_UPDATE_ITEM_LORE
                 );
 
-        return new GUIButton(11, item, a->{
+        return new GuiEntry(item, a->{
             this.close();
             if(!Utils.isConnected()){
-                this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.NO_CONNECTION.toString());
+                this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + "&c" + L.NO_CONNECTION);
             }else{
                 boolean updateAvailable = this.sPlugin.isUpdateAvailable();
                 if(this.sPlugin.getLatestVersion() == null){
-                    this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + "&c" + L.ERROR_WHILE_FETCHING_LATEST_VERSION.options().placeholder("{PluginName}", this.sPlugin.getName()));
+                    this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + "&c" + L.PLUGIN_MANAGER_FAILED_TO_CHECK_FOR_UPDATES.options().placeholder("{PluginName}", this.sPlugin.getName()));
                 }else{
                     if(updateAvailable){
-                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_NEEDS_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{LatestVersion}", this.sPlugin.getLatestVersion()));
+                        this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + L.PLUGIN_MANAGER_NEW_UPDATE_AVAILABLE.options().placeholder("{PluginName}", this.sPlugin.getName()).placeholder("{CurrentVersion}", this.sPlugin.getCurrentVersion()).placeholder("{NewVersion}", this.sPlugin.getLatestVersion()));
                     }else{
-                        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.PLUGIN_UP_TO_DATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
+                        this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + L.PLUGIN_MANAGER_ALREADY_UP_TO_DATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
                     }
                 }
             }
         });
     }
 
-    private GUIButton getDownloadUpdateButton(){
+    private GuiEntry getDownloadUpdateButton(){
         SimpleItem item = new SimpleItem(XMaterial.ANVIL)
                 .setDisplayName("&a" + L.PLUGIN_VIEW_DOWNLOAD_UPDATE_ITEM_NAME)
                 .setLore(
                         "&7",
                         "&7" + L.PLUGIN_VIEW_DOWNLOAD_UPDATE_ITEM_LORE
                 ).addPlaceholder("{PluginName}", this.sPlugin.getName());
-        return new GUIButton(15, item, a-> {
+        return new GuiEntry(item, a-> {
+            this.close();
             boolean premium = this.sPlugin.isPremium();
             if(premium){
-                if(!PluginManager.validateToken()){
+                if(!SuperManager.validateToken()){
                     // Ask for token
-                    this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
-                    new Dialog(a.getPlayer()){
+                    this.getSuperUtils().sendMessage(this.player, this.getSettings().getPrefix() + L.TOKEN_WILL_NOT_BE_SHARED);
+                    new Dialog(a.player){
                         @Override
                         public String getTitle() {
                             return L.DIALOG_TOKEN_INPUT_TITLE.toString();
@@ -108,12 +109,12 @@ public class PluginView extends GUI {
                         @Override
                         public boolean onResult(String s) {
                             this.getSettings().getConfig().set("songoda-token", s);
-                            this.getSettings().getConfig().reload();
-                            PluginManager.token = s;
+                            this.getSettings().getConfig().load();
+                            SuperManager.token = s;
                             this.getSuperUtils().sendMessage(this.getPlayer(), this.getSettings().getPrefix() + L.TOKEN_SAVED);
                             return true;
                         }
-                    }.setRecall(p-> this.getSpigotTasks().runTaskLater(5L, PluginView.this::open));
+                    };
                 }else{
                     this.startDownload(a);
                 }
@@ -123,13 +124,8 @@ public class PluginView extends GUI {
         });
     }
 
-    private void startDownload(ClickAction a){
-        this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.DOWNLOADING_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        boolean download = this.sPlugin.downloadUpdate();
-        if(download) {
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.SUCCESS_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        }else{
-            this.getSuperUtils().sendMessage(a.getPlayer(), this.getSettings().getPrefix() + L.ERROR_ON_DOWNLOAD.options().placeholder("{PluginName}", this.sPlugin.getName()));
-        }
+    private void startDownload(GuiAction a){
+        this.getSuperUtils().sendMessage(a.player, this.getSettings().getPrefix() + L.PLUGIN_MANAGER_DOWNLOADING_UPDATE.options().placeholder("{PluginName}", this.sPlugin.getName()));
+        this.sPlugin.downloadUpdate(a.player);
     }
 }

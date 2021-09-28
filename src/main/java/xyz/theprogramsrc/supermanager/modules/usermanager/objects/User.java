@@ -3,10 +3,10 @@ package xyz.theprogramsrc.supermanager.modules.usermanager.objects;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonArray;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonObject;
-import xyz.theprogramsrc.supercoreapi.google.gson.JsonParser;
+
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.*;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.skintexture.SkinTexture;
+import xyz.theprogramsrc.supermanager.SuperManager;
 
 import java.util.LinkedHashMap;
 import java.util.UUID;
@@ -17,12 +17,18 @@ public class User {
     private final String name;
     private SkinTexture skinTexture;
     private final LinkedHashMap<String, Object> data;
+    private final SuperManager plugin;
+
+    public User(UUID uuid, String name) {
+        this(uuid, name, null);
+    }
 
     public User(UUID uuid, String name, SkinTexture skinTexture){
         this.uuid = uuid;
         this.name = name;
         this.skinTexture = skinTexture;
         this.data = new LinkedHashMap<>();
+        this.plugin = SuperManager.i;
     }
 
     public boolean getDataAsBoolean(String key){
@@ -86,6 +92,48 @@ public class User {
         this.skinTexture = skinTexture;
     }
 
+    public String dataToString(){
+        JsonObject json = new JsonObject();
+        JsonArray data = new JsonArray();
+        this.data.forEach((key, value) ->{
+            JsonObject json1 = new JsonObject();
+            json1.addProperty("key", key);
+            if(value instanceof Boolean){
+                json1.addProperty("type", "boolean");
+                json1.addProperty("value", ((boolean)value));
+            }else if(value instanceof Number){
+                json1.addProperty("type", "number");
+                json1.addProperty("value", ((Number)value));
+            }else{
+                json1.addProperty("type", "string");
+                json1.addProperty("value", value.toString());
+            }
+
+            data.add(json1);
+        });
+        json.add("data", data);
+        return json.toString();
+    }
+
+    public void loadDataFromString(String string){
+        JsonArray data = JsonParser.parseString(string).getAsJsonObject().get("data").getAsJsonArray();
+        data.forEach(e -> {
+            JsonObject j1 = e.getAsJsonObject();
+            String key = j1.get("key").getAsString();
+            String type = j1.get("type").getAsString();
+            Object value;
+            if(type.equalsIgnoreCase("boolean")){
+                value = j1.get("value").getAsBoolean();
+            }else if(type.equalsIgnoreCase("number")){
+                value = j1.get("value").getAsNumber();
+            }else{
+                value = j1.get("value").getAsString();
+            }
+
+            this.data.put(key, value);
+        });
+    }
+
     @Override
     public String toString() {
         JsonObject json = new JsonObject();
@@ -113,8 +161,15 @@ public class User {
         return json.toString();
     }
 
+    public void sendMessage(String message, Object... replacements){
+        if(this.isOnline()){
+            String msg = String.format(message, replacements);
+            this.plugin.getSuperUtils().sendMessage(this.getPlayer(), msg);
+        }
+    }
+
     public static User fromJSON(String data){
-        JsonObject json = new JsonParser().parse(data).getAsJsonObject();
+        JsonObject json = JsonParser.parseString(data).getAsJsonObject();
 
         final User user = new User(
                 UUID.fromString(json.get("uuid").getAsString()),

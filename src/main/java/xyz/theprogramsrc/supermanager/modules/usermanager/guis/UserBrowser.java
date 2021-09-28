@@ -1,44 +1,43 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager.guis;
 
 import org.bukkit.entity.Player;
-import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.BrowserGUI;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.GUIButton;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.BrowserGui;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiEntry;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiModel;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiTitle;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 
-import java.util.LinkedList;
-
-public class UserBrowser extends BrowserGUI<User> {
+public class UserBrowser extends BrowserGui<User> {
 
     private final UserManagerModule userManagerModule;
     private boolean onlineOnly = false;
 
     public UserBrowser(Player player, UserManagerModule userManagerModule) {
-        super(player);
+        super(player, false);
         this.userManagerModule = userManagerModule;
         this.backEnabled = true;
         this.open();
     }
 
     @Override
-    protected GUIButton[] getButtons() {
-        LinkedList<GUIButton> buttons = new LinkedList<>(Utils.toList(super.getButtons()));
+    public void onBuild(GuiModel m) {
+        super.onBuild(m);
         SimpleItem item = new SimpleItem(this.onlineOnly ? XMaterial.ENDER_EYE : XMaterial.ENDER_PEARL)
                 .setDisplayName("&a" + (this.onlineOnly ? L.USER_MANAGER_BROWSER_ALL_ONLINE_NAME : L.USER_MANAGER_BROWSER_ONLINE_ONLY_NAME))
                 .setLore(
                         "&7",
                         "&7" + (this.onlineOnly ? L.USER_MANAGER_BROWSER_ALL_ONLINE_LORE : L.USER_MANAGER_BROWSER_ONLINE_ONLY_LORE)
                 );
-        buttons.add(new GUIButton(47, item, a-> {
+        m.setButton(47, new GuiEntry(item, a->{
             this.onlineOnly = !this.onlineOnly;
             this.open();
         }));
-        return buttons.toArray(new GUIButton[0]);
     }
 
     @Override
@@ -47,7 +46,15 @@ public class UserBrowser extends BrowserGUI<User> {
     }
 
     @Override
-    public GUIButton getButton(User user) {
+    public String[] getSearchTags(User u) {
+        return new String[]{
+            u.getName(),
+            u.getUUID().toString(),
+        };
+    }
+
+    @Override
+    public GuiEntry getEntry(User user) {
         SimpleItem item = new SimpleItem(XMaterial.PLAYER_HEAD)
                 .setDisplayName("&a" + L.USER_MANAGER_BROWSER_ITEM_NAME)
                 .setLore(
@@ -55,16 +62,16 @@ public class UserBrowser extends BrowserGUI<User> {
                         "&7" + L.USER_MANAGER_BROWSER_ITEM_LORE
                 ).setSkin(user.getSkin())
                 .addPlaceholder("{UserName}", user.getName());
-        return new GUIButton(item, a-> new UserView(a.getPlayer(), user, this.userManagerModule.getUserStorage()){
+        return new GuiEntry(item, a-> new UserView(a.player, user, this.userManagerModule.getUserStorage()){
             @Override
-            public void onBack(ClickAction clickAction) {
+            public void onBack(GuiAction clickAction) {
                 UserBrowser.this.open();
             }
         });
     }
 
     @Override
-    protected String getTitle() {
-        return L.USER_MANAGER_BROWSER_TITLE.toString();
+    public GuiTitle getTitle() {
+        return GuiTitle.of(L.USER_MANAGER_BROWSER_TITLE.toString());
     }
 }

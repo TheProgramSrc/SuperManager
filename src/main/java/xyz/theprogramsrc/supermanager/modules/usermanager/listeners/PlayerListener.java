@@ -1,21 +1,51 @@
 package xyz.theprogramsrc.supermanager.modules.usermanager.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.*;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.SpigotModule;
 import xyz.theprogramsrc.supercoreapi.spigot.utils.skintexture.SkinTexture;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserStorage;
 import xyz.theprogramsrc.supermanager.modules.usermanager.objects.User;
 
+import java.util.*;
+
 public class PlayerListener extends SpigotModule {
 
+    public static final LinkedHashMap<UUID, UUID> following = new LinkedHashMap<>();
     private final UserStorage userStorage;
 
     public PlayerListener(UserStorage userStorage){
         this.userStorage = userStorage;
+        this.getSpigotTasks().runRepeatingTask(0L, 20L, () -> {
+            if(!this.plugin.getPluginDataStorage().isLowResourceUsageEnabled()){
+                for(final Player player : Bukkit.getOnlinePlayers()){
+                    this.getSpigotTasks().runAsyncTask(() -> {
+                        if(!userStorage.exists(player.getUniqueId())){
+                            userStorage.save(new User(player.getUniqueId(), player.getName(), null));
+                        }
+                    });
+                }
+    
+                if(Utils.isConnected()){
+                    for(User user : this.userStorage.get()){
+                        if(!user.hasSkin() && user.isOnline()){
+                            SkinTexture skin = null;
+                            try {
+                                skin = this.spigotPlugin.getSkinManager().getSkin(user.getPlayer());
+                            }catch(Exception ignored){}
+                            if(skin != null){
+                                user.setSkinTexture(skin);
+                                userStorage.save(user);
+                            }
+                        }
+                    }
+                }
+            }
+        });
     }
 
     @EventHandler(priority = EventPriority.NORMAL)

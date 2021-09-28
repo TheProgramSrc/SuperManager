@@ -1,5 +1,10 @@
 package xyz.theprogramsrc.supermanager;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+
 import xyz.theprogramsrc.supercoreapi.global.storage.DataBase;
 import xyz.theprogramsrc.supercoreapi.global.storage.universal.UniversalStorage;
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
@@ -7,6 +12,7 @@ import xyz.theprogramsrc.supercoreapi.spigot.SpigotPlugin;
 import xyz.theprogramsrc.supermanager.api.SuperManagerAPI;
 import xyz.theprogramsrc.supermanager.commands.MainCommand;
 import xyz.theprogramsrc.supermanager.managers.ModuleManager;
+import xyz.theprogramsrc.supermanager.modules.backupmanager.BackupManager;
 import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsModule;
 import xyz.theprogramsrc.supermanager.modules.filemanager.FileManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
@@ -14,29 +20,23 @@ import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplac
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-
 public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
+    public static String token;
     public static SuperManager i;
     private ModuleManager moduleManager;
     private LinkedList<Module> modules;
-    private LinkedHashMap<String, Module> enabledModules;
-    private DataBase dataBase;
 
     @Override
     public void onPluginLoad() {
         i = this;
         this.modules = new LinkedList<>();
-        this.enabledModules = new LinkedHashMap<>();
         this.moduleManager = new ModuleManager();
     }
 
     @Override
     public void onPluginEnable() {
+        token = this.getSettingsStorage().getConfig().contains("songoda-token") ? this.getSettingsStorage().getConfig().getString("songoda-token") : "";
         UniversalStorage.register(this);
         this.registerTranslation(L.class);
         this.registerModules();
@@ -45,6 +45,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     @Override
     public void onPluginDisable() {
+        if(BackupManager.task != null) BackupManager.task.stop();
 
     }
 
@@ -54,6 +55,11 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         this.registerModule(UserManagerModule.class);
         this.registerModule(ChatChannelsModule.class);
         this.registerModule(FileManager.class);
+        this.registerModule(BackupManager.class);
+    }
+
+    public DataBase getDataBase() {
+        return UniversalStorage.database();
     }
 
     public ModuleManager getModuleManager() {
@@ -80,14 +86,6 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
                             module.disable();
                         }
                     }
-
-                    if(module.isEnabled() && module.isRunning()){
-                        if(!this.enabledModules.containsKey(module.getIdentifier())){
-                            this.enabledModules.put(module.getIdentifier(), module);
-                        }
-                    }else{
-                        this.enabledModules.remove(module.getIdentifier());
-                    }
                 }
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
@@ -107,8 +105,33 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         return Arrays.stream(this.getModules()).filter(m-> m.getIdentifier().equals(id)).findFirst().orElse(null);
     }
 
-    public LinkedList<Module> getEnabledModules(){
-        return new LinkedList<>(this.enabledModules.values());
+    public Module[] getEnabledModules(){
+        return this.modules.stream().filter(Module::isEnabled).toArray(Module[]::new);
+    }
+
+    // Utils
+    public static long getTimeSecondsFromString(String string) {
+        return Arrays.stream(string.split(" ")).mapToLong(s -> getTimeFromWord(s)).sum();
+    }
+
+    private static long getTimeFromWord(String word) {
+        if (word.length() < 2) return 0L;
+        String timeUnitString = word.toCharArray()[word.length() - 1] + "";
+        TimeUnit timeUnit = Arrays.stream(new TimeUnit[] { TimeUnit.DAYS, TimeUnit.HOURS, TimeUnit.MINUTES, TimeUnit.SECONDS }).filter((t) -> t.toString().toLowerCase().startsWith(timeUnitString)).findFirst().orElse(null);
+        if(timeUnit == null) return 0L;
+        try{
+            return timeUnit == null ? 0L : timeUnit.toSeconds((long) Integer.parseInt(word.substring(0, word.length() - 1)));
+        }catch(NumberFormatException e){
+            return 0L;
+        }
+    }
+
+    public static boolean validateToken(){
+        if(token == null) return false;
+        if(token.equals("")) return false;
+        if(token.equals(" ")) return false;
+
+        return token.matches("^[a-fA-F0-9]{32}$");
     }
 
 }

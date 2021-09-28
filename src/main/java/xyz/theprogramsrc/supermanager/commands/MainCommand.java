@@ -1,6 +1,11 @@
 package xyz.theprogramsrc.supermanager.commands;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.entity.Player;
+
 import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
 import xyz.theprogramsrc.supercoreapi.spigot.commands.CommandResult;
 import xyz.theprogramsrc.supercoreapi.spigot.commands.SpigotCommand;
@@ -9,9 +14,6 @@ import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.SuperManager;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.objects.Module;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class MainCommand extends SpigotCommand {
 
@@ -86,14 +88,10 @@ public class MainCommand extends SpigotCommand {
 
     @Override
     public List<String> getCommandComplete(Player player, String alias, String[] args) {
-        if(args.length == 0){
-            return SuperManager.i.getEnabledModules().stream().map(Module::getIdentifier).collect(Collectors.toList());
-        }else {
-            if(args.length == 1){
-                return SuperManager.i.getEnabledModules().stream().map(Module::getIdentifier).filter(id -> id.toLowerCase().contains(args[0].toLowerCase())).collect(Collectors.toList());
-            }else if(args.length == 2){
-                return Utils.toList("enable", "disable");
-            }
+        if(args.length == 1){
+            return Arrays.stream(SuperManager.i.getEnabledModules()).map(Module::getIdentifier).filter(id -> id.toLowerCase().contains(args[0].toLowerCase())).collect(Collectors.toList());
+        }else if(args.length == 2){
+            return Utils.toList("enable", "disable");
         }
         return super.getCommandComplete(player, alias, args);
     }

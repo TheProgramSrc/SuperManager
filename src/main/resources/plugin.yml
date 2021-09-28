@@ -4,6 +4,8 @@ main: xyz.theprogramsrc.supermanager.SuperManager
 api-version: "1.13"
 author: TheProgramSrc
 description: ${project.description}
+softdepend: ["PlaceholderAPI"]
+load: STARTUP
 
 permissions:
   supermanager.admin:

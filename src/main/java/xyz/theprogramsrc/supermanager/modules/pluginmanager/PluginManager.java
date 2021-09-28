@@ -1,62 +1,93 @@
 package xyz.theprogramsrc.supermanager.modules.pluginmanager;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.io.File;
+import java.io.IOException;
+import java.net.CookieHandler;
+import java.net.CookieManager;
+import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.Plugin;
-import xyz.theprogramsrc.supercoreapi.apache.commons.io.FileUtils;
-import xyz.theprogramsrc.supercoreapi.spigot.guis.action.ClickAction;
+
+import xyz.theprogramsrc.supercoreapi.global.networking.ConnectionBuilder;
+import xyz.theprogramsrc.supercoreapi.global.utils.Utils;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonObject;
+import xyz.theprogramsrc.supercoreapi.libs.google.gson.JsonParser;
+import xyz.theprogramsrc.supercoreapi.libs.xseries.XMaterial;
+import xyz.theprogramsrc.supercoreapi.spigot.gui.objets.GuiAction;
 import xyz.theprogramsrc.supercoreapi.spigot.items.SimpleItem;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.xseries.XMaterial;
 import xyz.theprogramsrc.supermanager.L;
 import xyz.theprogramsrc.supermanager.guis.MainGUI;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.guis.PluginBrowser;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.objects.SPlugin;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.LinkedHashMap;
-
 public class PluginManager extends Module {
 
-    public static LinkedHashMap<String, SPlugin> plugins;
-    public static String token;
+    public static LinkedHashMap<String, SPlugin> plugins = new LinkedHashMap<>();
+    public static CookieManager cookieManager = new CookieManager();
 
     @Override
     public void onEnable() {
-        if(plugins == null) plugins = new LinkedHashMap<>();
-        token = this.getSettings().getConfig().contains("songoda-token") ? this.getSettings().getConfig().getString("songoda-token") : null;
-        for(Plugin plugin : Bukkit.getPluginManager().getPlugins()){
-            File pluginFolder = plugin.getDataFolder();
-            File superManagerFile = new File(pluginFolder, "SuperManager.json");
-            if(superManagerFile.exists()){
-                try {
-                    String data = FileUtils.readFileToString(superManagerFile, Charset.defaultCharset());
-                    JsonObject json = new JsonParser().parse(data).getAsJsonObject();
-                    int id = json.get("id").getAsInt();
-                    String name = json.get("name").getAsString();
-                    boolean songoda = json.get("songoda").getAsBoolean();
-                    plugins.put(name, new SPlugin(id, name, songoda));
-                } catch (IOException e) {
-                    this.plugin.addError(e);
-                    this.log("&cError while reading file SuperManager.json from " + plugin.getName() + " (" + plugin.getDescription().getVersion() + ")");
-                    e.printStackTrace();
-                }
-            }
-        }
-
-        this.log("&aLoaded &c" + plugins.size() + "&a plugins.");
+        CookieHandler.setDefault(cookieManager);
     }
 
-    public static boolean validateToken(){
-        if(token == null) return false;
-        if(token.equals("")) return false;
-        if(token.equals(" ")) return false;
+    @EventHandler
+    public void onServerLoad(ServerLoadEvent event){
+        Plugin[] pluginsArray = Bukkit.getPluginManager().getPlugins();
+        this.getSpigotTasks().runAsyncTask(() -> {
+            for(Plugin bukkitPlugin : pluginsArray){
+                File superManagerFile = new File(Utils.folder(bukkitPlugin.getDataFolder()), "SuperManager.json");
+                if(Utils.isConnected()){ // Always download in case of updates
+                    String url = "https://raw.githubusercontent.com/TheProgramSrc/PluginsResources/master/SuperManager/PluginManager/{Plugin}.json".replace("{Plugin}", bukkitPlugin.getName());
+                    if(this.isValidUrl(url)){
+                        try{
+                            String data = Utils.readWithInputStream(url);
+                            if(data != null){
+                                xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils.writeStringToFile(superManagerFile, data, Charset.defaultCharset(), false);
+                            }
+                        }catch(IOException ignored){}
+                    }
+                }
+    
+                if(superManagerFile.exists()){
+                    try {
+                        String data = xyz.theprogramsrc.supercoreapi.libs.apache.commons.io.FileUtils.readFileToString(superManagerFile, Charset.defaultCharset());
+                        JsonObject json = JsonParser.parseString(data).getAsJsonObject();
+                        int id = json.get("id").getAsInt();
+                        String name = json.get("name").getAsString();
+                        String platform = json.get("platform").getAsString();
+                        String fileName = json.has("fileName") ? json.get("fileName").getAsString() : name + ".jar";
+                        String downloadUrl = json.has("downloadUrl") ? json.get("downloadUrl").getAsString() : null; 
+                        plugins.put(name, new SPlugin(id, name, platform, fileName, downloadUrl));
+                    } catch (IOException e) {
+                        this.plugin.addError(e);
+                        this.log("&cError while reading file SuperManager.json from " + bukkitPlugin.getName() + " (" + bukkitPlugin.getDescription().getVersion() + ")");
+                        e.printStackTrace();
+                    }
+                }
+            }
 
-        return token.matches("^[a-fA-F0-9]{32}$");
+            for(SPlugin plugin : plugins.values()){
+                plugin.parseProduct(); // Here we just pre load the products from their respective api.
+            }
+    
+            if(plugins.size() > 0){
+                this.log("&aLoaded &c" + plugins.size() + "&a plugins.");
+            }
+        });
+    }
+
+    private boolean isValidUrl(String url){
+        try{
+            return ConnectionBuilder.connect(url).getResponseCode().startsWith("2");
+        }catch(IOException e){
+            return false;
+        }
     }
 
     @Override
@@ -83,8 +114,8 @@ public class PluginManager extends Module {
     public void onAction(Player player) {
         new PluginBrowser(player){
             @Override
-            public void onBack(ClickAction clickAction) {
-                new MainGUI(clickAction.getPlayer());
+            public void onBack(GuiAction clickAction) {
+                new MainGUI(clickAction.player);
             }
         };
     }

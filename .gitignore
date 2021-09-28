@@ -66,7 +66,13 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
 .classpath
 .project
 .settings/
+.vscode/
 .apt_generated_tests/

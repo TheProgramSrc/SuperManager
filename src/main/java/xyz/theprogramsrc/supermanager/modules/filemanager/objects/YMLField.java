@@ -1,19 +1,24 @@
 package xyz.theprogramsrc.supermanager.modules.filemanager.objects;
 
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.ConfigField;
-import xyz.theprogramsrc.supercoreapi.spigot.utils.storage.SpigotYMLConfig;
-
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
+
+import xyz.theprogramsrc.supercoreapi.global.files.yml.ConfigField;
+import xyz.theprogramsrc.supercoreapi.global.files.yml.YMLConfig;
 
 public class YMLField {
 
     private final ConfigField field;
-    private final SpigotYMLConfig cfg;
+    private final YMLConfig cfg;
 
     public YMLField(File file, String path){
-        this.cfg = new SpigotYMLConfig(file);
-        this.field = new ConfigField(this.cfg.getConfig(), path);
+        this.cfg = new YMLConfig(file);
+        this.field = new ConfigField(this.cfg, path);
+    }
+
+    public boolean isEditable(){
+        return this.isString() || this.isNumber() || this.isBoolean() || this.isList();
     }
 
     public String getPath() {
@@ -34,6 +39,18 @@ public class YMLField {
 
     public boolean isBoolean(){
         return this.get() instanceof Boolean;
+    }
+
+    public boolean isList(){
+        return this.get() instanceof Collection;
+    }
+
+    public boolean isStringList(){
+        if(!this.isList()) 
+            return false;
+        if(!this.asList().isEmpty()) 
+            return this.asList().get(0) instanceof String;
+        return false;
     }
 
     public void set(Object value){

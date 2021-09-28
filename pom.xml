@@ -6,17 +6,18 @@
 
     <groupId>xyz.theprogramsrc</groupId>
     <artifactId>SuperManager</artifactId>
-    <version>2.0.0</version>
+    <version>2.0.0-BETA</version>
     <packaging>jar</packaging>
 
     <name>SuperManager</name>
 
     <description>The best way to manage and customize your server</description>
     <properties>
-        <kotlin.compiler.languageVersion>1.4</kotlin.compiler.languageVersion>
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <main.class>xyz.theprogramsrc.supermanager.SuperManager</main.class>
-        <java.version>1.8</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
     </properties>
 
     <build>
@@ -45,7 +46,7 @@
                             <relocations>
                                 <relocation>
                                     <pattern>xyz.theprogramsrc.supercoreapi</pattern>
-                                    <shadedPattern>xyz.theprogramsrc.supermanager.supercoreapi</shadedPattern>
+                                    <shadedPattern>xyz.theprogramsrc.supermanager.libs.supercoreapi</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
@@ -112,36 +113,53 @@
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
+        <!-- PlaceholderAPI -->
+        <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi</url>
+        </repository>
+        <!-- JitPack -->
+		<repository>
+		    <id>jitpack.io</id>
+		    <url>https://jitpack.io</url>
+		</repository>
     </repositories>
 
     <dependencies>
-        <!-- SuperCoreAPI -->
-        <dependency>
-            <groupId>xyz.theprogramsrc</groupId>
-            <artifactId>SuperCoreAPI</artifactId>
-            <version>4.12.0</version>
-            <scope>compile</scope>
-        </dependency>
-        <!-- NMS -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot</artifactId>
-            <version>1.16.5-R0.1-20210407.051511-11</version>
-            <scope>provided</scope>
-        </dependency>
         <!-- Spigot -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.16.5-R0.1-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <!-- BUNGEE -->
         <dependency>
             <groupId>net.md-5</groupId>
             <artifactId>bungeecord-api</artifactId>
-            <version>1.16-R0.4-SNAPSHOT</version>
+            <version>1.17-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
+        <!-- SuperCoreAPI -->
+        <dependency>
+            <groupId>xyz.theprogramsrc</groupId>
+            <artifactId>SuperCoreAPI</artifactId>
+            <version>5.2.4</version>
+            <scope>compile</scope> 
+        </dependency>
+        <!-- PlaceholderAPI -->
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- JSoup -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.14.2</version>
+            <scope>compile</scope>
+          </dependency>
     </dependencies>
 </project>
