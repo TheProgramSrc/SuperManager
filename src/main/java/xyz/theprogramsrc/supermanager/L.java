@@ -34,6 +34,13 @@ public enum L implements TranslationPack {
     TOKEN_WILL_NOT_BE_SHARED("Messages.TokenWillNotBeShared","&aDon't worry, your token will only be available in the config file and we won't share it to anyone."),
     TOKEN_SAVED("Messages.TokenSaved","&aThe token was saved in the config."),
     INVALID_TIME_FORMAT("Messages.InvalidTimeFormat","&cThe time format is invalid."),
+    INVALID_NUMBER("Messages.InvalidNumber","&cThe number is invalid."),
+    VALIDATING_SERVER_ICON("Messages.ValidatingServerIcon","&7Validating server icon..."),
+    VALIDATING_SERVER_ICON_SUCCESS("Messages.ValidatingServerIconSuccess","&aThe server icon is valid."),
+    INVALID_SERVER_ICON_URL("Messages.InvalidServerIcon","&cThe server icon url is invalid!"),
+    INVALID_SERVER_ICON_IMAGE("Messages.InvalidServerIconImage","&cThe server icon url must be a direct link to an image!"),
+    FAILED_TO_LOAD_SERVER_ICON("Messages.FailedToLoadServerIcon","&cFailed to load server icon. Please try again later."),
+    
 
     /* Plugin Manager - Main */
     PLUGIN_MANAGER_BROWSER_CACHE_RELOAD_REQUEST_SENT("Modules.PluginManager.ReloadCache", "&aCache reload request sent."),
@@ -149,6 +156,22 @@ public enum L implements TranslationPack {
     BACKUP_MANAGER_RENAME_BACKUP_TITLE("Dialogs.BackupManager.RenameBackup.Title", "&bRename Backup"),
     BACKUP_MANAGER_RENAME_BACKUP_SUBTITLE("Dialogs.BackupManager.RenameBackup.Subtitle", "&7Write the new backup name"),
     BACKUP_MANAGER_RENAME_BACKUP_ACTIONBAR("Dialogs.BackupManager.RenameBackup.Actionbar", "&cCurrent Name: &7{BackupName}"),
+    
+    SERVER_MANAGER_CHANGE_MOTD_LINE_1_TITLE("Dialogs.ServerManager.ChangeMOTDLine1.Title", "&eChange MOTD Line 1"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_1_SUBTITLE("Dialogs.ServerManager.ChangeMOTDLine1.Subtitle", "&7Write the new MOTD line"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_1_ACTIONBAR("Dialogs.ServerManager.ChangeMOTDLine1.Actionbar", "&cCurrent MOTD Line 1: &r{CurrentMOTDLine}"),
+
+    SERVER_MANAGER_CHANGE_MOTD_LINE_2_TITLE("Dialogs.ServerManager.ChangeMOTDLine2.Title", "&eChange MOTD Line 2"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_2_SUBTITLE("Dialogs.ServerManager.ChangeMOTDLine2.Subtitle", "&7Write the new MOTD line"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_2_ACTIONBAR("Dialogs.ServerManager.ChangeMOTDLine2.Actionbar", "&cCurrent MOTD Line 2: &r{CurrentMOTDLine}"),
+
+    SERVER_MANAGER_MAX_PLAYERS_TITLE("Dialogs.ServerManager.MaxPlayers.Title", "&9Change Max Players"),
+    SERVER_MANAGER_MAX_PLAYERS_SUBTITLE("Dialogs.ServerManager.MaxPlayers.Subtitle", "&7Write the new max players"),
+    SERVER_MANAGER_MAX_PLAYERS_ACTIONBAR("Dialogs.ServerManager.MaxPlayers.Actionbar", "&cCurrent Max Players: &r{CurrentMaxPlayers}"),
+
+    SERVER_MANAGER_SERVER_ICON_URL_TITLE("Dialogs.ServerManager.ServerIcon.Title", "&9Change Server Icon"),
+    SERVER_MANAGER_SERVER_ICON_URL_SUBTITLE("Dialogs.ServerManager.ServerIcon.Subtitle", "&7Write the new server icon url"),
+    SERVER_MANAGER_SERVER_ICON_URL_ACTIONBAR("Dialogs.ServerManager.ServerIcon.Actionbar", "&cREMEMBER: The icon url must be a direct link to an image"),
 
     /* Modules */
 
@@ -359,6 +382,31 @@ public enum L implements TranslationPack {
     BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_OPEN_FOLDER("GUI.Modules.BackupManager.BackupFolderSelector.Item.OpenFolder", "&7Click to open the folder."),
     BACKUP_MANAGER_BACKUP_FOLDER_SELECTOR_ITEM_SELECT_FOLDER("GUI.Modules.BackupManager.BackupFolderSelector.Item.SelectFolder", "&7Click to select the folder."),
 
+    /* Server Manager */
+    SERVER_MANAGER_DISPLAY("GUI.Modules.ServerManager.Display", "Server Manager"),
+    SERVER_MANAGER_NAME("GUI.Modules.ServerManager.Name", "&aServer Manager"),
+    SERVER_MANAGER_LORE("GUI.Modules.ServerManager.Lore", "&7Click to customize your server"),
+
+    SERVER_MANAGER_TITLE("GUI.Modules.ServerManager.Title", "&aServer Manager"),
+    SERVER_MANAGER_CHANGE_MOTD_NAME("GUI.Modules.ServerManager.ChangeMOTD.Name", "&aMOTD"),
+    SERVER_MANAGER_CHANGE_MOTD_LORE("GUI.Modules.ServerManager.ChangeMOTD.Lore", "&7Change the MOTD"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_1("GUI.Modules.ServerManager.ChangeMOTD.Line1", "&7Change the first line of the MOTD"),
+    SERVER_MANAGER_CHANGE_MOTD_LINE_2("GUI.Modules.ServerManager.ChangeMOTD.Line2", "&7Change the second line of the MOTD"),
+    SERVER_MANAGER_CHANGE_MOTD_PREVIEW("GUI.Modules.ServerManager.ChangeMOTD.Preview", "&7Current MOTD:"),
+    SERVER_MANAGER_CHANGE_MOTD_PREVIEW_LINE_1("GUI.Modules.ServerManager.ChangeMOTD.PreviewLine1", "&7{MOTDLine1}"),
+    SERVER_MANAGER_CHANGE_MOTD_PREVIEW_LINE_2("GUI.Modules.ServerManager.ChangeMOTD.PreviewLine2", "&7{MOTDLine2}"),
+
+    SERVER_MANAGER_MAX_PLAYERS_NAME("GUI.Modules.ServerManager.MaxPlayers.Name", "&aMax Players"),
+    SERVER_MANAGER_MAX_PLAYERS_LORE("GUI.Modules.ServerManager.MaxPlayers.Lore", "&7Change the max players"),
+    SERVER_MANAGER_MAX_PLAYERS_LEFT_ACTION("GUI.Modules.ServerManager.MaxPlayers.LeftAction", "&7Increase Max Players by 1"),
+    SERVER_MANAGER_MAX_PLAYERS_MIDDLE_ACTION("GUI.Modules.ServerManager.MaxPlayers.MiddleAction", "&7Enter Custom Max Players"),
+    SERVER_MANAGER_MAX_PLAYERS_RIGHT_ACTION("GUI.Modules.ServerManager.MaxPlayers.RightAction", "&7Decrease Max Players by 1"),
+    SERVER_MANAGER_MAX_PLAYERS_PREVIEW("GUI.Modules.ServerManager.MaxPlayers.Preview", "&7Current Max Players: &c{MaxPlayers}"),    
+
+    SERVER_MANAGER_SERVER_ICON_URL_NAME("GUI.Modules.ServerManager.ServerIconURL.Name", "&aServer Icon URL"),
+    SERVER_MANAGER_SERVER_ICON_URL_LORE("GUI.Modules.ServerManager.ServerIconURL.Lore", "&7Change the server icon URL"),
+    SERVER_MANAGER_SERVER_ICON_URL_LEFT_ACTION("GUI.Modules.ServerManager.ServerIconURL.LeftAction", "&7Change Server Icon URL"),
+    SERVER_MANAGER_SERVER_ICON_URL_RIGHT_ACTION("GUI.Modules.ServerManager.ServerIconURL.LeftAction", "&7Clear Server Icon URL"),
 
     ;
 

@@ -17,6 +17,7 @@ import xyz.theprogramsrc.supermanager.modules.chatchannels.ChatChannelsModule;
 import xyz.theprogramsrc.supermanager.modules.filemanager.FileManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmanager.PluginManager;
 import xyz.theprogramsrc.supermanager.modules.pluginmarketplace.PluginMarketplace;
+import xyz.theprogramsrc.supermanager.modules.servermanager.ServerManager;
 import xyz.theprogramsrc.supermanager.modules.usermanager.UserManagerModule;
 import xyz.theprogramsrc.supermanager.objects.Module;
 
@@ -56,6 +57,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
         this.registerModule(ChatChannelsModule.class);
         this.registerModule(FileManager.class);
         this.registerModule(BackupManager.class);
+        this.registerModule(ServerManager.class);
     }
 
     public DataBase getDataBase() {
@@ -76,6 +78,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
                 if(module.getDisplayItem() == null){
                     this.log("&cThe display item of the module '&b" + module.getIdentifier() + "&c' cannot be null!");
                 }else{
+                    this.debug("&aThe module &7" + module.getDisplay() + "&a was registered");
                     this.modules.add(module);
                     if(module.isEnabled()){
                         if(!module.isRunning()){
