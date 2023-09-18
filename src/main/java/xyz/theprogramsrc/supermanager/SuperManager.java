@@ -51,7 +51,7 @@ public class SuperManager extends SpigotPlugin implements SuperManagerAPI {
 
     private void registerModules(){
         this.registerModule(PluginManager.class);
-        this.registerModule(PluginMarketplace.class);
+        // this.registerModule(PluginMarketplace.class);
         this.registerModule(UserManagerModule.class);
         this.registerModule(ChatChannelsModule.class);
         this.registerModule(FileManager.class);

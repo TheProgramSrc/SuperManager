@@ -6,7 +6,7 @@
 
     <groupId>xyz.theprogramsrc</groupId>
     <artifactId>SuperManager</artifactId>
-    <version>2.0.0-BETA</version>
+    <version>2.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>SuperManager</name>
@@ -76,23 +76,7 @@
         <finalName>SuperManager</finalName>
     </build>
 
-    <distributionManagement>
-        <repository>
-            <id>theprogramsrc-releases</id>
-            <url>https://repo.theprogramsrc.xyz/repository/maven-private/</url>
-        </repository>
-        <snapshotRepository>
-            <id>theprogramsrc-snapshots</id>
-            <url>https://repo.theprogramsrc.xyz/repository/maven-private/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
     <repositories>
-        <!-- TheProgramSrc Repo -->
-        <repository>
-            <id>theprogramsrc</id>
-            <url>https://repo.theprogramsrc.xyz/repository/maven-public</url>
-        </repository>
         <!-- CodeMC -->
         <repository>
             <id>CodeMC</id>
@@ -142,10 +126,9 @@
         </dependency>
         <!-- SuperCoreAPI -->
         <dependency>
-            <groupId>xyz.theprogramsrc</groupId>
+            <groupId>com.github.TheProgramSrc</groupId>
             <artifactId>SuperCoreAPI</artifactId>
-            <version>5.2.4</version>
-            <scope>compile</scope> 
+            <version>v5.2.4</version>
         </dependency>
         <!-- PlaceholderAPI -->
         <dependency>
